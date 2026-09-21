@@ -2,16 +2,16 @@
 
 本设计把 PostgreSQL 作为业务数据的权威来源；Redis/MQ 是高并发入口、削峰和异步传递机制，不替代本库的最终审计记录与状态约束。金额均以最小货币单位 `*_minor` 的整数保存，时间均为 `timestamptz`。
 
-## 1. 领域关系
+## 1. 消费者业务领域关系
+
+本图只描述 `CUSTOMER` 的浏览、领券、下单、支付及履约数据关系；商品、活动和券模板是消费者读取的运营配置。
 
 ```mermaid
 erDiagram
-    app_user ||--o{ product : creates
-    app_user ||--o{ marketing_activity : creates
-    product ||--o{ marketing_activity : configured_for
     app_user ||--o{ user_coupon : owns
-    coupon_template ||--o{ user_coupon : issues
     app_user ||--o{ customer_order : places
+    product ||--o{ marketing_activity : configured_for
+    coupon_template ||--o{ user_coupon : issues
     marketing_activity o|--o{ customer_order : backs_activity_order
     customer_order ||--|{ order_item : contains
     product ||--o{ order_item : snapshots
@@ -20,22 +20,42 @@ erDiagram
     user_coupon ||--o{ coupon_reservation : reserved_by
     customer_order ||--o| payment_record : paid_by
     customer_order ||--o| fulfillment_record : fulfilled_by
+    customer_order ||--o{ order_submission_idempotency : deduplicates
 ```
 
-## 2. 表与职责
+## 2. 运营与权限领域关系
+
+本图只描述 `OPERATOR` 的业务配置管理与 `ADMIN` 的账户权限管理。`app_user.role` 决定可操作范围：消费者不能作为业务配置操作者，管理员不能修改商品、活动或券配置。
+
+```mermaid
+erDiagram
+    app_user ||--o{ product : creates_updates
+    app_user ||--o{ marketing_activity : creates_updates
+    app_user ||--o{ coupon_template : creates_updates
+    product ||--o{ marketing_activity : configured_for
+    app_user ||--o{ operator_audit_log : performs
+    product ||--o{ operator_audit_log : audited
+    marketing_activity ||--o{ operator_audit_log : audited
+    coupon_template ||--o{ operator_audit_log : audited
+```
+
+## 3. 表与职责
 
 | 领域 | 表 | 说明 |
 |---|---|---|
-| 用户与商品 | `app_user`、`product` | 用户/运营角色、商品资料、直接购买可用库存。 |
-| 活动与限购 | `marketing_activity`、`activity_user_quota` | 一个活动绑定一个商品；活动库存是独立库存池，不扣减 `product.available_stock`；限购计数包含待支付保留和已支付订单。 |
-| 优惠券 | `coupon_template`、`user_coupon`、`coupon_user_claim_counter`、`coupon_reservation` | 满减券模板、用户持券、限领计数、订单锁券/核销/释放审计。券可用于任何符合金额与时间条件的订单；锁券记录由复合外键保证与订单、持券人属于同一用户。 |
+| 账户与权限 | `app_user`、`operator_audit_log` | `CUSTOMER` 为消费者，`OPERATOR` 为运营人员，`ADMIN` 为账户管理员；审计记录保存运营配置与账户权限变更。 |
+| 商品 | `product` | 商品资料、直接购买可用库存；`created_by` 和 `updated_by` 均只能是活跃 OPERATOR。 |
+| 活动与限购 | `marketing_activity`、`activity_user_quota` | 一个活动绑定一个商品；活动库存是独立库存池，不扣减 `product.available_stock`；限购计数包含待支付保留和已支付订单；创建人/修改人只能为 OPERATOR。 |
+| 优惠券 | `coupon_template`、`user_coupon`、`coupon_user_claim_counter`、`coupon_reservation` | 满减券模板、用户持券、限领计数、订单锁券/核销/释放审计。券可用于任何符合金额与时间条件的订单；模板创建人/修改人只能为 OPERATOR。 |
 | 订单 | `customer_order`、`order_item`、`order_submission_idempotency` | 订单头、不可变商品/价格快照、客户端提交幂等映射。 |
 | 库存 | `inventory_reservation`、`inventory_movement` | 每个订单项唯一的一次库存保留，以及保留/释放流水。 |
-| 支付与履约 | `payment_record`、`fulfillment_record` | 每单至多一个支付记录；模拟支付成功后自动建立完成态履约记录。 |
+| 支付与履约 | `payment_record`、`fulfillment_record`、`payment_outbox`、`payment_message_idempotency` | 每单至多一个支付记录；模拟支付成功后自动建立完成态履约记录；支付事件可靠投递并幂等消费。 |
+| 可靠消息 | `order_outbox`、`coupon_outbox`、`inventory_outbox` | 各生产服务独立维护 Outbox；业务事务与事件记录同一事务提交，后台任务负责重试投递。 |
+| 消费幂等 | `order_message_idempotency`、`coupon_message_idempotency`、`inventory_message_idempotency` | 各消费者服务独立记录消息处理状态，支持重复投递去重和处理中超时恢复。 |
 
 完整 DDL 位于 [001_initial_schema.sql](../db/001_initial_schema.sql)。
 
-## 3. 订单模型与不变量
+## 4. 订单模型与不变量
 
 `customer_order.kind` 仅有两类：
 
@@ -46,7 +66,7 @@ erDiagram
 
 订单金额和名称不依赖实时商品/活动/券配置：`order_item` 保存 SKU、商品名、标价、成交价和活动优惠快照；`coupon_reservation` 保存券门槛和优惠金额快照。
 
-## 4. 状态与并发规则
+## 5. 状态、权限与并发规则
 
 | 对象 | 状态/规则 |
 |---|---|
@@ -54,12 +74,15 @@ erDiagram
 | 用户券 | `AVAILABLE → RESERVED → CONSUMED`；超时/取消时，仍在使用期内则回到 `AVAILABLE`，否则为 `EXPIRED`。 |
 | 保留记录 | `RESERVED → CONFIRMED`（支付成功）或 `RESERVED → RELEASED`（取消/超时）。 |
 | 活动 | 仅未开始活动可取消；暂停只阻止新下单，已创建的待支付订单仍可在自身到期前支付。 |
-| 幂等 | `order_submission_idempotency` 对 `(user_id, idempotency_key)` 唯一；同键重试返回初次处理结果。 |
+| 幂等 | `order_submission_idempotency` 对 `(user_id, idempotency_key)` 唯一；同键重试返回初次处理结果。各 Outbox 使用 `event_id` 与业务前缀幂等号唯一；消费者幂等状态为 `PROCESSING`、`SUCCEEDED`、`FAILED`。 |
+| 角色 | `CUSTOMER` 只能拥有自己的订单和优惠券；`OPERATOR` 只能作为商品/活动/券配置操作者；`ADMIN` 只能执行账户管理。数据库触发器拒绝非活跃 OPERATOR 写入业务配置操作者，拒绝移除最后一个活跃 ADMIN。 |
 
 库存、券领取、限购和支付/超时竞争必须在服务层的单一数据库事务中执行。关键扣减使用带条件的 `UPDATE ... WHERE available_stock >= :qty` / `... committed_quantity + :qty <= :limit`，以受影响行数作为成功判定；不得先查询再无条件更新。活动边界以该事务中的数据库服务器时间为准。
 
-## 5. 审核要点
+## 6. 审核要点
 
 - `marketing_activity.available_stock` 是活动订单唯一库存权威；`product.available_stock` 只服务直接订单，二者故意不自动同步。
 - 订单项数量、订单金额、券适用性与活动限购是服务事务中的业务校验；DDL 提供不可绕过的基础形状、唯一性、非负数和合法订单状态约束。
 - 运营侧禁止修改已经开始的活动价格/库存规则与已开始发放券的核心规则，应由应用层按状态拦截，并依赖订单快照保证历史不变。
+- 运营写操作与账户角色变更必须同时写入 `operator_audit_log`；审计记录保存操作者、资源、动作、前后 JSON 快照和 Trace ID。账户管理审计只能由 ADMIN 写入，运营配置审计只能由 OPERATOR 写入。
+- Redis 预扣成功但 PostgreSQL 事务失败时，由对账/补偿任务回补 Redis；Outbox 发送成功但状态更新前宕机时，允许重复投递，由消费者幂等记录拦截。

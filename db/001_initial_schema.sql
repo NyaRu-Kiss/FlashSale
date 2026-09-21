@@ -1,9 +1,9 @@
 -- FlashSale PostgreSQL 16 initial schema.
 -- Monetary values are stored as integer minor units (for example, cents).
 
-CREATE TYPE user_role AS ENUM ('CUSTOMER', 'OPERATOR');
--- user_role: CUSTOMER=普通用户；OPERATOR=运营人员。
-COMMENT ON TYPE user_role IS '用户角色枚举。';
+CREATE TYPE user_role AS ENUM ('CUSTOMER', 'OPERATOR', 'ADMIN');
+-- user_role: CUSTOMER=普通消费者；OPERATOR=运营人员，管理商品/活动/优惠券；ADMIN=后台管理员，管理账户与角色。
+COMMENT ON TYPE user_role IS '平台账户角色枚举；消费者、运营人员与后台管理员相互隔离。';
 CREATE TYPE product_status AS ENUM ('DRAFT', 'ON_SALE', 'OFF_SALE');
 -- product_status: DRAFT=草稿/尚未上架；ON_SALE=上架可直接购买；OFF_SALE=已下架。
 COMMENT ON TYPE product_status IS '商品销售状态枚举。';
@@ -40,6 +40,12 @@ COMMENT ON TYPE fulfillment_status IS '模拟履约状态枚举。';
 CREATE TYPE idempotency_status AS ENUM ('PROCESSING', 'SUCCEEDED', 'REJECTED');
 -- idempotency_status: PROCESSING=处理中；SUCCEEDED=已成功并保存结果；REJECTED=已拒绝并保存结果。
 COMMENT ON TYPE idempotency_status IS '下单幂等请求处理状态枚举。';
+CREATE TYPE outbox_status AS ENUM ('PENDING', 'SENT', 'FAILED');
+-- outbox_status: PENDING=待投递；SENT=已成功投递；FAILED=达到重试条件后暂时失败，等待补偿或人工处理。
+COMMENT ON TYPE outbox_status IS '本地消息表的投递状态枚举。';
+CREATE TYPE message_consumer_status AS ENUM ('PROCESSING', 'SUCCEEDED', 'FAILED');
+-- message_consumer_status: PROCESSING=处理中；SUCCEEDED=已成功处理；FAILED=本次处理失败，可按策略重试。
+COMMENT ON TYPE message_consumer_status IS '消息消费者幂等记录状态枚举。';
 
 CREATE TABLE app_user (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -51,11 +57,11 @@ CREATE TABLE app_user (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (username)
 );
-COMMENT ON TABLE app_user IS '平台用户与运营人员账户。';
+COMMENT ON TABLE app_user IS '平台账户；CUSTOMER 为消费者，OPERATOR 为运营人员，ADMIN 为后台管理员。';
 COMMENT ON COLUMN app_user.id IS '用户主键。';
 COMMENT ON COLUMN app_user.username IS '登录用户名，平台内唯一。';
 COMMENT ON COLUMN app_user.password_hash IS '密码哈希值，不保存明文密码。';
-COMMENT ON COLUMN app_user.role IS '用户角色，区分普通用户和运营人员。';
+COMMENT ON COLUMN app_user.role IS '账户角色：CUSTOMER 只能消费，OPERATOR 只能运营业务，ADMIN 只能管理账户与角色。';
 COMMENT ON COLUMN app_user.status IS '账户状态：ACTIVE 可用，DISABLED 已禁用。';
 COMMENT ON COLUMN app_user.created_at IS '账户创建时间。';
 COMMENT ON COLUMN app_user.updated_at IS '账户最后修改时间。';
@@ -70,6 +76,7 @@ CREATE TABLE product (
     status product_status NOT NULL DEFAULT 'DRAFT',
     version BIGINT NOT NULL DEFAULT 0 CHECK (version >= 0),
     created_by BIGINT NOT NULL REFERENCES app_user(id),
+    updated_by BIGINT NOT NULL REFERENCES app_user(id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -83,6 +90,7 @@ COMMENT ON COLUMN product.available_stock IS '普通直接订单可保留的剩�
 COMMENT ON COLUMN product.status IS '商品状态；只有 ON_SALE 商品允许普通直接购买。';
 COMMENT ON COLUMN product.version IS '乐观锁版本号，每次库存或配置更新递增。';
 COMMENT ON COLUMN product.created_by IS '创建该商品的运营人员。';
+COMMENT ON COLUMN product.updated_by IS '最后修改该商品的运营人员。';
 COMMENT ON COLUMN product.created_at IS '商品创建时间。';
 COMMENT ON COLUMN product.updated_at IS '商品最后修改时间。';
 
@@ -99,6 +107,7 @@ CREATE TABLE marketing_activity (
     status activity_status NOT NULL DEFAULT 'NOT_STARTED',
     version BIGINT NOT NULL DEFAULT 0 CHECK (version >= 0),
     created_by BIGINT NOT NULL REFERENCES app_user(id),
+    updated_by BIGINT NOT NULL REFERENCES app_user(id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     CHECK (starts_at < ends_at)
@@ -116,6 +125,7 @@ COMMENT ON COLUMN marketing_activity.ends_at IS '活动结束时间；结束时�
 COMMENT ON COLUMN marketing_activity.status IS '活动生命周期状态。';
 COMMENT ON COLUMN marketing_activity.version IS '活动配置/库存的乐观锁版本号。';
 COMMENT ON COLUMN marketing_activity.created_by IS '创建该活动的运营人员。';
+COMMENT ON COLUMN marketing_activity.updated_by IS '最后修改该活动的运营人员。';
 COMMENT ON COLUMN marketing_activity.created_at IS '活动创建时间。';
 COMMENT ON COLUMN marketing_activity.updated_at IS '活动最后修改时间。';
 CREATE INDEX marketing_activity_browse_idx ON marketing_activity (status, starts_at, ends_at);
@@ -136,6 +146,7 @@ CREATE TABLE coupon_template (
     status coupon_template_status NOT NULL DEFAULT 'DRAFT',
     version BIGINT NOT NULL DEFAULT 0 CHECK (version >= 0),
     created_by BIGINT NOT NULL REFERENCES app_user(id),
+    updated_by BIGINT NOT NULL REFERENCES app_user(id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     CHECK (claim_starts_at < claim_ends_at),
@@ -157,9 +168,37 @@ COMMENT ON COLUMN coupon_template.use_ends_at IS '优惠券允许被订单使用
 COMMENT ON COLUMN coupon_template.status IS '优惠券模板领取控制状态。';
 COMMENT ON COLUMN coupon_template.version IS '优惠券模板配置的乐观锁版本号。';
 COMMENT ON COLUMN coupon_template.created_by IS '创建该优惠券模板的运营人员。';
+COMMENT ON COLUMN coupon_template.updated_by IS '最后修改该优惠券模板的运营人员。';
 COMMENT ON COLUMN coupon_template.created_at IS '优惠券模板创建时间。';
 COMMENT ON COLUMN coupon_template.updated_at IS '优惠券模板最后修改时间。';
 CREATE INDEX coupon_template_claim_idx ON coupon_template (status, claim_starts_at, claim_ends_at);
+
+CREATE TABLE operator_audit_log (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    operator_id BIGINT NOT NULL REFERENCES app_user(id),
+    target_type VARCHAR(32) NOT NULL CHECK (target_type IN ('PRODUCT', 'ACTIVITY', 'COUPON_TEMPLATE', 'USER_ACCOUNT')),
+    target_id BIGINT NOT NULL,
+    action VARCHAR(32) NOT NULL CHECK (action IN ('CREATE', 'UPDATE', 'ON_SALE', 'OFF_SALE', 'CANCEL', 'PAUSE', 'RESUME', 'CREATE_ACCOUNT', 'UPDATE_ROLE', 'ENABLE_ACCOUNT', 'DISABLE_ACCOUNT')),
+    before_snapshot JSONB,
+    after_snapshot JSONB,
+    trace_id VARCHAR(128),
+    request_source VARCHAR(128),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE operator_audit_log IS '运营业务配置和管理员账户权限变更的不可变审计记录。';
+COMMENT ON COLUMN operator_audit_log.id IS '审计记录主键。';
+COMMENT ON COLUMN operator_audit_log.operator_id IS '执行操作的 OPERATOR 或 ADMIN 账户。';
+COMMENT ON COLUMN operator_audit_log.target_type IS '被操作对象类型：PRODUCT 商品、ACTIVITY 活动、COUPON_TEMPLATE 优惠券模板、USER_ACCOUNT 账户。';
+COMMENT ON COLUMN operator_audit_log.target_id IS '被操作对象主键。';
+COMMENT ON COLUMN operator_audit_log.action IS '操作类型：CREATE/UPDATE/ON_SALE/OFF_SALE/CANCEL/PAUSE/RESUME 或账户管理操作。';
+COMMENT ON COLUMN operator_audit_log.before_snapshot IS '变更前的对象 JSON 快照；创建操作可为空。';
+COMMENT ON COLUMN operator_audit_log.after_snapshot IS '变更后的对象 JSON 快照。';
+COMMENT ON COLUMN operator_audit_log.trace_id IS '请求的分布式链路标识。';
+COMMENT ON COLUMN operator_audit_log.request_source IS '请求来源，例如后台用户标识或调用方地址。';
+COMMENT ON COLUMN operator_audit_log.created_at IS '操作审计创建时间。';
+CREATE INDEX operator_audit_log_operator_created_idx ON operator_audit_log (operator_id, created_at DESC);
+CREATE INDEX operator_audit_log_target_created_idx ON operator_audit_log (target_type, target_id, created_at DESC);
+CREATE INDEX operator_audit_log_trace_idx ON operator_audit_log (trace_id) WHERE trace_id IS NOT NULL;
 
 CREATE TABLE user_coupon (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -443,9 +482,344 @@ COMMENT ON COLUMN fulfillment_record.status IS '模拟履约状态，当前阶�
 COMMENT ON COLUMN fulfillment_record.completed_at IS '模拟履约完成时间。';
 COMMENT ON COLUMN fulfillment_record.created_at IS '履约记录创建时间。';
 
+-- Each producer service owns its own outbox table. The repeated structure keeps write ownership explicit.
+CREATE TABLE order_outbox (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    event_type VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    payload JSONB NOT NULL,
+    trace_id VARCHAR(128),
+    status outbox_status NOT NULL DEFAULT 'PENDING',
+    attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+    available_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    locked_until TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE order_outbox IS '订单服务本地消息表；订单事务与事件记录必须同一事务提交。';
+COMMENT ON COLUMN order_outbox.id IS 'Outbox 记录主键。';
+COMMENT ON COLUMN order_outbox.event_id IS '全局事件唯一标识。';
+COMMENT ON COLUMN order_outbox.event_type IS 'RocketMQ 事件类型。';
+COMMENT ON COLUMN order_outbox.idempotency_key IS '事件业务幂等号，必须带订单业务前缀。';
+COMMENT ON COLUMN order_outbox.aggregate_type IS '事件聚合类型，例如 ORDER。';
+COMMENT ON COLUMN order_outbox.aggregate_id IS '事件聚合根业务标识。';
+COMMENT ON COLUMN order_outbox.payload IS '发送到 MQ 的 JSON 事件载荷。';
+COMMENT ON COLUMN order_outbox.trace_id IS '创建事件时关联的分布式链路标识。';
+COMMENT ON COLUMN order_outbox.status IS '本地消息投递状态。';
+COMMENT ON COLUMN order_outbox.attempt_count IS '已尝试投递次数。';
+COMMENT ON COLUMN order_outbox.available_at IS '允许下一次投递的时间，用于退避。';
+COMMENT ON COLUMN order_outbox.locked_until IS '投递任务租约截止时间，防止多实例重复领取。';
+COMMENT ON COLUMN order_outbox.last_error IS '最近一次投递错误信息。';
+COMMENT ON COLUMN order_outbox.created_at IS 'Outbox 创建时间。';
+COMMENT ON COLUMN order_outbox.sent_at IS '首次成功投递时间。';
+COMMENT ON COLUMN order_outbox.updated_at IS 'Outbox 最后修改时间。';
+CREATE INDEX order_outbox_pending_idx ON order_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
+
+CREATE TABLE coupon_outbox (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    event_type VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    payload JSONB NOT NULL,
+    trace_id VARCHAR(128),
+    status outbox_status NOT NULL DEFAULT 'PENDING',
+    attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+    available_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    locked_until TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE coupon_outbox IS '优惠券服务本地消息表；领券、锁券和恢复事件与业务事务同提交。';
+COMMENT ON COLUMN coupon_outbox.id IS 'Outbox 记录主键。';
+COMMENT ON COLUMN coupon_outbox.event_id IS '全局事件唯一标识。';
+COMMENT ON COLUMN coupon_outbox.event_type IS 'RocketMQ 事件类型。';
+COMMENT ON COLUMN coupon_outbox.idempotency_key IS '事件业务幂等号，必须带优惠券业务前缀。';
+COMMENT ON COLUMN coupon_outbox.aggregate_type IS '事件聚合类型，例如 USER_COUPON。';
+COMMENT ON COLUMN coupon_outbox.aggregate_id IS '事件聚合根业务标识。';
+COMMENT ON COLUMN coupon_outbox.payload IS '发送到 MQ 的 JSON 事件载荷。';
+COMMENT ON COLUMN coupon_outbox.trace_id IS '创建事件时关联的分布式链路标识。';
+COMMENT ON COLUMN coupon_outbox.status IS '本地消息投递状态。';
+COMMENT ON COLUMN coupon_outbox.attempt_count IS '已尝试投递次数。';
+COMMENT ON COLUMN coupon_outbox.available_at IS '允许下一次投递的时间，用于退避。';
+COMMENT ON COLUMN coupon_outbox.locked_until IS '投递任务租约截止时间。';
+COMMENT ON COLUMN coupon_outbox.last_error IS '最近一次投递错误信息。';
+COMMENT ON COLUMN coupon_outbox.created_at IS 'Outbox 创建时间。';
+COMMENT ON COLUMN coupon_outbox.sent_at IS '首次成功投递时间。';
+COMMENT ON COLUMN coupon_outbox.updated_at IS 'Outbox 最后修改时间。';
+CREATE INDEX coupon_outbox_pending_idx ON coupon_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
+
+CREATE TABLE inventory_outbox (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    event_type VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    payload JSONB NOT NULL,
+    trace_id VARCHAR(128),
+    status outbox_status NOT NULL DEFAULT 'PENDING',
+    attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+    available_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    locked_until TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE inventory_outbox IS '库存服务本地消息表；库存预占、释放和确认事件与库存事务同提交。';
+COMMENT ON COLUMN inventory_outbox.id IS 'Outbox 记录主键。';
+COMMENT ON COLUMN inventory_outbox.event_id IS '全局事件唯一标识。';
+COMMENT ON COLUMN inventory_outbox.event_type IS 'RocketMQ 事件类型。';
+COMMENT ON COLUMN inventory_outbox.idempotency_key IS '事件业务幂等号，必须带库存业务前缀。';
+COMMENT ON COLUMN inventory_outbox.aggregate_type IS '事件聚合类型，例如 INVENTORY_RESERVATION。';
+COMMENT ON COLUMN inventory_outbox.aggregate_id IS '事件聚合根业务标识。';
+COMMENT ON COLUMN inventory_outbox.payload IS '发送到 MQ 的 JSON 事件载荷。';
+COMMENT ON COLUMN inventory_outbox.trace_id IS '创建事件时关联的分布式链路标识。';
+COMMENT ON COLUMN inventory_outbox.status IS '本地消息投递状态。';
+COMMENT ON COLUMN inventory_outbox.attempt_count IS '已尝试投递次数。';
+COMMENT ON COLUMN inventory_outbox.available_at IS '允许下一次投递的时间，用于退避。';
+COMMENT ON COLUMN inventory_outbox.locked_until IS '投递任务租约截止时间。';
+COMMENT ON COLUMN inventory_outbox.last_error IS '最近一次投递错误信息。';
+COMMENT ON COLUMN inventory_outbox.created_at IS 'Outbox 创建时间。';
+COMMENT ON COLUMN inventory_outbox.sent_at IS '首次成功投递时间。';
+COMMENT ON COLUMN inventory_outbox.updated_at IS 'Outbox 最后修改时间。';
+CREATE INDEX inventory_outbox_pending_idx ON inventory_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
+
+CREATE TABLE payment_outbox (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    event_type VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    payload JSONB NOT NULL,
+    trace_id VARCHAR(128),
+    status outbox_status NOT NULL DEFAULT 'PENDING',
+    attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+    available_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    locked_until TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE payment_outbox IS '支付服务本地消息表；支付状态变更与支付事件同一事务提交。';
+COMMENT ON COLUMN payment_outbox.id IS 'Outbox 记录主键。';
+COMMENT ON COLUMN payment_outbox.event_id IS '全局事件唯一标识。';
+COMMENT ON COLUMN payment_outbox.event_type IS 'RocketMQ 事件类型。';
+COMMENT ON COLUMN payment_outbox.idempotency_key IS '事件业务幂等号，必须带支付业务前缀。';
+COMMENT ON COLUMN payment_outbox.aggregate_type IS '事件聚合类型，例如 PAYMENT。';
+COMMENT ON COLUMN payment_outbox.aggregate_id IS '事件聚合根业务标识。';
+COMMENT ON COLUMN payment_outbox.payload IS '发送到 MQ 的 JSON 事件载荷。';
+COMMENT ON COLUMN payment_outbox.trace_id IS '创建事件时关联的分布式链路标识。';
+COMMENT ON COLUMN payment_outbox.status IS '本地消息投递状态。';
+COMMENT ON COLUMN payment_outbox.attempt_count IS '已尝试投递次数。';
+COMMENT ON COLUMN payment_outbox.available_at IS '允许下一次投递的时间，用于退避。';
+COMMENT ON COLUMN payment_outbox.locked_until IS '投递任务租约截止时间。';
+COMMENT ON COLUMN payment_outbox.last_error IS '最近一次投递错误信息。';
+COMMENT ON COLUMN payment_outbox.created_at IS 'Outbox 创建时间。';
+COMMENT ON COLUMN payment_outbox.sent_at IS '首次成功投递时间。';
+COMMENT ON COLUMN payment_outbox.updated_at IS 'Outbox 最后修改时间。';
+CREATE INDEX payment_outbox_pending_idx ON payment_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
+
+CREATE TABLE order_message_idempotency (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    event_id UUID NOT NULL,
+    event_type VARCHAR(128) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    status message_consumer_status NOT NULL DEFAULT 'PROCESSING',
+    trace_id VARCHAR(128),
+    attempt_count INTEGER NOT NULL DEFAULT 1 CHECK (attempt_count > 0),
+    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE order_message_idempotency IS '订单服务消费者幂等记录；按业务幂等号防止重复处理订单事件。';
+COMMENT ON COLUMN order_message_idempotency.id IS '消费幂等记录主键。';
+COMMENT ON COLUMN order_message_idempotency.idempotency_key IS '带 ORDER 前缀的业务幂等号。';
+COMMENT ON COLUMN order_message_idempotency.event_id IS '被消费的全局事件号。';
+COMMENT ON COLUMN order_message_idempotency.event_type IS '被消费的事件类型。';
+COMMENT ON COLUMN order_message_idempotency.aggregate_id IS '事件聚合业务标识。';
+COMMENT ON COLUMN order_message_idempotency.status IS '消费者处理状态。';
+COMMENT ON COLUMN order_message_idempotency.trace_id IS '消费链路标识。';
+COMMENT ON COLUMN order_message_idempotency.attempt_count IS '消费尝试次数。';
+COMMENT ON COLUMN order_message_idempotency.started_at IS '本次处理开始时间。';
+COMMENT ON COLUMN order_message_idempotency.completed_at IS '处理成功或最终失败时间。';
+COMMENT ON COLUMN order_message_idempotency.last_error IS '最近一次消费错误。';
+COMMENT ON COLUMN order_message_idempotency.created_at IS '幂等记录创建时间。';
+COMMENT ON COLUMN order_message_idempotency.updated_at IS '幂等记录最后修改时间。';
+CREATE INDEX order_message_idempotency_recovery_idx ON order_message_idempotency (started_at) WHERE status = 'PROCESSING';
+
+CREATE TABLE coupon_message_idempotency (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    event_id UUID NOT NULL,
+    event_type VARCHAR(128) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    status message_consumer_status NOT NULL DEFAULT 'PROCESSING',
+    trace_id VARCHAR(128),
+    attempt_count INTEGER NOT NULL DEFAULT 1 CHECK (attempt_count > 0),
+    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE coupon_message_idempotency IS '优惠券服务消费者幂等记录；按业务幂等号防止重复处理优惠券事件。';
+COMMENT ON COLUMN coupon_message_idempotency.id IS '消费幂等记录主键。';
+COMMENT ON COLUMN coupon_message_idempotency.idempotency_key IS '带 COUPON 前缀的业务幂等号。';
+COMMENT ON COLUMN coupon_message_idempotency.event_id IS '被消费的全局事件号。';
+COMMENT ON COLUMN coupon_message_idempotency.event_type IS '被消费的事件类型。';
+COMMENT ON COLUMN coupon_message_idempotency.aggregate_id IS '事件聚合业务标识。';
+COMMENT ON COLUMN coupon_message_idempotency.status IS '消费者处理状态。';
+COMMENT ON COLUMN coupon_message_idempotency.trace_id IS '消费链路标识。';
+COMMENT ON COLUMN coupon_message_idempotency.attempt_count IS '消费尝试次数。';
+COMMENT ON COLUMN coupon_message_idempotency.started_at IS '本次处理开始时间。';
+COMMENT ON COLUMN coupon_message_idempotency.completed_at IS '处理成功或最终失败时间。';
+COMMENT ON COLUMN coupon_message_idempotency.last_error IS '最近一次消费错误。';
+COMMENT ON COLUMN coupon_message_idempotency.created_at IS '幂等记录创建时间。';
+COMMENT ON COLUMN coupon_message_idempotency.updated_at IS '幂等记录最后修改时间。';
+CREATE INDEX coupon_message_idempotency_recovery_idx ON coupon_message_idempotency (started_at) WHERE status = 'PROCESSING';
+
+CREATE TABLE inventory_message_idempotency (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    event_id UUID NOT NULL,
+    event_type VARCHAR(128) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    status message_consumer_status NOT NULL DEFAULT 'PROCESSING',
+    trace_id VARCHAR(128),
+    attempt_count INTEGER NOT NULL DEFAULT 1 CHECK (attempt_count > 0),
+    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE inventory_message_idempotency IS '库存服务消费者幂等记录；按业务幂等号防止重复处理库存事件。';
+COMMENT ON COLUMN inventory_message_idempotency.id IS '消费幂等记录主键。';
+COMMENT ON COLUMN inventory_message_idempotency.idempotency_key IS '带 STOCK 前缀的业务幂等号。';
+COMMENT ON COLUMN inventory_message_idempotency.event_id IS '被消费的全局事件号。';
+COMMENT ON COLUMN inventory_message_idempotency.event_type IS '被消费的事件类型。';
+COMMENT ON COLUMN inventory_message_idempotency.aggregate_id IS '事件聚合业务标识。';
+COMMENT ON COLUMN inventory_message_idempotency.status IS '消费者处理状态。';
+COMMENT ON COLUMN inventory_message_idempotency.trace_id IS '消费链路标识。';
+COMMENT ON COLUMN inventory_message_idempotency.attempt_count IS '消费尝试次数。';
+COMMENT ON COLUMN inventory_message_idempotency.started_at IS '本次处理开始时间。';
+COMMENT ON COLUMN inventory_message_idempotency.completed_at IS '处理成功或最终失败时间。';
+COMMENT ON COLUMN inventory_message_idempotency.last_error IS '最近一次消费错误。';
+COMMENT ON COLUMN inventory_message_idempotency.created_at IS '幂等记录创建时间。';
+COMMENT ON COLUMN inventory_message_idempotency.updated_at IS '幂等记录最后修改时间。';
+CREATE INDEX inventory_message_idempotency_recovery_idx ON inventory_message_idempotency (started_at) WHERE status = 'PROCESSING';
+
+CREATE TABLE payment_message_idempotency (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    event_id UUID NOT NULL,
+    event_type VARCHAR(128) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    status message_consumer_status NOT NULL DEFAULT 'PROCESSING',
+    trace_id VARCHAR(128),
+    attempt_count INTEGER NOT NULL DEFAULT 1 CHECK (attempt_count > 0),
+    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE payment_message_idempotency IS '支付服务消费者幂等记录；按业务幂等号防止重复处理支付事件。';
+COMMENT ON COLUMN payment_message_idempotency.id IS '消费幂等记录主键。';
+COMMENT ON COLUMN payment_message_idempotency.idempotency_key IS '带 PAYMENT 前缀的业务幂等号。';
+COMMENT ON COLUMN payment_message_idempotency.event_id IS '被消费的全局事件号。';
+COMMENT ON COLUMN payment_message_idempotency.event_type IS '被消费的事件类型。';
+COMMENT ON COLUMN payment_message_idempotency.aggregate_id IS '事件聚合业务标识。';
+COMMENT ON COLUMN payment_message_idempotency.status IS '消费者处理状态。';
+COMMENT ON COLUMN payment_message_idempotency.trace_id IS '消费链路标识。';
+COMMENT ON COLUMN payment_message_idempotency.attempt_count IS '消费尝试次数。';
+COMMENT ON COLUMN payment_message_idempotency.started_at IS '本次处理开始时间。';
+COMMENT ON COLUMN payment_message_idempotency.completed_at IS '处理成功或最终失败时间。';
+COMMENT ON COLUMN payment_message_idempotency.last_error IS '最近一次消费错误。';
+COMMENT ON COLUMN payment_message_idempotency.created_at IS '幂等记录创建时间。';
+COMMENT ON COLUMN payment_message_idempotency.updated_at IS '幂等记录最后修改时间。';
+CREATE INDEX payment_message_idempotency_recovery_idx ON payment_message_idempotency (started_at) WHERE status = 'PROCESSING';
+
 CREATE OR REPLACE FUNCTION touch_updated_at() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
     NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION enforce_operator_actor() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+    actor_id BIGINT;
+    actor_role user_role;
+    actor_status VARCHAR(24);
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        actor_id := (to_jsonb(NEW) ->> 'created_by')::BIGINT;
+        IF (to_jsonb(NEW) ->> 'updated_by')::BIGINT <> actor_id THEN
+            RAISE EXCEPTION 'created_by and updated_by must match when creating %', TG_TABLE_NAME;
+        END IF;
+    ELSE
+        IF (to_jsonb(NEW) ->> 'created_by')::BIGINT <> (to_jsonb(OLD) ->> 'created_by')::BIGINT THEN
+            RAISE EXCEPTION 'created_by cannot be changed for %', TG_TABLE_NAME;
+        END IF;
+        actor_id := (to_jsonb(NEW) ->> 'updated_by')::BIGINT;
+    END IF;
+    SELECT role, status INTO actor_role, actor_status FROM app_user WHERE id = actor_id;
+    IF actor_role IS DISTINCT FROM 'OPERATOR' OR actor_status IS DISTINCT FROM 'ACTIVE' THEN
+        RAISE EXCEPTION 'business configuration actor % must be an active OPERATOR', actor_id;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION enforce_audit_actor() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+    actor_role user_role;
+    actor_status VARCHAR(24);
+BEGIN
+    SELECT role, status INTO actor_role, actor_status FROM app_user WHERE id = NEW.operator_id;
+    IF actor_status IS DISTINCT FROM 'ACTIVE' THEN
+        RAISE EXCEPTION 'audit actor % must be active', NEW.operator_id;
+    END IF;
+    IF NEW.target_type = 'USER_ACCOUNT' AND actor_role IS DISTINCT FROM 'ADMIN' THEN
+        RAISE EXCEPTION 'only ADMIN may audit account management actions';
+    END IF;
+    IF NEW.target_type IN ('PRODUCT', 'ACTIVITY', 'COUPON_TEMPLATE') AND actor_role IS DISTINCT FROM 'OPERATOR' THEN
+        RAISE EXCEPTION 'only OPERATOR may audit business configuration actions';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION prevent_last_admin_removal() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+    active_admin_count INTEGER;
+BEGIN
+    IF OLD.role = 'ADMIN' AND OLD.status = 'ACTIVE'
+       AND (TG_OP = 'DELETE' OR NEW.role <> 'ADMIN' OR NEW.status <> 'ACTIVE') THEN
+        SELECT count(*) INTO active_admin_count
+          FROM app_user
+         WHERE role = 'ADMIN' AND status = 'ACTIVE';
+        IF active_admin_count <= 1 THEN
+            RAISE EXCEPTION 'cannot remove or disable the last active ADMIN account';
+        END IF;
+    END IF;
+    IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
     RETURN NEW;
 END;
 $$;
@@ -514,6 +888,20 @@ CREATE TRIGGER order_touch BEFORE UPDATE ON customer_order FOR EACH ROW EXECUTE 
 CREATE TRIGGER reservation_touch BEFORE UPDATE ON inventory_reservation FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER coupon_reservation_touch BEFORE UPDATE ON coupon_reservation FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER payment_touch BEFORE UPDATE ON payment_record FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER product_operator_check BEFORE INSERT OR UPDATE ON product FOR EACH ROW EXECUTE FUNCTION enforce_operator_actor();
+CREATE TRIGGER activity_operator_check BEFORE INSERT OR UPDATE ON marketing_activity FOR EACH ROW EXECUTE FUNCTION enforce_operator_actor();
+CREATE TRIGGER coupon_template_operator_check BEFORE INSERT OR UPDATE ON coupon_template FOR EACH ROW EXECUTE FUNCTION enforce_operator_actor();
+CREATE TRIGGER operator_audit_actor_check BEFORE INSERT ON operator_audit_log FOR EACH ROW EXECUTE FUNCTION enforce_audit_actor();
+CREATE TRIGGER app_user_last_admin_update_check BEFORE UPDATE OF role, status ON app_user FOR EACH ROW EXECUTE FUNCTION prevent_last_admin_removal();
+CREATE TRIGGER app_user_last_admin_delete_check BEFORE DELETE ON app_user FOR EACH ROW EXECUTE FUNCTION prevent_last_admin_removal();
+CREATE TRIGGER order_outbox_touch BEFORE UPDATE ON order_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER coupon_outbox_touch BEFORE UPDATE ON coupon_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER inventory_outbox_touch BEFORE UPDATE ON inventory_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER payment_outbox_touch BEFORE UPDATE ON payment_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER order_message_idempotency_touch BEFORE UPDATE ON order_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER coupon_message_idempotency_touch BEFORE UPDATE ON coupon_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER inventory_message_idempotency_touch BEFORE UPDATE ON inventory_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER payment_message_idempotency_touch BEFORE UPDATE ON payment_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER order_transition_check BEFORE UPDATE OF status ON customer_order FOR EACH ROW EXECUTE FUNCTION enforce_order_transition();
 
 -- Deferred checks make a header and all its order items insertable in one transaction.

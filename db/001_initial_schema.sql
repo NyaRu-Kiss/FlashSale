@@ -442,6 +442,31 @@ COMMENT ON COLUMN order_submission_idempotency.response_code IS '首次处理结
 COMMENT ON COLUMN order_submission_idempotency.created_at IS '首次收到该幂等请求的时间。';
 COMMENT ON COLUMN order_submission_idempotency.completed_at IS '幂等请求处理完成时间。';
 
+CREATE TABLE coupon_claim_idempotency (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES app_user(id),
+    coupon_template_id BIGINT NOT NULL REFERENCES coupon_template(id),
+    idempotency_key VARCHAR(128) NOT NULL,
+    request_fingerprint CHAR(64) NOT NULL,
+    status idempotency_status NOT NULL DEFAULT 'PROCESSING',
+    user_coupon_id BIGINT REFERENCES user_coupon(id),
+    response_code VARCHAR(64),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    UNIQUE (user_id, coupon_template_id, idempotency_key)
+);
+COMMENT ON TABLE coupon_claim_idempotency IS '用户领取优惠券请求的幂等记录，防止重复领取并复用首次结果。';
+COMMENT ON COLUMN coupon_claim_idempotency.id IS '领券幂等记录主键。';
+COMMENT ON COLUMN coupon_claim_idempotency.user_id IS '发起领取请求的消费者。';
+COMMENT ON COLUMN coupon_claim_idempotency.coupon_template_id IS '本次领取对应的优惠券模板。';
+COMMENT ON COLUMN coupon_claim_idempotency.idempotency_key IS '客户端为一次领券请求生成的幂等键。';
+COMMENT ON COLUMN coupon_claim_idempotency.request_fingerprint IS '领取请求参数规范化后的 SHA-256 指纹。';
+COMMENT ON COLUMN coupon_claim_idempotency.status IS '领券请求处理状态。';
+COMMENT ON COLUMN coupon_claim_idempotency.user_coupon_id IS '成功领取时生成的用户券实例。';
+COMMENT ON COLUMN coupon_claim_idempotency.response_code IS '首次处理结果编码，供重试请求复用。';
+COMMENT ON COLUMN coupon_claim_idempotency.created_at IS '首次收到领券请求的时间。';
+COMMENT ON COLUMN coupon_claim_idempotency.completed_at IS '领券请求处理完成时间。';
+
 CREATE TABLE payment_record (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     order_id BIGINT NOT NULL UNIQUE REFERENCES customer_order(id) ON DELETE RESTRICT,
@@ -467,6 +492,31 @@ COMMENT ON COLUMN payment_record.failed_at IS '支付失败时间。';
 COMMENT ON COLUMN payment_record.failure_code IS '支付失败原因编码。';
 COMMENT ON COLUMN payment_record.created_at IS '支付记录创建时间。';
 COMMENT ON COLUMN payment_record.updated_at IS '支付记录最后修改时间。';
+
+CREATE TABLE payment_submission_idempotency (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES app_user(id),
+    order_id BIGINT NOT NULL REFERENCES customer_order(id),
+    idempotency_key VARCHAR(128) NOT NULL,
+    request_fingerprint CHAR(64) NOT NULL,
+    status idempotency_status NOT NULL DEFAULT 'PROCESSING',
+    payment_record_id BIGINT REFERENCES payment_record(id),
+    response_code VARCHAR(64),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    UNIQUE (user_id, order_id, idempotency_key)
+);
+COMMENT ON TABLE payment_submission_idempotency IS '用户发起支付请求的幂等记录，防止重复支付并复用首次结果。';
+COMMENT ON COLUMN payment_submission_idempotency.id IS '支付请求幂等记录主键。';
+COMMENT ON COLUMN payment_submission_idempotency.user_id IS '发起支付请求的消费者。';
+COMMENT ON COLUMN payment_submission_idempotency.order_id IS '本次支付对应的订单。';
+COMMENT ON COLUMN payment_submission_idempotency.idempotency_key IS '客户端为一次支付请求生成的幂等键。';
+COMMENT ON COLUMN payment_submission_idempotency.request_fingerprint IS '支付请求参数规范化后的 SHA-256 指纹。';
+COMMENT ON COLUMN payment_submission_idempotency.status IS '支付请求处理状态。';
+COMMENT ON COLUMN payment_submission_idempotency.payment_record_id IS '成功处理时关联的支付记录。';
+COMMENT ON COLUMN payment_submission_idempotency.response_code IS '首次处理结果编码，供重试请求复用。';
+COMMENT ON COLUMN payment_submission_idempotency.created_at IS '首次收到支付请求的时间。';
+COMMENT ON COLUMN payment_submission_idempotency.completed_at IS '支付请求处理完成时间。';
 
 CREATE TABLE fulfillment_record (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -630,6 +680,80 @@ COMMENT ON COLUMN payment_outbox.created_at IS 'Outbox 创建时间。';
 COMMENT ON COLUMN payment_outbox.sent_at IS '首次成功投递时间。';
 COMMENT ON COLUMN payment_outbox.updated_at IS 'Outbox 最后修改时间。';
 CREATE INDEX payment_outbox_pending_idx ON payment_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
+
+CREATE TABLE product_outbox (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    event_type VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    payload JSONB NOT NULL,
+    trace_id VARCHAR(128),
+    status outbox_status NOT NULL DEFAULT 'PENDING',
+    attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+    available_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    locked_until TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE product_outbox IS '商品服务本地消息表；商品配置变更与缓存失效事件同一事务提交。';
+COMMENT ON COLUMN product_outbox.id IS 'Outbox 记录主键。';
+COMMENT ON COLUMN product_outbox.event_id IS '全局事件唯一标识。';
+COMMENT ON COLUMN product_outbox.event_type IS '事件类型，例如 PRODUCT_CACHE_INVALIDATE。';
+COMMENT ON COLUMN product_outbox.idempotency_key IS '带 PRODUCT 前缀的业务幂等号。';
+COMMENT ON COLUMN product_outbox.aggregate_type IS '事件聚合类型 PRODUCT。';
+COMMENT ON COLUMN product_outbox.aggregate_id IS '商品主键。';
+COMMENT ON COLUMN product_outbox.payload IS '事件 JSON 载荷，包含待失效缓存键和延时信息。';
+COMMENT ON COLUMN product_outbox.trace_id IS '创建事件时关联的分布式链路标识。';
+COMMENT ON COLUMN product_outbox.status IS '本地消息投递状态。';
+COMMENT ON COLUMN product_outbox.attempt_count IS '已尝试投递次数。';
+COMMENT ON COLUMN product_outbox.available_at IS '允许下一次投递的时间。';
+COMMENT ON COLUMN product_outbox.locked_until IS '投递任务租约截止时间。';
+COMMENT ON COLUMN product_outbox.last_error IS '最近一次投递错误信息。';
+COMMENT ON COLUMN product_outbox.created_at IS 'Outbox 创建时间。';
+COMMENT ON COLUMN product_outbox.sent_at IS '首次成功投递时间。';
+COMMENT ON COLUMN product_outbox.updated_at IS 'Outbox 最后修改时间。';
+CREATE INDEX product_outbox_pending_idx ON product_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
+
+CREATE TABLE activity_outbox (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    event_type VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(160) NOT NULL UNIQUE,
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(128) NOT NULL,
+    payload JSONB NOT NULL,
+    trace_id VARCHAR(128),
+    status outbox_status NOT NULL DEFAULT 'PENDING',
+    attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+    available_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    locked_until TIMESTAMPTZ,
+    last_error TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE activity_outbox IS '活动服务本地消息表；活动配置变更与缓存失效事件同一事务提交。';
+COMMENT ON COLUMN activity_outbox.id IS 'Outbox 记录主键。';
+COMMENT ON COLUMN activity_outbox.event_id IS '全局事件唯一标识。';
+COMMENT ON COLUMN activity_outbox.event_type IS '事件类型，例如 ACTIVITY_CACHE_INVALIDATE。';
+COMMENT ON COLUMN activity_outbox.idempotency_key IS '带 ACTIVITY 前缀的业务幂等号。';
+COMMENT ON COLUMN activity_outbox.aggregate_type IS '事件聚合类型 ACTIVITY。';
+COMMENT ON COLUMN activity_outbox.aggregate_id IS '活动主键。';
+COMMENT ON COLUMN activity_outbox.payload IS '事件 JSON 载荷，包含待失效缓存键和延时信息。';
+COMMENT ON COLUMN activity_outbox.trace_id IS '创建事件时关联的分布式链路标识。';
+COMMENT ON COLUMN activity_outbox.status IS '本地消息投递状态。';
+COMMENT ON COLUMN activity_outbox.attempt_count IS '已尝试投递次数。';
+COMMENT ON COLUMN activity_outbox.available_at IS '允许下一次投递的时间。';
+COMMENT ON COLUMN activity_outbox.locked_until IS '投递任务租约截止时间。';
+COMMENT ON COLUMN activity_outbox.last_error IS '最近一次投递错误信息。';
+COMMENT ON COLUMN activity_outbox.created_at IS 'Outbox 创建时间。';
+COMMENT ON COLUMN activity_outbox.sent_at IS '首次成功投递时间。';
+COMMENT ON COLUMN activity_outbox.updated_at IS 'Outbox 最后修改时间。';
+CREATE INDEX activity_outbox_pending_idx ON activity_outbox (available_at, id) WHERE status IN ('PENDING', 'FAILED');
 
 CREATE TABLE order_message_idempotency (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -898,6 +1022,8 @@ CREATE TRIGGER order_outbox_touch BEFORE UPDATE ON order_outbox FOR EACH ROW EXE
 CREATE TRIGGER coupon_outbox_touch BEFORE UPDATE ON coupon_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER inventory_outbox_touch BEFORE UPDATE ON inventory_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER payment_outbox_touch BEFORE UPDATE ON payment_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER product_outbox_touch BEFORE UPDATE ON product_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER activity_outbox_touch BEFORE UPDATE ON activity_outbox FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER order_message_idempotency_touch BEFORE UPDATE ON order_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER coupon_message_idempotency_touch BEFORE UPDATE ON coupon_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER inventory_message_idempotency_touch BEFORE UPDATE ON inventory_message_idempotency FOR EACH ROW EXECUTE FUNCTION touch_updated_at();

@@ -10,6 +10,8 @@
 erDiagram
     app_user ||--o{ user_coupon : owns
     app_user ||--o{ customer_order : places
+    app_user ||--o{ coupon_claim_idempotency : claims_once
+    app_user ||--o{ payment_submission_idempotency : pays_once
     product ||--o{ marketing_activity : configured_for
     coupon_template ||--o{ user_coupon : issues
     marketing_activity o|--o{ customer_order : backs_activity_order
@@ -19,6 +21,7 @@ erDiagram
     customer_order ||--o| coupon_reservation : applies
     user_coupon ||--o{ coupon_reservation : reserved_by
     customer_order ||--o| payment_record : paid_by
+    customer_order ||--o{ payment_submission_idempotency : deduplicates
     customer_order ||--o| fulfillment_record : fulfilled_by
     customer_order ||--o{ order_submission_idempotency : deduplicates
 ```
@@ -49,8 +52,9 @@ erDiagram
 | 优惠券 | `coupon_template`、`user_coupon`、`coupon_user_claim_counter`、`coupon_reservation` | 满减券模板、用户持券、限领计数、订单锁券/核销/释放审计。券可用于任何符合金额与时间条件的订单；模板创建人/修改人只能为 OPERATOR。 |
 | 订单 | `customer_order`、`order_item`、`order_submission_idempotency` | 订单头、不可变商品/价格快照、客户端提交幂等映射。 |
 | 库存 | `inventory_reservation`、`inventory_movement` | 每个订单项唯一的一次库存保留，以及保留/释放流水。 |
+| 请求幂等 | `coupon_claim_idempotency`、`payment_submission_idempotency` | 用户领券和发起支付的请求幂等映射；同键重试返回首次处理结果。 |
 | 支付与履约 | `payment_record`、`fulfillment_record`、`payment_outbox`、`payment_message_idempotency` | 每单至多一个支付记录；模拟支付成功后自动建立完成态履约记录；支付事件可靠投递并幂等消费。 |
-| 可靠消息 | `order_outbox`、`coupon_outbox`、`inventory_outbox` | 各生产服务独立维护 Outbox；业务事务与事件记录同一事务提交，后台任务负责重试投递。 |
+| 可靠消息 | `order_outbox`、`coupon_outbox`、`inventory_outbox`、`payment_outbox`、`product_outbox`、`activity_outbox` | 各生产服务独立维护 Outbox；业务事务与事件记录同一事务提交，后台任务负责重试投递。商品、活动和券配置变更通过 Outbox 可靠失效读缓存。 |
 | 消费幂等 | `order_message_idempotency`、`coupon_message_idempotency`、`inventory_message_idempotency` | 各消费者服务独立记录消息处理状态，支持重复投递去重和处理中超时恢复。 |
 
 完整 DDL 位于 [001_initial_schema.sql](../db/001_initial_schema.sql)。

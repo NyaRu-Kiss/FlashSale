@@ -1,0 +1,21 @@
+groups:
+  - name: flashsale-messaging
+    rules:
+      - alert: FlashSaleOutboxBacklog
+        expr: flashsale_outbox_pending > 100
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "Outbox backlog is high" }
+      - alert: FlashSaleOutboxOldestMessage
+        expr: flashsale_outbox_oldest_age_seconds > 300
+        for: 5m
+        labels: { severity: critical }
+        annotations: { summary: "Oldest Outbox message is stale" }
+      - alert: FlashSaleConsumerDeadLetter
+        expr: increase(flashsale_consumer_dead_letter[5m]) > 0
+        labels: { severity: critical }
+        annotations: { summary: "Consumer dead-letter messages detected" }
+      - alert: FlashSaleCompensationFailure
+        expr: increase(flashsale_compensation_failed_total[5m]) > 0
+        labels: { severity: critical }
+        annotations: { summary: "Compensation task failed" }

@@ -1,0 +1,11 @@
+package com.flashsale.inventory;
+import java.util.concurrent.ConcurrentHashMap;
+/** Thread-safe reservation ledger; persistence adapters can delegate to the same transition rules. */
+public final class InventoryLedger {
+ private final ConcurrentHashMap<Long,Integer> available=new ConcurrentHashMap<>(); private final ConcurrentHashMap<String,InventoryReservation> reservations=new ConcurrentHashMap<>();
+ public synchronized void initialize(long resourceId,int quantity){if(quantity<0)throw new IllegalArgumentException("VALIDATION_ERROR");available.put(resourceId,quantity);}
+ public synchronized InventoryReservation reserve(String key,long resourceId,int quantity){if(quantity<=0)throw new IllegalArgumentException("VALIDATION_ERROR");InventoryReservation prior=reservations.get(key);if(prior!=null)return prior;if(available.getOrDefault(resourceId,0)<quantity)throw new IllegalArgumentException("STOCK_NOT_ENOUGH");available.compute(resourceId,(k,v)->v-quantity);InventoryReservation r=new InventoryReservation(key,resourceId,quantity,ReservationStatus.RESERVED);reservations.put(key,r);return r;}
+ public synchronized InventoryReservation confirm(String key){InventoryReservation r=require(key);if(r.status()==ReservationStatus.RELEASED)throw new IllegalArgumentException("RESERVATION_ALREADY_RELEASED");if(r.status()==ReservationStatus.CONFIRMED)return r;InventoryReservation n=new InventoryReservation(r.key(),r.resourceId(),r.quantity(),ReservationStatus.CONFIRMED);reservations.put(key,n);return n;}
+ public synchronized InventoryReservation release(String key){InventoryReservation r=require(key);if(r.status()==ReservationStatus.RELEASED)return r;if(r.status()==ReservationStatus.CONFIRMED)throw new IllegalArgumentException("RESERVATION_ALREADY_CONFIRMED");available.compute(r.resourceId(),(k,v)->v+r.quantity());InventoryReservation n=new InventoryReservation(r.key(),r.resourceId(),r.quantity(),ReservationStatus.RELEASED);reservations.put(key,n);return n;}
+ public int available(long id){return available.getOrDefault(id,0);} private InventoryReservation require(String key){InventoryReservation r=reservations.get(key);if(r==null)throw new IllegalArgumentException("RESERVATION_NOT_FOUND");return r;}
+}

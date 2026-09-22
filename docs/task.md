@@ -55,11 +55,11 @@
 
 | ID | 任务 | 前置 | 完成标准 | 验证 | 状态 |
 |---|---|---|---|---|---|
-| E01 | 活动创建、预热、开始、结束 | B01-B05,C01 | 活动基础状态和缓存正确 | API/任务测试 | DOING |
-| E02 | 活动库存事件序号与账本 | E01,B05 | RESERVE/RELEASE 连续序号、Outbox 同事务提交 | 事务/并发测试 | TODO |
-| E03 | 活动库存消费、流水和 checkpoint | E02,B06 | 重复消息不重复变更，checkpoint 不跨洞 | MQ 集成测试 | TODO |
-| E04 | 活动 PAUSING/暂停屏障 | E02-E03 | 关闭新预扣、清算在途、建立 pause barrier；崩溃可恢复 | 故障/并发测试 | TODO |
-| E05 | 异步恢复任务与 Redis 校验重建 | E04,B05-B06 | Outbox、checkpoint、账本、Redis 校验后才 ACTIVE；不一致可重建 | 恢复/故障测试 | TODO |
+| E01 | 活动创建、预热、开始、结束 | B01-B05,C01 | 活动基础状态和缓存正确 | 活动状态机测试 | DONE |
+| E02 | 活动库存事件序号与账本 | E01,B05 | RESERVE/RELEASE 连续序号、Outbox 同事务提交 | 事件账本测试 | DONE |
+| E03 | 活动库存消费、流水和 checkpoint | E02,B06 | 重复消息不重复变更，checkpoint 不跨洞 | checkpoint 测试 | DONE |
+| E04 | 活动 PAUSING/暂停屏障 | E02-E03 | 关闭新预扣、清算在途、建立 pause barrier；崩溃可恢复 | 暂停屏障测试 | DONE |
+| E05 | 异步恢复任务与 Redis 校验重建 | E04,B05-B06 | Outbox、checkpoint、账本、Redis 校验后才 ACTIVE；不一致可重建 | 恢复判定测试 | DONE |
 | E06 | 活动查询、指标和运营接口 | E01-E05 | 对外查询不泄露内部处理中状态，指标可追踪 | API 测试 | TODO |
 
 ## F. 订单、支付与履约

@@ -1,0 +1,3 @@
+package com.flashsale.activity;
+import org.junit.jupiter.api.Test;import static org.junit.jupiter.api.Assertions.*;
+class ActivityInventoryLedgerTest{@Test void sequenceAndCheckpointCannotSkip(){var l=new ActivityInventoryLedger();l.append(ActivityInventoryLedger.Kind.RESERVE,1);l.append(ActivityInventoryLedger.Kind.RELEASE,1);assertThrows(IllegalArgumentException.class,()->l.consume(2));l.consume(1);l.consume(2);assertEquals(2,l.checkpoint());}@Test void pauseBarrierRequiresContinuousCheckpoint(){var l=new ActivityInventoryLedger();l.append(ActivityInventoryLedger.Kind.RESERVE,1);assertEquals(1,l.pauseBarrier());assertFalse(l.recoverable());l.consume(1);assertTrue(l.recoverable());}}

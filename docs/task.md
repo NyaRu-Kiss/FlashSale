@@ -37,7 +37,7 @@
 
 | ID | 任务 | 前置 | 完成标准 | 验证 | 状态 |
 |---|---|---|---|---|---|
-| C01 | Auth 服务注册/登录 | B01-B03,A04 | 注册只能创建 CUSTOMER；登录签发 JWT | API 集成测试 | TODO |
+| C01 | Auth 服务注册/登录 | B01-B03,A04 | 注册只能创建 CUSTOMER；登录签发 JWT | Docker Java 21 容器测试：10 tests passed（公共 8 + Auth 2） | DONE |
 | C02 | ADMIN 账户管理 | C01 | 角色、启停用、最后 ADMIN 保护和审计完整 | API/事务测试 | TODO |
 | C03 | Gateway 路由、鉴权与限流 | B02-B03,A03 | 路由、JWT、Sentinel、Trace 生效 | Gateway 集成测试 | TODO |
 
@@ -96,6 +96,6 @@
 
 ## 当前执行位置
 
-- 当前任务：`C01`
+- 当前任务：`C02`
 - 状态：`DOING`
 - 备注：A01-A05、B01-B04 已完成；下一步补充 Outbox 投递接口和租约语义。

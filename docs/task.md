@@ -82,7 +82,7 @@
 | G02 | 各消费者幂等处理器 | B06,D04,E03,F05-F07 | 重复、失败、PROCESSING 超时可恢复 | MQ 集成测试 | DONE |
 | G03 | XXL-Job 对账与补偿 | E03-E05,D04-D05,F04,F07 | Redis/DB/账本/Outbox/订单状态可对账补偿 | 故障演练 | DONE |
 | G04 | 监控、指标、日志和告警 | B02,G01-G03 | 覆盖延迟、积压、库存不一致、死信、补偿失败 | 指标检查 | DONE |
-| G05 | Docker 一键启动与初始化 | A03,A04,G04 | 新环境可一键启动并完成健康检查 | `docker compose up` | TODO |
+| G05 | Docker 一键启动与初始化 | A03,A04,G04 | 新环境可一键启动并完成健康检查 | `docker compose up` | DONE |
 
 ## H. 验收测试
 
@@ -96,6 +96,6 @@
 
 ## 当前执行位置
 
-- 当前任务：`G05`
+- 当前任务：`H01`
   - 状态：`TODO`
-  - 备注：G01-G04 已完成；新增消息/补偿 Micrometer 指标、MDC 结构化日志上下文、Prometheus 抓取配置和 Outbox/死信/补偿失败告警规则。下一步完善 Compose 一键启动与健康检查。
+  - 备注：G01-G05 已完成；Compose 已补齐 RocketMQ topic 初始化、独立 XXL-Job MySQL、Prometheus/Grafana/Alertmanager/Loki、健康检查和 Flyway 启动链路。Java 21 测试与基础设施启动验证已通过；MinIO 使用可访问的 Quay 镜像源，XXL-Job 默认端口调整为 18088 以避开本机 8088 端口冲突。

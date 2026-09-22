@@ -43,15 +43,36 @@ services:
     image: apache/rocketmq:5.3.1
     command: sh mqnamesrv
     ports: ["${ROCKETMQ_NAMESRV_PORT:-9876}:9876"]
+    healthcheck:
+      test: ["CMD-SHELL", "ps -ef | grep -q '[N]amesrvStartup'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
   rocketmq-broker:
     image: apache/rocketmq:5.3.1
     depends_on:
-      - rocketmq-namesrv
+      rocketmq-namesrv:
+        condition: service_healthy
     environment:
       NAMESRV_ADDR: rocketmq-namesrv:9876
     command: sh mqbroker -n rocketmq-namesrv:9876 -c /home/rocketmq/rocketmq-5.3.1/conf/broker.conf
     ports: ["10909:10909", "${ROCKETMQ_BROKER_PORT:-10911}:10911"]
+    healthcheck:
+      test: ["CMD-SHELL", "ps -ef | grep -q '[B]rokerStartup'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  rocketmq-init:
+    image: apache/rocketmq:5.3.1
+    depends_on:
+      - rocketmq-broker
+    command: >-
+      sh -c "sleep 15;
+      /home/rocketmq/rocketmq-5.3.1/bin/mqadmin updateTopic -n rocketmq-namesrv:9876 -c DefaultCluster -t FLASHSALE_EVENTS || true;
+      /home/rocketmq/rocketmq-5.3.1/bin/mqadmin updateTopic -n rocketmq-namesrv:9876 -c DefaultCluster -t RETRY_FLASHSALE_EVENTS || true;
+      /home/rocketmq/rocketmq-5.3.1/bin/mqadmin updateTopic -n rocketmq-namesrv:9876 -c DefaultCluster -t DLQ_FLASHSALE_EVENTS || true"
 
   nacos:
     image: nacos/nacos-server:v2.4.3
@@ -68,25 +89,122 @@ services:
   xxl-job-admin:
     image: xuxueli/xxl-job-admin:2.4.1
     depends_on:
-      postgres:
+      xxl-mysql:
         condition: service_healthy
     environment:
       PARAMS: >-
-        --spring.datasource.url=jdbc:postgresql://postgres:5432/flashsale
-        --spring.datasource.username=flashsale
-        --spring.datasource.password=flashsale
-    ports: ["${XXL_JOB_PORT:-8088}:8080"]
+        --spring.datasource.url=jdbc:mysql://xxl-mysql:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+        --spring.datasource.username=xxl
+        --spring.datasource.password=xxl
+    ports: ["${XXL_JOB_PORT:-18088}:8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "kill -0 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  xxl-mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: xxl_job
+      MYSQL_USER: xxl
+      MYSQL_PASSWORD: xxl
+      MYSQL_ROOT_PASSWORD: xxl-root
+    command: ["--default-authentication-plugin=mysql_native_password"]
+    volumes:
+      - xxl-mysql-data:/var/lib/mysql
+      - ./db/xxl-job.sql:/docker-entrypoint-initdb.d/xxl-job.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uxxl -pxxl --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    image: quay.io/minio/minio:latest
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-flashsale}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-flashsale123}
     command: server /data --console-address ":9001"
     ports: ["${MINIO_API_PORT:-9000}:9000", "${MINIO_CONSOLE_PORT:-9001}:9001"]
     volumes: ["minio-data:/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    depends_on:
+      - rocketmq-init
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    ports: ["${PROMETHEUS_PORT:-9090}:9090"]
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    command: ["--config.file=/etc/alertmanager/alertmanager.yml"]
+    ports: ["${ALERTMANAGER_PORT:-9093}:9093"]
+    volumes:
+      - ./config/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  loki:
+    image: grafana/loki:3.2.1
+    command: ["-config.file=/etc/loki/config.yml"]
+    ports: ["${LOKI_PORT:-3100}:3100"]
+    volumes:
+      - ./config/loki/config.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_started
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    ports: ["${GRAFANA_PORT:-3000}:3000"]
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
 volumes:
   postgres-data:
   redis-data:
   minio-data:
+  prometheus-data:
+  alertmanager-data:
+  loki-data:
+  grafana-data:
+  xxl-mysql-data:

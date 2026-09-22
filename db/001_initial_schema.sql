@@ -46,6 +46,12 @@ COMMENT ON TYPE outbox_status IS '本地消息表的投递状态枚举。';
 CREATE TYPE message_consumer_status AS ENUM ('PROCESSING', 'SUCCEEDED', 'FAILED');
 -- message_consumer_status: PROCESSING=处理中；SUCCEEDED=已成功处理；FAILED=本次处理失败，可按策略重试。
 COMMENT ON TYPE message_consumer_status IS '消息消费者幂等记录状态枚举。';
+CREATE TYPE activity_inventory_event_kind AS ENUM ('RESERVE', 'RELEASE');
+-- activity_inventory_event_kind: RESERVE=活动库存预扣；RELEASE=订单取消或超时后的活动库存回补。
+COMMENT ON TYPE activity_inventory_event_kind IS '活动库存事件类型枚举；所有改变实时可售库存的事件都必须入账。';
+CREATE TYPE activity_recovery_status AS ENUM ('PENDING', 'RUNNING', 'FAILED', 'SUCCEEDED');
+-- activity_recovery_status: PENDING=等待恢复；RUNNING=正在追平/对账/预热；FAILED=恢复失败且保持暂停；SUCCEEDED=恢复完成并已激活活动。
+COMMENT ON TYPE activity_recovery_status IS '异步活动恢复任务状态枚举。';
 
 CREATE TABLE app_user (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -105,6 +111,7 @@ CREATE TABLE marketing_activity (
     starts_at TIMESTAMPTZ NOT NULL,
     ends_at TIMESTAMPTZ NOT NULL,
     status activity_status NOT NULL DEFAULT 'NOT_STARTED',
+    pause_barrier_sequence BIGINT CHECK (pause_barrier_sequence IS NULL OR pause_barrier_sequence >= 0),
     version BIGINT NOT NULL DEFAULT 0 CHECK (version >= 0),
     created_by BIGINT NOT NULL REFERENCES app_user(id),
     updated_by BIGINT NOT NULL REFERENCES app_user(id),
@@ -118,11 +125,12 @@ COMMENT ON COLUMN marketing_activity.name IS '活动展示名称。';
 COMMENT ON COLUMN marketing_activity.product_id IS '活动绑定的唯一商品。';
 COMMENT ON COLUMN marketing_activity.sale_price_minor IS '活动销售价，使用最小货币单位整数保存。';
 COMMENT ON COLUMN marketing_activity.initial_stock IS '活动创建时配置的独立可售库存上限。';
-COMMENT ON COLUMN marketing_activity.available_stock IS '活动库存池当前尚未被订单保留的数量。';
+COMMENT ON COLUMN marketing_activity.available_stock IS '活动库存的 PostgreSQL 持久化投影；活动进行中可因 Outbox/MQ 待处理而暂时滞后于 Redis 实时可售库存，不能直接用于恢复 Redis。';
 COMMENT ON COLUMN marketing_activity.purchase_limit_per_user IS '单个用户在该活动中的累计购买数量上限，包含待支付保留量。';
 COMMENT ON COLUMN marketing_activity.starts_at IS '活动开始时间；以数据库服务器时间判断是否开始。';
 COMMENT ON COLUMN marketing_activity.ends_at IS '活动结束时间；结束时刻不再接受新的活动订单。';
 COMMENT ON COLUMN marketing_activity.status IS '活动生命周期状态。';
+COMMENT ON COLUMN marketing_activity.pause_barrier_sequence IS '关闭 Redis 新预扣门闸并清算在途预扣后，在数据库锁定活动事件序号分配器截取的最后已提交事件序号；恢复前必须追平。';
 COMMENT ON COLUMN marketing_activity.version IS '活动配置/库存的乐观锁版本号。';
 COMMENT ON COLUMN marketing_activity.created_by IS '创建该活动的运营人员。';
 COMMENT ON COLUMN marketing_activity.updated_by IS '最后修改该活动的运营人员。';
@@ -252,6 +260,52 @@ COMMENT ON COLUMN activity_user_quota.activity_id IS '被计数的营销活动�
 COMMENT ON COLUMN activity_user_quota.user_id IS '被计数的用户。';
 COMMENT ON COLUMN activity_user_quota.committed_quantity IS '该用户在活动中已承诺的购买数量，包含待支付和已支付订单，取消后释放。';
 
+CREATE TABLE activity_inventory_checkpoint (
+    activity_id BIGINT PRIMARY KEY REFERENCES marketing_activity(id),
+    last_contiguous_sequence BIGINT NOT NULL DEFAULT 0 CHECK (last_contiguous_sequence >= 0),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE activity_inventory_checkpoint IS '活动库存事件消费者的连续处理检查点，用于暂停屏障追平和 Redis 丢失后的安全恢复。';
+COMMENT ON COLUMN activity_inventory_checkpoint.activity_id IS '活动主键。';
+COMMENT ON COLUMN activity_inventory_checkpoint.last_contiguous_sequence IS '库存事件已连续成功处理到的最大活动库存事件序号，包含预扣和释放，不能跨越缺失事件。';
+COMMENT ON COLUMN activity_inventory_checkpoint.updated_at IS '检查点最后推进时间。';
+
+CREATE TABLE activity_inventory_sequence (
+    activity_id BIGINT PRIMARY KEY REFERENCES marketing_activity(id),
+    next_event_sequence BIGINT NOT NULL DEFAULT 1 CHECK (next_event_sequence > 0),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE activity_inventory_sequence IS '活动库存事件序号分配器；活动预扣与释放在各自本地事务中锁定本行后取得连续序号。';
+COMMENT ON COLUMN activity_inventory_sequence.activity_id IS '活动主键。';
+COMMENT ON COLUMN activity_inventory_sequence.next_event_sequence IS '下一条已提交活动库存事件应分配的序号。';
+COMMENT ON COLUMN activity_inventory_sequence.updated_at IS '序号分配器最后修改时间。';
+
+CREATE TABLE activity_recovery_job (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    activity_id BIGINT NOT NULL REFERENCES marketing_activity(id),
+    requested_by BIGINT NOT NULL REFERENCES app_user(id),
+    recovery_barrier_sequence BIGINT CHECK (recovery_barrier_sequence IS NULL OR recovery_barrier_sequence >= 0),
+    status activity_recovery_status NOT NULL DEFAULT 'PENDING',
+    last_error TEXT,
+    requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    started_at TIMESTAMPTZ,
+    completed_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CHECK (status = 'PENDING' OR recovery_barrier_sequence IS NOT NULL)
+);
+COMMENT ON TABLE activity_recovery_job IS '活动异步恢复任务；活动对外保持 PAUSED，只有库存事件、Outbox、对账和预热全部完成后才激活。';
+COMMENT ON COLUMN activity_recovery_job.id IS '恢复任务主键。';
+COMMENT ON COLUMN activity_recovery_job.activity_id IS '待恢复的活动。';
+COMMENT ON COLUMN activity_recovery_job.requested_by IS '请求恢复的运营人员。';
+COMMENT ON COLUMN activity_recovery_job.recovery_barrier_sequence IS '恢复任务进入 RUNNING 并取得活动互斥锁后截取的活动库存事件屏障；PENDING 时为空，所有不大于该序号的事件必须已发送且被连续消费。';
+COMMENT ON COLUMN activity_recovery_job.status IS '异步恢复任务状态。';
+COMMENT ON COLUMN activity_recovery_job.last_error IS '最近一次恢复失败原因。';
+COMMENT ON COLUMN activity_recovery_job.requested_at IS '运营人员请求恢复时间。';
+COMMENT ON COLUMN activity_recovery_job.started_at IS '后台任务开始恢复时间。';
+COMMENT ON COLUMN activity_recovery_job.completed_at IS '恢复成功或最终失败完成时间。';
+COMMENT ON COLUMN activity_recovery_job.updated_at IS '恢复任务最后修改时间。';
+CREATE UNIQUE INDEX activity_recovery_job_active_uk ON activity_recovery_job (activity_id) WHERE status IN ('PENDING', 'RUNNING');
+
 CREATE TABLE customer_order (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     order_number VARCHAR(40) NOT NULL UNIQUE,
@@ -336,6 +390,7 @@ CREATE TABLE inventory_reservation (
     source inventory_source NOT NULL,
     product_id BIGINT REFERENCES product(id),
     activity_id BIGINT REFERENCES marketing_activity(id),
+    activity_reserve_sequence BIGINT,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     status reservation_status NOT NULL DEFAULT 'RESERVED',
     reserved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -343,8 +398,8 @@ CREATE TABLE inventory_reservation (
     released_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CHECK ((source = 'PRODUCT' AND product_id IS NOT NULL AND activity_id IS NULL) OR
-           (source = 'ACTIVITY' AND activity_id IS NOT NULL AND product_id IS NULL))
+    CHECK ((source = 'PRODUCT' AND product_id IS NOT NULL AND activity_id IS NULL AND activity_reserve_sequence IS NULL) OR
+           (source = 'ACTIVITY' AND activity_id IS NOT NULL AND product_id IS NULL AND activity_reserve_sequence IS NOT NULL AND activity_reserve_sequence > 0))
 );
 COMMENT ON TABLE inventory_reservation IS '订单项对应的库存保留记录；每个订单项最多一条。';
 COMMENT ON COLUMN inventory_reservation.id IS '库存保留记录主键。';
@@ -352,6 +407,7 @@ COMMENT ON COLUMN inventory_reservation.order_item_id IS '被该记录保留库�
 COMMENT ON COLUMN inventory_reservation.source IS '库存池类型：商品库存或活动独立库存。';
 COMMENT ON COLUMN inventory_reservation.product_id IS '商品库存池标识；source 为 PRODUCT 时填写。';
 COMMENT ON COLUMN inventory_reservation.activity_id IS '活动库存池标识；source 为 ACTIVITY 时填写。';
+COMMENT ON COLUMN inventory_reservation.activity_reserve_sequence IS '活动 RESERVE 事件的连续序号；在订单本地事务锁定活动事件序号分配器后分配。';
 COMMENT ON COLUMN inventory_reservation.quantity IS '本次订单项保留的库存数量。';
 COMMENT ON COLUMN inventory_reservation.status IS '库存保留生命周期状态。';
 COMMENT ON COLUMN inventory_reservation.reserved_at IS '库存成功保留时间。';
@@ -361,6 +417,7 @@ COMMENT ON COLUMN inventory_reservation.created_at IS '库存保留记录创建�
 COMMENT ON COLUMN inventory_reservation.updated_at IS '库存保留记录最后修改时间。';
 CREATE INDEX inventory_reservation_active_idx ON inventory_reservation (source, activity_id, status) WHERE source = 'ACTIVITY';
 CREATE INDEX inventory_reservation_product_idx ON inventory_reservation (source, product_id, status) WHERE source = 'PRODUCT';
+CREATE UNIQUE INDEX inventory_reservation_activity_sequence_uk ON inventory_reservation (activity_id, activity_reserve_sequence) WHERE source = 'ACTIVITY';
 
 CREATE TABLE inventory_movement (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -368,11 +425,12 @@ CREATE TABLE inventory_movement (
     source inventory_source NOT NULL,
     product_id BIGINT REFERENCES product(id),
     activity_id BIGINT REFERENCES marketing_activity(id),
+    activity_inventory_event_sequence BIGINT,
     quantity_delta INTEGER NOT NULL CHECK (quantity_delta <> 0),
     reason inventory_movement_reason NOT NULL,
     occurred_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CHECK ((source = 'PRODUCT' AND product_id IS NOT NULL AND activity_id IS NULL) OR
-           (source = 'ACTIVITY' AND activity_id IS NOT NULL AND product_id IS NULL))
+    CHECK ((source = 'PRODUCT' AND product_id IS NOT NULL AND activity_id IS NULL AND activity_inventory_event_sequence IS NULL) OR
+           (source = 'ACTIVITY' AND activity_id IS NOT NULL AND product_id IS NULL AND activity_inventory_event_sequence IS NOT NULL AND activity_inventory_event_sequence > 0))
 );
 COMMENT ON TABLE inventory_movement IS '库存保留、释放、初始化和调整的不可变流水。';
 COMMENT ON COLUMN inventory_movement.id IS '库存流水主键。';
@@ -380,10 +438,40 @@ COMMENT ON COLUMN inventory_movement.reservation_id IS '关联的库存保留记
 COMMENT ON COLUMN inventory_movement.source IS '发生变化的库存池类型。';
 COMMENT ON COLUMN inventory_movement.product_id IS '商品库存标识；商品库存流水时填写。';
 COMMENT ON COLUMN inventory_movement.activity_id IS '活动库存标识；活动库存流水时填写。';
+COMMENT ON COLUMN inventory_movement.activity_inventory_event_sequence IS '活动库存事件的单调递增序号；预扣和释放事件都必须分配，用于暂停屏障和连续消费检查点。';
 COMMENT ON COLUMN inventory_movement.quantity_delta IS '库存变化量；负数表示扣减/保留，正数表示释放/增加。';
 COMMENT ON COLUMN inventory_movement.reason IS '库存变化原因。';
 COMMENT ON COLUMN inventory_movement.occurred_at IS '库存变化发生时间。';
 CREATE INDEX inventory_movement_reservation_idx ON inventory_movement (reservation_id, occurred_at);
+CREATE UNIQUE INDEX inventory_movement_activity_sequence_uk ON inventory_movement (activity_id, activity_inventory_event_sequence) WHERE source = 'ACTIVITY';
+
+CREATE TABLE activity_inventory_event (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    activity_id BIGINT NOT NULL REFERENCES marketing_activity(id),
+    event_sequence BIGINT NOT NULL CHECK (event_sequence > 0),
+    reservation_id BIGINT REFERENCES inventory_reservation(id),
+    kind activity_inventory_event_kind NOT NULL,
+    quantity_delta INTEGER NOT NULL CHECK (quantity_delta <> 0),
+    producer VARCHAR(64) NOT NULL,
+    outbox_event_id UUID NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (activity_id, event_sequence),
+    CHECK ((kind = 'RESERVE' AND quantity_delta < 0) OR
+           (kind = 'RELEASE' AND quantity_delta > 0))
+);
+COMMENT ON TABLE activity_inventory_event IS '活动库存事件账本；预扣和释放在业务本地事务中与对应 Outbox 一起持久化，用于暂停/恢复栅栏与对账。';
+COMMENT ON COLUMN activity_inventory_event.id IS '活动库存事件账本主键。';
+COMMENT ON COLUMN activity_inventory_event.event_id IS '活动库存事件全局标识，也是 RocketMQ 消息事件标识。';
+COMMENT ON COLUMN activity_inventory_event.activity_id IS '活动库存池所属活动。';
+COMMENT ON COLUMN activity_inventory_event.event_sequence IS '活动内连续库存事件序号；由 activity_inventory_sequence 在成功本地事务内分配。';
+COMMENT ON COLUMN activity_inventory_event.reservation_id IS '关联的库存保留；预扣和释放均关联原保留记录。';
+COMMENT ON COLUMN activity_inventory_event.kind IS '库存事件类型：预扣或释放。';
+COMMENT ON COLUMN activity_inventory_event.quantity_delta IS '实时库存变化量；预扣为负，释放为正。';
+COMMENT ON COLUMN activity_inventory_event.producer IS '产生该事件的业务服务名称。';
+COMMENT ON COLUMN activity_inventory_event.outbox_event_id IS '承载该事件的生产端 Outbox 事件号，用于恢复时检查是否已投递。';
+COMMENT ON COLUMN activity_inventory_event.created_at IS '库存事件在业务本地事务中提交的创建时间。';
+CREATE INDEX activity_inventory_event_barrier_idx ON activity_inventory_event (activity_id, event_sequence);
 
 CREATE TABLE coupon_reservation (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1008,6 +1096,9 @@ CREATE TRIGGER product_touch BEFORE UPDATE ON product FOR EACH ROW EXECUTE FUNCT
 CREATE TRIGGER activity_touch BEFORE UPDATE ON marketing_activity FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER coupon_template_touch BEFORE UPDATE ON coupon_template FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER user_coupon_touch BEFORE UPDATE ON user_coupon FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER activity_inventory_checkpoint_touch BEFORE UPDATE ON activity_inventory_checkpoint FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER activity_inventory_sequence_touch BEFORE UPDATE ON activity_inventory_sequence FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+CREATE TRIGGER activity_recovery_job_touch BEFORE UPDATE ON activity_recovery_job FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER order_touch BEFORE UPDATE ON customer_order FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER reservation_touch BEFORE UPDATE ON inventory_reservation FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER coupon_reservation_touch BEFORE UPDATE ON coupon_reservation FOR EACH ROW EXECUTE FUNCTION touch_updated_at();

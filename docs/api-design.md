@@ -51,10 +51,10 @@
 | GET | `/admin/products/{id}/inventory` | 查询普通库存及保留情况。 |
 | POST | `/admin/activities` | 创建未开始活动。 |
 | GET | `/admin/activities`、`/admin/activities/{id}` | 查询活动列表、详情与状态。 |
-| PUT | `/admin/activities/{id}` | 仅修改未开始活动。 |
 | POST | `/admin/activities/{id}/cancel` | 仅取消未开始活动。 |
 | POST | `/admin/activities/{id}/pause` | 仅暂停进行中活动。 |
-| POST | `/admin/activities/{id}/resume` | 仅恢复已暂停活动。 |
+| POST | `/admin/activities/{id}/resume` | 仅为已暂停活动创建异步恢复任务，返回 `202 Accepted`；任务成功前活动始终为 `PAUSED`。 |
+| GET | `/admin/activities/{id}/recovery` | 查询最近恢复任务及 `PENDING/RUNNING/FAILED/SUCCEEDED` 状态、屏障和失败原因。 |
 | GET | `/admin/activities/{id}/metrics` | 查询活动状态、库存、订单及限购基础数据。 |
 | POST | `/admin/coupon-templates` | 创建优惠券模板。 |
 | GET | `/admin/coupon-templates`、`/admin/coupon-templates/{id}` | 查询模板列表、详情与领取状态。 |
@@ -90,7 +90,8 @@
 ### 运营配置
 
 - 商品写入字段：`sku`、`name`、`description`、`list_price_minor`、`available_stock`、`status`。创建时由服务端将 JWT 的 OPERATOR 写入 `created_by/updated_by`。
-- 活动写入字段：`name`、`product_id`、`sale_price_minor`、`initial_stock`、`purchase_limit_per_user`、`starts_at`、`ends_at`。创建后只有未开始活动允许修改核心规则。
+- 活动创建字段：`name`、`product_id`、`sale_price_minor`、`initial_stock`、`purchase_limit_per_user`、`starts_at`、`ends_at`。一期不提供活动更新接口；创建后仅允许取消未开始活动、暂停进行中活动和请求异步恢复已暂停活动。
+- `POST /admin/activities/{id}/resume` 返回恢复任务 ID、状态 `PENDING` 和 `trace_id`；若该活动已有 `PENDING` 或 `RUNNING` 任务则返回该任务，不创建并发恢复。运营端通过恢复查询接口观察结果；任务失败时活动仍为 `PAUSED`。
 - 优惠券模板写入字段：`name`、`threshold_minor`、`discount_minor`、`issue_limit`、`claim_limit_per_user`、`claim_starts_at`、`claim_ends_at`、`use_starts_at`、`use_ends_at`。开始领取后禁止修改核心规则。
 - 运营状态接口不接受操作者或审计字段；服务端生成 `updated_by`、前后快照和 Trace ID。
 

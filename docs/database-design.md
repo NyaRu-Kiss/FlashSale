@@ -1,6 +1,6 @@
 # 数据库设计（PostgreSQL 16）
 
-本设计把 PostgreSQL 作为业务数据的权威来源；Redis/MQ 是高并发入口、削峰和异步传递机制，不替代本库的最终审计记录与状态约束。金额均以最小货币单位 `*_minor` 的整数保存，时间均为 `timestamptz`。
+PostgreSQL 是业务持久化审计与最终对账的权威来源；Redis/MQ 是高并发入口、削峰和异步传递机制。活动进行中 Redis 保存实时可售库存，PostgreSQL 库存投影在 Outbox/MQ 待处理时可能滞后，必须经暂停屏障追平后才能用于恢复。金额均以最小货币单位 `*_minor` 的整数保存，时间均为 `timestamptz`。
 
 ## 1. 消费者业务领域关系
 
@@ -13,6 +13,10 @@ erDiagram
     app_user ||--o{ coupon_claim_idempotency : claims_once
     app_user ||--o{ payment_submission_idempotency : pays_once
     product ||--o{ marketing_activity : configured_for
+    marketing_activity ||--|| activity_inventory_checkpoint : tracks
+    marketing_activity ||--|| activity_inventory_sequence : allocates
+    marketing_activity ||--o{ activity_inventory_event : records
+    marketing_activity ||--o{ activity_recovery_job : restores
     coupon_template ||--o{ user_coupon : issues
     marketing_activity o|--o{ customer_order : backs_activity_order
     customer_order ||--|{ order_item : contains
@@ -48,10 +52,10 @@ erDiagram
 |---|---|---|
 | 账户与权限 | `app_user`、`operator_audit_log` | `CUSTOMER` 为消费者，`OPERATOR` 为运营人员，`ADMIN` 为账户管理员；审计记录保存运营配置与账户权限变更。 |
 | 商品 | `product` | 商品资料、直接购买可用库存；`created_by` 和 `updated_by` 均只能是活跃 OPERATOR。 |
-| 活动与限购 | `marketing_activity`、`activity_user_quota` | 一个活动绑定一个商品；活动库存是独立库存池，不扣减 `product.available_stock`；限购计数包含待支付保留和已支付订单；创建人/修改人只能为 OPERATOR。 |
+| 活动与限购 | `marketing_activity`、`activity_user_quota`、`activity_inventory_sequence`、`activity_inventory_event`、`activity_inventory_checkpoint`、`activity_recovery_job` | 一个活动绑定一个商品；活动库存事件账本统一记录预扣与释放；暂停/恢复以已提交事件序号、Outbox 投递状态和消费者检查点建立栅栏。 |
 | 优惠券 | `coupon_template`、`user_coupon`、`coupon_user_claim_counter`、`coupon_reservation` | 满减券模板、用户持券、限领计数、订单锁券/核销/释放审计。券可用于任何符合金额与时间条件的订单；模板创建人/修改人只能为 OPERATOR。 |
 | 订单 | `customer_order`、`order_item`、`order_submission_idempotency` | 订单头、不可变商品/价格快照、客户端提交幂等映射。 |
-| 库存 | `inventory_reservation`、`inventory_movement` | 每个订单项唯一的一次库存保留，以及保留/释放流水。 |
+| 库存 | `inventory_reservation`、`inventory_movement` | 每个订单项唯一的一次库存保留，以及保留/释放流水；活动流水必须关联连续活动库存事件序号。 |
 | 请求幂等 | `coupon_claim_idempotency`、`payment_submission_idempotency` | 用户领券和发起支付的请求幂等映射；同键重试返回首次处理结果。 |
 | 支付与履约 | `payment_record`、`fulfillment_record`、`payment_outbox`、`payment_message_idempotency` | 每单至多一个支付记录；模拟支付成功后自动建立完成态履约记录；支付事件可靠投递并幂等消费。 |
 | 可靠消息 | `order_outbox`、`coupon_outbox`、`inventory_outbox`、`payment_outbox`、`product_outbox`、`activity_outbox` | 各生产服务独立维护 Outbox；业务事务与事件记录同一事务提交，后台任务负责重试投递。商品、活动和券配置变更通过 Outbox 可靠失效读缓存。 |
@@ -77,7 +81,7 @@ erDiagram
 | 订单 | `PENDING_PAYMENT → PAID → COMPLETED`，或 `PENDING_PAYMENT → CANCELLED`；DDL 触发器拒绝其他转换。 |
 | 用户券 | `AVAILABLE → RESERVED → CONSUMED`；超时/取消时，仍在使用期内则回到 `AVAILABLE`，否则为 `EXPIRED`。 |
 | 保留记录 | `RESERVED → CONFIRMED`（支付成功）或 `RESERVED → RELEASED`（取消/超时）。 |
-| 活动 | 仅未开始活动可取消；暂停只阻止新下单，已创建的待支付订单仍可在自身到期前支付。 |
+| 活动 | 创建活动时同时创建事件序号分配器和消费检查点。仅未开始活动可取消；暂停关闭新预扣、清算在途请求后，锁定分配器并截取暂停屏障。预扣与暂停期间取消/超时释放都写入活动库存事件账本及 Outbox。异步恢复任务开始运行后截取恢复屏障，确认相关 Outbox 已发送且检查点连续追平后，才对账、预热并切换为 ACTIVE。 |
 | 幂等 | `order_submission_idempotency` 对 `(user_id, idempotency_key)` 唯一；同键重试返回初次处理结果。各 Outbox 使用 `event_id` 与业务前缀幂等号唯一；消费者幂等状态为 `PROCESSING`、`SUCCEEDED`、`FAILED`。 |
 | 角色 | `CUSTOMER` 只能拥有自己的订单和优惠券；`OPERATOR` 只能作为商品/活动/券配置操作者；`ADMIN` 只能执行账户管理。数据库触发器拒绝非活跃 OPERATOR 写入业务配置操作者，拒绝移除最后一个活跃 ADMIN。 |
 
@@ -85,7 +89,7 @@ erDiagram
 
 ## 6. 审核要点
 
-- `marketing_activity.available_stock` 是活动订单唯一库存权威；`product.available_stock` 只服务直接订单，二者故意不自动同步。
+- 活动进行中 Redis 库存键是实时可售库存权威；`marketing_activity.available_stock` 是可因 Outbox/MQ 待处理而滞后的持久化投影。创建活动时同步创建 `activity_inventory_sequence(next=1)` 和 `activity_inventory_checkpoint(0)`。`activity_inventory_event` 是恢复栅栏的已提交事件账本：其 `event_sequence` 在业务本地事务锁定分配器后分配，并与承载它的生产端 Outbox 一起提交，避免 Redis 预扣失败补偿留下序号空洞。只有恢复屏障内的 Outbox 已发送、`activity_inventory_checkpoint` 连续追平且对账成功后，才可用投影重建丢失的 Redis 库存键。`product.available_stock` 只服务直接订单，二者故意不自动同步。
 - 订单项数量、订单金额、券适用性与活动限购是服务事务中的业务校验；DDL 提供不可绕过的基础形状、唯一性、非负数和合法订单状态约束。
 - 运营侧禁止修改已经开始的活动价格/库存规则与已开始发放券的核心规则，应由应用层按状态拦截，并依赖订单快照保证历史不变。
 - 运营写操作与账户角色变更必须同时写入 `operator_audit_log`；审计记录保存操作者、资源、动作、前后 JSON 快照和 Trace ID。账户管理审计只能由 ADMIN 写入，运营配置审计只能由 OPERATOR 写入。

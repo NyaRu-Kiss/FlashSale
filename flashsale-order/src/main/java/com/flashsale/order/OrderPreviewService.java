@@ -39,7 +39,7 @@ public final class OrderPreviewService {
             long unit = activity == null ? product.salePriceMinor() : activity.salePriceMinor();
             long line = Math.multiplyExact(unit, input.quantity());
             long lineList = Math.multiplyExact(product.listPriceMinor(), input.quantity());
-            long discount = Math.max(0, lineList - line);
+            long discount = activity == null ? 0 : Math.max(0, lineList - line);
             subtotal = Math.addExact(subtotal, lineList);
             activityDiscount = Math.addExact(activityDiscount, discount);
             result.add(new OrderPreview.Item(product.productId(), input.quantity(), product.sku(),

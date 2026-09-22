@@ -16,7 +16,7 @@ class OrderPreviewServiceTest {
     @Test void calculatesSnapshotWithoutReservation() {
         var s = new OrderPreviewService(products, activities, coupons,
                 Clock.fixed(Instant.parse("2026-06-01T00:00:00Z"), ZoneOffset.UTC));
-        var p = s.preview(new OrderPreviewRequest(7, OrderKind.DIRECT, null, 9,
+        var p = s.preview(new OrderPreviewRequest(7, OrderKind.DIRECT, null, 9L,
                 List.of(new OrderPreviewRequest.Item(1, 2), new OrderPreviewRequest.Item(2, 1))));
         assertEquals(3000, p.itemSubtotalMinor());
         assertEquals(0, p.activityDiscountMinor());
@@ -28,6 +28,6 @@ class OrderPreviewServiceTest {
         var s = new OrderPreviewService(products, activities, coupons,
                 Clock.fixed(Instant.parse("2026-06-01T00:00:00Z"), ZoneOffset.UTC));
         assertThrows(IllegalArgumentException.class, () -> s.preview(new OrderPreviewRequest(1,
-                OrderKind.ACTIVITY, 2L, null, List.of(new OrderPreviewRequest.Item(2, 1))));
+                OrderKind.ACTIVITY, 2L, null, List.of(new OrderPreviewRequest.Item(2, 1)))));
     }
 }

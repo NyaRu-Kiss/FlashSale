@@ -1,0 +1,14 @@
+package com.flashsale.common.api;
+
+public enum ErrorCode {
+    VALIDATION_ERROR,
+    UNAUTHENTICATED,
+    FORBIDDEN,
+    RESOURCE_ACCESS_DENIED,
+    REQUEST_IN_PROGRESS,
+    IDEMPOTENCY_CONFLICT,
+    STOCK_NOT_ENOUGH,
+    ORDER_NOT_FOUND,
+    ORDER_NOT_PAYABLE,
+    INTERNAL_ERROR
+}

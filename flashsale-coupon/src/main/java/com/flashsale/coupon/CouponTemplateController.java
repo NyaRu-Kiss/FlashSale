@@ -1,0 +1,13 @@
+package com.flashsale.coupon;
+import com.flashsale.common.api.ApiResponse;import com.flashsale.common.security.*;import com.flashsale.common.trace.TraceContext;import org.springframework.web.bind.annotation.*;import java.time.OffsetDateTime;import java.util.List;
+@RestController @RequestMapping("/api/v1") class CouponTemplateController {private final CouponTemplateService s;private final JwtTokenService t;CouponTemplateController(CouponTemplateService s,JwtTokenService t){this.s=s;this.t=t;}
+ @GetMapping("/coupon-templates/claimable")ApiResponse<List<CouponTemplate>> claimable(){return ApiResponse.success(s.list(true),TraceContext.getOrCreate());}
+ @GetMapping("/admin/coupon-templates")ApiResponse<List<CouponTemplate>> list(@RequestHeader("Authorization")String h){return ApiResponse.success(s.list(false),TraceContext.getOrCreate());}
+ @GetMapping("/admin/coupon-templates/{id}")ApiResponse<CouponTemplate> get(@RequestHeader("Authorization")String h,@PathVariable long id){actor(h);return ApiResponse.success(s.get(id),TraceContext.getOrCreate());}
+ @PostMapping("/admin/coupon-templates")ApiResponse<CouponTemplate> create(@RequestHeader("Authorization")String h,@RequestBody Request r){return ok(s.create(actor(h),r.to(0)));}
+ @PutMapping("/admin/coupon-templates/{id}")ApiResponse<CouponTemplate> update(@RequestHeader("Authorization")String h,@PathVariable long id,@RequestBody Request r){return ok(s.update(actor(h),id,r.to(id)));}
+ @PostMapping("/admin/coupon-templates/{id}/pause")ApiResponse<CouponTemplate> pause(@RequestHeader("Authorization")String h,@PathVariable long id){return ok(s.status(actor(h),id,"PAUSED"));}
+ @PostMapping("/admin/coupon-templates/{id}/resume")ApiResponse<CouponTemplate> resume(@RequestHeader("Authorization")String h,@PathVariable long id){return ok(s.status(actor(h),id,"ACTIVE"));}
+ private ApiResponse<CouponTemplate>ok(CouponTemplate x){return ApiResponse.success(x,TraceContext.getOrCreate());}private Principal actor(String h){try{return t.parse(h.substring(7));}catch(Exception e){throw new IllegalArgumentException("UNAUTHENTICATED");}}
+ record Request(String name,long thresholdMinor,long discountMinor,int issueLimit,int claimLimitPerUser,OffsetDateTime claimStartsAt,OffsetDateTime claimEndsAt,OffsetDateTime useStartsAt,OffsetDateTime useEndsAt){CouponTemplate to(long id){return new CouponTemplate(id,name,thresholdMinor,discountMinor,issueLimit,claimLimitPerUser,claimStartsAt,claimEndsAt,useStartsAt,useEndsAt,null,0);}}
+}

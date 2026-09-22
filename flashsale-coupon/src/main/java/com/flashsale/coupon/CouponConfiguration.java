@@ -1,0 +1,1 @@
+package com.flashsale.coupon;import com.flashsale.common.security.JwtTokenService;import org.springframework.context.annotation.*;import java.time.Duration;@Configuration class CouponConfiguration{@Bean JwtTokenService jwtTokenService(){return new JwtTokenService(System.getenv().getOrDefault("JWT_SECRET","change-me-development-secret-32-bytes"),Duration.ofHours(2));}}

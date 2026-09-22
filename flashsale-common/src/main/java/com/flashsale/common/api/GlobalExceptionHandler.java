@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ApiResponse<Void> handleValidation(IllegalArgumentException exception) {
-        return ApiResponse.failure(ErrorCode.VALIDATION_ERROR.name(), exception.getMessage(), TraceContext.getOrCreate());
+        String code = exception.getMessage();
+        if (code == null || !code.matches("[A-Z][A-Z0-9_]+")) code = ErrorCode.VALIDATION_ERROR.name();
+        return ApiResponse.failure(code, code, TraceContext.getOrCreate());
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,0 +1,22 @@
+FROM maven:3.9.9-eclipse-temurin-21
+
+WORKDIR /workspace
+
+COPY pom.xml .
+COPY flashsale-common/pom.xml flashsale-common/pom.xml
+COPY flashsale-gateway/pom.xml flashsale-gateway/pom.xml
+COPY flashsale-auth/pom.xml flashsale-auth/pom.xml
+COPY flashsale-product/pom.xml flashsale-product/pom.xml
+COPY flashsale-activity/pom.xml flashsale-activity/pom.xml
+COPY flashsale-inventory/pom.xml flashsale-inventory/pom.xml
+COPY flashsale-coupon/pom.xml flashsale-coupon/pom.xml
+COPY flashsale-order/pom.xml flashsale-order/pom.xml
+COPY flashsale-payment/pom.xml flashsale-payment/pom.xml
+COPY flashsale-job/pom.xml flashsale-job/pom.xml
+COPY flashsale-migration/pom.xml flashsale-migration/pom.xml
+
+RUN mvn -B -DskipTests dependency:go-offline
+
+COPY . .
+
+CMD ["mvn", "-B", "test"]

@@ -1,0 +1,92 @@
+name: flashsale
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flashsale}
+      POSTGRES_USER: ${POSTGRES_USER:-flashsale}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flashsale}
+    ports: ["${POSTGRES_PORT:-5432}:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-flashsale} -d $${POSTGRES_DB:-flashsale}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migration:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/flashsale
+      FLYWAY_USER: flashsale
+      FLYWAY_PASSWORD: flashsale
+    command: ["mvn", "-B", "-f", "flashsale-migration/pom.xml", "compile", "exec:java"]
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["${REDIS_PORT:-6379}:6379"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rocketmq-namesrv:
+    image: apache/rocketmq:5.3.1
+    command: sh mqnamesrv
+    ports: ["${ROCKETMQ_NAMESRV_PORT:-9876}:9876"]
+
+  rocketmq-broker:
+    image: apache/rocketmq:5.3.1
+    depends_on:
+      - rocketmq-namesrv
+    environment:
+      NAMESRV_ADDR: rocketmq-namesrv:9876
+    command: sh mqbroker -n rocketmq-namesrv:9876 -c /home/rocketmq/rocketmq-5.3.1/conf/broker.conf
+    ports: ["10909:10909", "${ROCKETMQ_BROKER_PORT:-10911}:10911"]
+
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "false"
+    ports: ["${NACOS_PORT:-8848}:8848", "${NACOS_GRPC_PORT:-9848}:9848"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8848/nacos/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  xxl-job-admin:
+    image: xuxueli/xxl-job-admin:2.4.1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PARAMS: >-
+        --spring.datasource.url=jdbc:postgresql://postgres:5432/flashsale
+        --spring.datasource.username=flashsale
+        --spring.datasource.password=flashsale
+    ports: ["${XXL_JOB_PORT:-8088}:8080"]
+
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-flashsale}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-flashsale123}
+    command: server /data --console-address ":9001"
+    ports: ["${MINIO_API_PORT:-9000}:9000", "${MINIO_CONSOLE_PORT:-9001}:9001"]
+    volumes: ["minio-data:/data"]
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:

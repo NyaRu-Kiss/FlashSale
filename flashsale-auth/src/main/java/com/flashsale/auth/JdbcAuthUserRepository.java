@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public class JdbcAuthUserRepository implements AuthUserRepository {
@@ -22,4 +23,13 @@ public class JdbcAuthUserRepository implements AuthUserRepository {
                 ? Optional.of(new AuthUser(rs.getLong("id"), rs.getString("username"), rs.getString("password_hash"), Role.valueOf(rs.getString("role")), rs.getString("status")))
                 : Optional.empty(), username);
     }
+    public Optional<AuthUser> findById(long id) { return jdbc.query("select id,username,password_hash,role,status from app_user where id = ?", rs -> rs.next() ? Optional.of(map(rs)) : Optional.empty(), id); }
+    public AuthUser create(String username, String passwordHash, Role role) {
+        return jdbc.queryForObject("insert into app_user(username,password_hash,role,status) values (?, ?, ?, 'ACTIVE') returning id,username,password_hash,role,status", (rs,n)->map(rs), username,passwordHash,role.name());
+    }
+    public AuthUser updateRole(long id, Role role) { return jdbc.queryForObject("update app_user set role = ? where id = ? returning id,username,password_hash,role,status", (rs,n)->map(rs), role.name(),id); }
+    public AuthUser updateStatus(long id, String status) { return jdbc.queryForObject("update app_user set status = ? where id = ? returning id,username,password_hash,role,status", (rs,n)->map(rs), status,id); }
+    public List<AuthUser> findAll(int offset, int limit) { return jdbc.query("select id,username,password_hash,role,status from app_user order by id limit ? offset ?", (rs,n)->map(rs), limit,offset); }
+    public long count() { return jdbc.queryForObject("select count(*) from app_user", Long.class); }
+    private AuthUser map(java.sql.ResultSet rs) throws java.sql.SQLException { return new AuthUser(rs.getLong("id"),rs.getString("username"),rs.getString("password_hash"),Role.valueOf(rs.getString("role")),rs.getString("status")); }
 }

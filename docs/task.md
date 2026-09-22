@@ -31,7 +31,7 @@
 | B03 | JWT、角色和资源归属校验 | B01 | CUSTOMER/OPERATOR/ADMIN 隔离生效 | Docker Java 21 容器测试：3 tests passed | DONE |
 | B04 | PostgreSQL、Redis、RocketMQ 客户端封装 | A03 | 连接、超时、重试、序列化配置统一 | Docker Java 21 容器编译通过，Redis/RocketMQ 客户端依赖已统一 | DONE |
 | B05 | Outbox 通用模型与投递接口 | B04 | 支持租约、退避、PENDING/SENT/FAILED | Docker Java 21 容器测试：6 tests passed；租约与退避接口已完成 | DONE |
-| B06 | 消费幂等通用模型 | B04 | PROCESSING/SUCCEEDED/FAILED 和超时恢复可复用 | 状态模型待补充持久化接口 | TODO |
+| B06 | 消费幂等通用模型 | B04 | PROCESSING/SUCCEEDED/FAILED 和超时恢复可复用 | Docker Java 21 容器测试：8 tests passed；抢占与超时恢复接口已完成 | DONE |
 
 ## C. 认证、网关与账户
 
@@ -96,6 +96,6 @@
 
 ## 当前执行位置
 
-- 当前任务：`B06`
+- 当前任务：`C01`
 - 状态：`DOING`
 - 备注：A01-A05、B01-B04 已完成；下一步补充 Outbox 投递接口和租约语义。

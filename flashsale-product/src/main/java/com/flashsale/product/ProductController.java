@@ -1,12 +1,17 @@
 package com.flashsale.product;
-import com.flashsale.common.api.ApiResponse; import com.flashsale.common.security.*; import com.flashsale.common.trace.TraceContext; import jakarta.validation.Valid; import jakarta.validation.constraints.*; import org.springframework.web.bind.annotation.*; import java.util.List;
+import com.flashsale.common.api.ApiResponse; import com.flashsale.common.api.PageResponse; import com.flashsale.common.security.*; import com.flashsale.common.trace.TraceContext; import jakarta.validation.Valid; import jakarta.validation.constraints.*; import org.springframework.web.bind.annotation.*; import java.util.List;
 @RestController @RequestMapping("/api/v1") class ProductController {private final ProductService service;private final JwtTokenService tokens; ProductController(ProductService s,JwtTokenService t){service=s;tokens=t;}
- @GetMapping("/products") ApiResponse<List<Product>> list(){return ApiResponse.success(service.list(true),TraceContext.getOrCreate());}
- @GetMapping("/products/{id}") ApiResponse<Product> get(@PathVariable long id){return ApiResponse.success(service.get(id),TraceContext.getOrCreate());}
+ @GetMapping("/products") ApiResponse<PageResponse<Product>> list(@RequestParam(defaultValue="1")int page,@RequestParam(name="page_size",defaultValue="20")int size){validatePage(page,size);var all=service.list(true);return ApiResponse.success(page(all,page,size,service.count(true)),TraceContext.getOrCreate());}
+ @GetMapping("/products/{id}") ApiResponse<Product> get(@PathVariable long id){return ApiResponse.success(service.getPublic(id),TraceContext.getOrCreate());}
+ @GetMapping("/admin/products") ApiResponse<PageResponse<Product>> adminList(@RequestHeader("Authorization")String h,@RequestParam(defaultValue="1")int page,@RequestParam(name="page_size",defaultValue="20")int size){validatePage(page,size);var all=service.listForOperator(actor(h));return ApiResponse.success(page(all,page,size,service.count(false)),TraceContext.getOrCreate());}
+ @GetMapping("/admin/products/{id}") ApiResponse<Product> adminGet(@RequestHeader("Authorization")String h,@PathVariable long id){return ok(service.getForOperator(actor(h),id));}
+ @GetMapping("/admin/products/{id}/inventory") ApiResponse<ProductService.InventoryView> inventory(@RequestHeader("Authorization")String h,@PathVariable long id){return ApiResponse.success(service.inventory(actor(h),id),TraceContext.getOrCreate());}
  @PostMapping("/admin/products") ApiResponse<Product> create(@RequestHeader("Authorization")String h,@Valid@RequestBody Request r){return ok(service.create(actor(h),r.toProduct()));}
  @PutMapping("/admin/products/{id}") ApiResponse<Product> update(@RequestHeader("Authorization")String h,@PathVariable long id,@Valid@RequestBody Request r){return ok(service.update(actor(h),id,r.toProduct()));}
  @PostMapping("/admin/products/{id}/on-sale") ApiResponse<Product> on(@RequestHeader("Authorization")String h,@PathVariable long id){return ok(service.changeStatus(actor(h),id,"ON_SALE"));}
  @PostMapping("/admin/products/{id}/off-sale") ApiResponse<Product> off(@RequestHeader("Authorization")String h,@PathVariable long id){return ok(service.changeStatus(actor(h),id,"OFF_SALE"));}
- private ApiResponse<Product> ok(Product p){return ApiResponse.success(p,TraceContext.getOrCreate());} private Principal actor(String h){try{return tokens.parse(h.substring(7));}catch(Exception e){throw new IllegalArgumentException("UNAUTHENTICATED");}}
+ private ApiResponse<Product> ok(Product p){return ApiResponse.success(p,TraceContext.getOrCreate());} private Principal actor(String h){try{if(h==null||!h.startsWith("Bearer "))throw new IllegalArgumentException();return tokens.parse(h.substring(7));}catch(Exception e){throw new IllegalArgumentException("UNAUTHENTICATED");}}
+ private void validatePage(int page,int size){if(page<1||size<1||size>100)throw new IllegalArgumentException("VALIDATION_ERROR");}
+ private PageResponse<Product> page(List<Product> all,int page,int size,long total){int from=Math.min((page-1)*size,all.size());int to=Math.min(from+size,all.size());return new PageResponse<>(all.subList(from,to),page,size,total);}
  record Request(@NotBlank String sku,@NotBlank String name,String description,@Min(0)long priceMinor,@Min(0)int stock){Product toProduct(){return new Product(0,sku,name,description,priceMinor,stock,null,0);}}
 }

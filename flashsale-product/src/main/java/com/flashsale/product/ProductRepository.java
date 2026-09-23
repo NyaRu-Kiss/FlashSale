@@ -9,5 +9,6 @@ import java.util.List;
  Product status(long id,String status,long actor){return jdbc.queryForObject("update product set status=?,updated_by=?,version=version+1 where id=? returning id,sku,name,description,list_price_minor,available_stock,status,updated_by",(r,n)->map(r),status,actor,id);}
  Product get(long id){return jdbc.query("select id,sku,name,description,list_price_minor,available_stock,status,updated_by from product where id=?",r->r.next()?map(r):null,id);}
  List<Product> list(boolean onSale){return jdbc.query("select id,sku,name,description,list_price_minor,available_stock,status,updated_by from product "+(onSale?"where status='ON_SALE' ":"")+"order by id",(r,n)->map(r));}
+ long count(boolean onSale){Long count=jdbc.queryForObject("select count(*) from product "+(onSale?"where status='ON_SALE'":""),Long.class);return count==null?0:count;}
  private Product map(java.sql.ResultSet r)throws java.sql.SQLException{return new Product(r.getLong(1),r.getString(2),r.getString(3),r.getString(4),r.getLong(5),r.getInt(6),r.getString(7),r.getLong(8));}
 }

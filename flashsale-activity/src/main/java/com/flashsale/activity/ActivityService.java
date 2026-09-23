@@ -27,11 +27,8 @@ final class ActivityService {
     }
 
     Activity getPublic(long id) {
-        Activity activity = get(id);
-        OffsetDateTime now = OffsetDateTime.now();
-        if (activity.status() != ActivityStatus.ACTIVE || now.isBefore(activity.startsAt()) || !now.isBefore(activity.endsAt())) {
-            throw new IllegalArgumentException("ACTIVITY_NOT_FOUND");
-        }
+        Activity activity = repository.findPublic(id);
+        if (activity == null) throw new IllegalArgumentException("ACTIVITY_NOT_FOUND");
         return activity;
     }
 
@@ -79,6 +76,14 @@ final class ActivityService {
         inventory.closeGate(id);
         long barrier = repository.lockAndReadBarrier(id);
         return changed(repository.pauseWithBarrier(id, barrier, actor.userId()), "INVALID_ACTIVITY_STATE");
+    }
+
+    @Transactional
+    Activity end(Principal actor, long id) {
+        requireOperator(actor); get(id);
+        Activity ended = repository.endIfDue(id, actor.userId());
+        if (ended == null) throw new IllegalArgumentException("ACTIVITY_NOT_ACTIVE");
+        inventory.closeGate(id); return ended;
     }
 
     @Transactional

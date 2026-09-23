@@ -64,6 +64,9 @@ final class ActivityController {
         return ok(service.pause(actor(header), id));
     }
 
+    @PostMapping("/admin/activities/{id}/end")
+    ApiResponse<Activity> end(@RequestHeader("Authorization") String header, @PathVariable long id) { return ok(service.end(actor(header), id)); }
+
     @PostMapping("/admin/activities/{id}/resume") @ResponseStatus(HttpStatus.ACCEPTED)
     ApiResponse<ActivityRecoveryJob> resume(@RequestHeader("Authorization") String header, @PathVariable long id) { return ok(service.resume(actor(header), id)); }
 

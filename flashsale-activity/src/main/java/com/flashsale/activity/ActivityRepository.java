@@ -46,6 +46,15 @@ final class ActivityRepository {
                 """, (rs, n) -> map(rs), id).stream().findFirst().orElse(null);
     }
 
+    Activity findPublic(long id) {
+        return jdbc.query("""
+                select id, name, product_id, sale_price_minor, initial_stock, available_stock,
+                       purchase_limit_per_user, starts_at, ends_at, status, updated_by
+                  from marketing_activity
+                 where id = ? and status = 'ACTIVE' and starts_at <= now() and now() < ends_at
+                """, (rs, n) -> map(rs), id).stream().findFirst().orElse(null);
+    }
+
     List<Activity> listPublic() {
         return jdbc.query("""
                 select id, name, product_id, sale_price_minor, initial_stock, available_stock,
@@ -86,6 +95,15 @@ final class ActivityRepository {
                 returning id, name, product_id, sale_price_minor, initial_stock, available_stock,
                           purchase_limit_per_user, starts_at, ends_at, status, updated_by
                 """, (rs, n) -> map(rs), target.name(), actor, id, expected.name(), target.name()).stream().findFirst().orElse(null);
+    }
+
+    Activity endIfDue(long id, long actor) {
+        return jdbc.query("""
+                update marketing_activity set status = 'ENDED', updated_by = ?, version = version + 1
+                 where id = ? and status = 'ACTIVE' and ends_at <= now()
+                returning id, name, product_id, sale_price_minor, initial_stock, available_stock,
+                          purchase_limit_per_user, starts_at, ends_at, status, updated_by
+                """, (rs, n) -> map(rs), actor, id).stream().findFirst().orElse(null);
     }
 
     Activity pauseWithBarrier(long id, long barrier, long actor) {

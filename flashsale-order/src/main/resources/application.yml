@@ -1,5 +1,8 @@
 spring:
   application.name: flashsale-order
+  config.import: optional:nacos:${spring.application.name}.yaml?group=${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
+  cloud.nacos.discovery.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+  cloud.nacos.config.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
   data.redis.host: ${REDIS_HOST:redis}
   data.redis.port: ${REDIS_PORT_INTERNAL:6379}
 server.port: ${SERVER_PORT:8080}

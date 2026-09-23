@@ -8,10 +8,12 @@ import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRuleManager;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 
 /** Local Sentinel rules for R01; Nacos-backed rule distribution belongs to R02. */
 @Configuration(proxyBeanMethods = false)
-final class GatewaySentinelConfiguration {
+@RefreshScope
+class GatewaySentinelConfiguration {
     GatewaySentinelConfiguration(
             @Value("${flashsale.gateway.rate-limit.default-qps:100}") double defaultQps,
             @Value("${flashsale.gateway.rate-limit.ip-qps:100}") double ipQps,

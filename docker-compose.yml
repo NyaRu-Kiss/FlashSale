@@ -86,6 +86,40 @@ services:
       timeout: 5s
       retries: 30
 
+  auth:
+    profiles: ["r02"]
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: flashsale-auth
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flashsale
+      JWT_SECRET: ${JWT_SECRET:-local-only-jwt-secret-at-least-32-bytes}
+    depends_on:
+      nacos:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+
+  gateway:
+    profiles: ["r02"]
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: flashsale-gateway
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      JWT_SECRET: ${JWT_SECRET:-local-only-jwt-secret-at-least-32-bytes}
+    ports: ["${GATEWAY_PORT:-8080}:8080"]
+    depends_on:
+      nacos:
+        condition: service_healthy
+      auth:
+        condition: service_started
+
   xxl-job-admin:
     image: xuxueli/xxl-job-admin:2.4.1
     depends_on:

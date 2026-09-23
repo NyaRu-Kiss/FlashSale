@@ -1,5 +1,17 @@
 spring:
   application.name: flashsale-gateway
+  config:
+    import: optional:nacos:${spring.application.name}.yaml?group=${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+        group: ${NACOS_DISCOVERY_GROUP:DEFAULT_GROUP}
+        namespace: ${NACOS_NAMESPACE:}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+        group: ${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
+        namespace: ${NACOS_NAMESPACE:}
 server.port: ${SERVER_PORT:8080}
 management.endpoints.web.exposure.include: health,info,prometheus
 flashsale.security.jwt-secret: ${JWT_SECRET}

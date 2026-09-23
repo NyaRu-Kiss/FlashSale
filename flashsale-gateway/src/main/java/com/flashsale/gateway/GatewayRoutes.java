@@ -14,20 +14,20 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 @Configuration(proxyBeanMethods = false)
 public class GatewayRoutes {
     @Bean
-    RouteLocator gatewayRoutes(RouteLocatorBuilder builder, UpstreamResolver upstreams) {
+    RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("auth", r -> r.path("/api/v1/auth/**", "/api/v1/admin/users/**")
-                        .uri(upstreams.base("auth")))
+                        .uri("lb://flashsale-auth"))
                 .route("product", r -> r.path("/api/v1/products/**", "/api/v1/admin/products/**")
-                        .uri(upstreams.base("product")))
+                        .uri("lb://flashsale-product"))
                 .route("activity", r -> r.path("/api/v1/activities/**", "/api/v1/admin/activities/**")
-                        .uri(upstreams.base("activity")))
+                        .uri("lb://flashsale-activity"))
                 .route("coupon", r -> r.path("/api/v1/coupons/**", "/api/v1/coupon-templates/**",
                                 "/api/v1/admin/coupon-templates/**")
-                        .uri(upstreams.base("coupon")))
+                        .uri("lb://flashsale-coupon"))
                 .route("payment", r -> r.path("/api/v1/orders/*/payments/**", "/api/v1/payments/**")
-                        .uri(upstreams.base("payment")))
-                .route("order", r -> r.path("/api/v1/orders/**").uri(upstreams.base("order")))
+                        .uri("lb://flashsale-payment"))
+                .route("order", r -> r.path("/api/v1/orders/**").uri("lb://flashsale-order"))
                 .build();
     }
 

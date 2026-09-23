@@ -1,4 +1,8 @@
-spring.application.name: flashsale-payment
+spring:
+  application.name: flashsale-payment
+  config.import: optional:nacos:${spring.application.name}.yaml?group=${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
+  cloud.nacos.discovery.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+  cloud.nacos.config.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
 server.port: ${SERVER_PORT:8080}
 management.endpoints.web.exposure.include: health,info,prometheus
 flashsale.security.jwt-secret: ${JWT_SECRET}

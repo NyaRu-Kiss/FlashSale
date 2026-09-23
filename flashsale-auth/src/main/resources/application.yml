@@ -1,6 +1,11 @@
 spring:
   application:
     name: flashsale-auth
+  config.import: optional:nacos:${spring.application.name}.yaml?group=${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
+  cloud:
+    nacos:
+      discovery.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+      config.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/flashsale}
     username: ${SPRING_DATASOURCE_USERNAME:flashsale}

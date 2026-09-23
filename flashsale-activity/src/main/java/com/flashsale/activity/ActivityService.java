@@ -10,15 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 final class ActivityService {
     private final ActivityRepository repository;
+    private final ActivityInventoryPort inventory;
     private final ActivityStateMachine stateMachine = new ActivityStateMachine();
 
-    ActivityService(ActivityRepository repository) { this.repository = repository; }
+    ActivityService(ActivityRepository repository, ActivityInventoryPort inventory) { this.repository = repository; this.inventory = inventory; }
 
     @Transactional
     Activity create(Principal actor, Activity input) {
         requireOperator(actor);
         validate(input);
-        return repository.create(input, actor.userId());
+        Activity activity = repository.create(input, actor.userId());
+        inventory.preheat(activity);
+        return activity;
     }
 
     Activity getPublic(long id) {
@@ -60,7 +63,9 @@ final class ActivityService {
         if (existing.status() != ActivityStatus.NOT_STARTED) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
         OffsetDateTime now = OffsetDateTime.now();
         if (now.isBefore(existing.startsAt()) || !now.isBefore(existing.endsAt())) throw new IllegalArgumentException("ACTIVITY_NOT_READY");
-        return changed(repository.casStatusAt(id, ActivityStatus.NOT_STARTED, ActivityStatus.ACTIVE, actor.userId()), "ACTIVITY_NOT_READY");
+        Activity started = changed(repository.casStatusAt(id, ActivityStatus.NOT_STARTED, ActivityStatus.ACTIVE, actor.userId()), "ACTIVITY_NOT_READY");
+        inventory.rebuild(started, started.availableStock());
+        return started;
     }
 
     private Activity get(long id) {

@@ -1,0 +1,109 @@
+x-workspace: &workspace [".:/workspace", "flashsale-acceptance-m2:/root/.m2"]
+
+services:
+  migration:
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/flashsale_acceptance
+      FLYWAY_USER: flashsale
+      FLYWAY_PASSWORD: flashsale
+
+  gateway:
+    image: flashsale-dev:acceptance
+    build: {context: ., dockerfile: Dockerfile.dev}
+    command: ["mvn", "-B", "-pl", "flashsale-gateway", "-am", "spring-boot:run"]
+    ports: ["18080:8080"]
+    environment: &service-env
+      SERVICE_NAME: gateway
+      SPRING_PROFILES_ACTIVE: acceptance
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/workspace/config/application-acceptance.yml
+      JWT_SECRET: acceptance-secret-change-me-32-bytes
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flashsale_acceptance
+      SPRING_DATASOURCE_USERNAME: flashsale
+      SPRING_DATASOURCE_PASSWORD: flashsale
+      REDIS_HOST: redis
+      REDIS_PORT_INTERNAL: 6379
+    volumes: *workspace
+    depends_on:
+      migration: {condition: service_completed_successfully}
+    healthcheck: &http-health
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q 'UP'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  auth:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-auth", "-am", "spring-boot:run"]
+    ports: ["18081:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on:
+      migration: {condition: service_completed_successfully}
+      postgres: {condition: service_healthy}
+    healthcheck: *http-health
+
+  product:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-product", "-am", "spring-boot:run"]
+    ports: ["18082:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+  activity:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-activity", "-am", "spring-boot:run"]
+    ports: ["18083:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+  inventory:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-inventory", "-am", "spring-boot:run"]
+    ports: ["18084:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+  coupon:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-coupon", "-am", "spring-boot:run"]
+    ports: ["18085:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+  order:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-order", "-am", "spring-boot:run"]
+    ports: ["18086:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+  payment:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-payment", "-am", "spring-boot:run"]
+    ports: ["18087:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+  job:
+    image: flashsale-dev:acceptance
+    command: ["mvn", "-B", "-pl", "flashsale-job", "-am", "spring-boot:run"]
+    ports: ["18090:8080"]
+    environment: *service-env
+    volumes: *workspace
+    depends_on: {migration: {condition: service_completed_successfully}}
+    healthcheck: *http-health
+
+volumes:
+  flashsale-acceptance-m2:

@@ -88,7 +88,7 @@
 
 | ID | 任务 | 前置 | 完成标准 | 验证 | 状态 |
 |---|---|---|---|---|---|
-| H01 | 全量接口契约测试 | C03,D01,D03,E06,F01,F05 | API 与文档字段、错误码、权限一致 | 自动化测试 | TODO |
+| H01 | 全量接口契约测试 | C03,D01,D03,E06,F01,F05 | API 与文档字段、错误码、权限一致 | 自动化测试 | DOING |
 | H02 | 核心状态机与数据库不变量测试 | 全部业务任务 | 无非法状态迁移、无负库存、无重复流水 | 自动化测试 | TODO |
 | H03 | 高并发压测 | F02-F04,D04 | 热点库存、限购、幂等结果正确 | 压测报告 | TODO |
 | H04 | 故障恢复演练 | G01-G03 | 崩溃、重复消息、Redis 丢失后可恢复 | 演练报告 | TODO |
@@ -97,5 +97,5 @@
 ## 当前执行位置
 
 - 当前任务：`H01`
-  - 状态：`TODO`
-  - 备注：G01-G05 已完成；Compose 已补齐 RocketMQ topic 初始化、独立 XXL-Job MySQL、Prometheus/Grafana/Alertmanager/Loki、健康检查和 Flyway 启动链路。Java 21 测试与基础设施启动验证已通过；MinIO 使用可访问的 Quay 镜像源，XXL-Job 默认端口调整为 18088 以避开本机 8088 端口冲突。
+  - 状态：`DOING`
+  - 备注：已开始建立隔离的真实 HTTP 验收环境；G01-G05 已完成；Compose 已补齐 RocketMQ topic 初始化、独立 XXL-Job MySQL、Prometheus/Grafana/Alertmanager/Loki、健康检查和 Flyway 启动链路。Java 21 测试与基础设施启动验证已通过；MinIO 使用可访问的 Quay 镜像源，XXL-Job 默认端口调整为 18088 以避开本机 8088 端口冲突。

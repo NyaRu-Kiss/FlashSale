@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: ${SERVICE_NAME:flashsale-service}
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/flashsale_acceptance}
+    username: ${SPRING_DATASOURCE_USERNAME:flashsale}
+    password: ${SPRING_DATASOURCE_PASSWORD:flashsale}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:8}
+      connection-timeout: 2000
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT_INTERNAL:6379}
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: UTC
+server:
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+flashsale:
+  trace:
+    header: X-Trace-Id
+  security:
+    jwt-secret: ${JWT_SECRET:acceptance-secret-change-me-32-bytes}

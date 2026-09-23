@@ -30,4 +30,8 @@ final class UpstreamResolver {
         if (path.startsWith("/api/v1/orders")) return bases.get("order");
         return null;
     }
+
+    String base(String service) {
+        return bases.get(service);
+    }
 }

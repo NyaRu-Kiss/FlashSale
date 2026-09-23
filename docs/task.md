@@ -114,7 +114,7 @@
 
 | ID | 对应偏离 | 任务 | 前置 | 必须完成的结果 | 验证 | 状态 |
 |---|---:|---|---|---|---|---|
-| R01 | 1 | 将网关改为设计要求的 Gateway/Sentinel 入口 | C03 | 接口/IP/热点参数限流；限流前不得进入 Redis、DB、MQ；返回 `RATE_LIMITED` | Sentinel 限流、绕过网关、热点参数和 Trace 契约测试 | DOING |
+| R01 | 1 | 将网关改为设计要求的 Gateway/Sentinel 入口 | C03 | 接口/IP/热点参数限流；限流前不得进入 Redis、DB、MQ；返回 `RATE_LIMITED` | Docker Java 21：`mvn -B -pl flashsale-gateway -am test`，18 tests passed；Reactive Gateway 编译通过；JWT/参数规范化/Sentinel 规则契约测试通过；测试容器使用 `--rm` 自动关闭 | DONE |
 | R02 | 2 | 接入 Nacos 注册/配置和 OpenFeign 服务调用 | R01 | 服务发现、配置中心和跨服务调用均由统一组件提供，禁止业务硬编码地址 | Docker Compose 服务发现、配置刷新和调用链测试 | TODO |
 | R03 | 3 | 实现商品/优惠券模板 Cache Aside 读缓存 | R02 | Redis GET；`SET NX PX` owner token 锁；二次 GET；有限退避；TTL 随机抖动；未获锁不得查 DB | 缓存命中、并发 miss、锁超时、DB 穿透和空结果测试 | TODO |
 | R04 | 4 | 实现商品/优惠券延迟双删、审计和本服务 Outbox | R03 | 先删缓存，再本地事务写配置/审计/Outbox，提交后延时二次删除；不得直接回写缓存 | 事务回滚、重复失效、Outbox 重试和审计快照测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R01`
-- 状态：`DOING`
-- 说明：按已确认边界，仅迁移 Gateway/Sentinel；服务地址暂时保留环境变量，Nacos/OpenFeign 留给 R02。未完成前不得并行处理 R02-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。
+- 当前任务：`R02`
+- 状态：`TODO`
+- 说明：R01 已完成。按已确认边界，R01 仅迁移 Gateway/Sentinel；服务地址暂时保留环境变量，Nacos/OpenFeign 由 R02 处理。未完成前不得并行处理 R03-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。

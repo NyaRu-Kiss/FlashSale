@@ -11,3 +11,8 @@ flashsale.gateway:
   coupon-url: ${COUPON_SERVICE_URL:http://coupon:8080}
   order-url: ${ORDER_SERVICE_URL:http://order:8080}
   payment-url: ${PAYMENT_SERVICE_URL:http://payment:8080}
+  rate-limit:
+    default-qps: ${GATEWAY_DEFAULT_QPS:100}
+    ip-qps: ${GATEWAY_IP_QPS:100}
+    activity-hotspot-qps: ${GATEWAY_ACTIVITY_HOTSPOT_QPS:20}
+    coupon-hotspot-qps: ${GATEWAY_COUPON_HOTSPOT_QPS:20}

@@ -13,4 +13,5 @@ public interface AuthUserRepository {
     default AuthUser updateStatus(long id, String status) { throw new UnsupportedOperationException(); }
     default java.util.List<AuthUser> findAll(int offset, int limit) { return java.util.List.of(); }
     default long count() { return 0; }
+    default long countActiveAdmins() { return 0; }
 }

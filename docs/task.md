@@ -39,7 +39,7 @@
 |---|---|---|---|---|---|
 | C01 | Auth 服务注册/登录 | B01-B03,A04 | 注册只能创建 CUSTOMER；登录签发 JWT | Docker Java 21 容器测试：10 tests passed（公共 8 + Auth 2） | DONE |
 | C02 | ADMIN 账户管理 | C01 | 角色、启停用、最后 ADMIN 保护和审计完整 | Docker Java 21 `mvn -B test`：通过 | DONE |
-| C03 | Gateway 路由、鉴权与限流 | B02-B03,A03 | 路由、JWT、Sentinel、Trace 生效 | Docker Java 21 `mvn -B test`：通过 | DONE |
+| C03 | Gateway 路由、鉴权与限流 | B02-B03,A03 | 路由、JWT、Sentinel、Trace 生效 | 公共运行时接线已完成；Docker Java 21 `mvn -B test`（11 模块）通过，待完成真实路由层验收 | DOING |
 
 ## D. 商品与优惠券
 
@@ -96,6 +96,6 @@
 
 ## 当前执行位置
 
-- 当前任务：`H01`
+- 当前任务：`C03`
   - 状态：`DOING`
-  - 备注：已开始建立隔离的真实 HTTP 验收环境；G01-G05 已完成；Compose 已补齐 RocketMQ topic 初始化、独立 XXL-Job MySQL、Prometheus/Grafana/Alertmanager/Loki、健康检查和 Flyway 启动链路。Java 21 测试与基础设施启动验证已通过；MinIO 使用可访问的 Quay 镜像源，XXL-Job 默认端口调整为 18088 以避开本机 8088 端口冲突。
+  - 备注：H01 静态核对发现各服务未统一接入运行时配置、Trace 和异常处理，且 Gateway 尚未形成真实路由层；按依赖顺序先回补 C03，再恢复 H01 验收。

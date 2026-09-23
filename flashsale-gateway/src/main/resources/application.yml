@@ -1,0 +1,6 @@
+spring:
+  application.name: flashsale-gateway
+server.port: ${SERVER_PORT:8080}
+management.endpoints.web.exposure.include: health,info,prometheus
+flashsale.security.jwt-secret: ${JWT_SECRET}
+flashsale.security.jwt-ttl: ${JWT_TTL:PT2H}

@@ -22,4 +22,4 @@ flashsale:
   trace:
     header: X-Trace-Id
   security:
-    jwt-secret: ${JWT_SECRET:change-me-in-development}
+    jwt-secret: ${JWT_SECRET:change-me-in-development-secret-32-bytes}

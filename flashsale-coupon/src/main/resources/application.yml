@@ -1,0 +1,11 @@
+spring:
+  application.name: flashsale-coupon
+  datasource.url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/flashsale}
+  datasource.username: ${SPRING_DATASOURCE_USERNAME:flashsale}
+  datasource.password: ${SPRING_DATASOURCE_PASSWORD:flashsale}
+  data.redis.host: ${REDIS_HOST:redis}
+  data.redis.port: ${REDIS_PORT_INTERNAL:6379}
+server.port: ${SERVER_PORT:8080}
+management.endpoints.web.exposure.include: health,info,prometheus
+flashsale.security.jwt-secret: ${JWT_SECRET}
+flashsale.security.jwt-ttl: ${JWT_TTL:PT2H}

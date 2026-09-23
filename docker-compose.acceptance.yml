@@ -17,6 +17,8 @@ services:
       SPRING_PROFILES_ACTIVE: acceptance
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/workspace/config/application-acceptance.yml
       JWT_SECRET: acceptance-secret-change-me-32-bytes
+      ADMIN_USERNAME: acceptance-admin
+      ADMIN_PASSWORD: acceptance-admin-password
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flashsale_acceptance
       SPRING_DATASOURCE_USERNAME: flashsale
       SPRING_DATASOURCE_PASSWORD: flashsale

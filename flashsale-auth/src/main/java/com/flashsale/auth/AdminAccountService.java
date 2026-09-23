@@ -21,6 +21,20 @@ class AdminAccountService {
     }
     public List<AuthUser> list(Principal actor,int page,int size){ requireAdmin(actor); if(page<1||size<1||size>100) throw new IllegalArgumentException("VALIDATION_ERROR"); return users.findAll((page-1)*size,size); }
     public long count(Principal actor){ requireAdmin(actor); return users.count(); }
+    public List<AccountAudit> audits(Principal actor, int page, int size) {
+        requireAdmin(actor);
+        if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("VALIDATION_ERROR");
+        return jdbc.query("select id,operator_id,target_id,action,trace_id,created_at from operator_audit_log "
+                        + "where target_type = 'USER_ACCOUNT' order by id desc limit ? offset ?",
+                (rs, row) -> new AccountAudit(rs.getLong("id"), rs.getLong("operator_id"), rs.getLong("target_id"),
+                        rs.getString("action"), rs.getString("trace_id"), rs.getObject("created_at", java.time.OffsetDateTime.class)),
+                size, (page - 1) * size);
+    }
+    public long auditCount(Principal actor) {
+        requireAdmin(actor);
+        Long count = jdbc.queryForObject("select count(*) from operator_audit_log where target_type = 'USER_ACCOUNT'", Long.class);
+        return count == null ? 0 : count;
+    }
     public AuthUser get(Principal actor,long id){ requireAdmin(actor); return users.findById(id).orElseThrow(()->new IllegalArgumentException("RESOURCE_NOT_FOUND")); }
     @Transactional public AuthUser changeRole(Principal actor,long id,Role role){ requireAdmin(actor); if(actor.userId()==id) throw new IllegalArgumentException("SELF_ROLE_CHANGE_FORBIDDEN"); AuthUser before=get(actor,id); if(before.role()==Role.ADMIN&&role!=Role.ADMIN&&activeAdmins()<=1) throw new IllegalArgumentException("LAST_ACTIVE_ADMIN_PROTECTED"); AuthUser after=users.updateRole(id,role); audit(actor,id,"UPDATE_ROLE",before,after); return after; }
     @Transactional public AuthUser setStatus(Principal actor,long id,String status){ requireAdmin(actor); if(!"ACTIVE".equals(status)&&!"DISABLED".equals(status)) throw new IllegalArgumentException("VALIDATION_ERROR"); if(actor.userId()==id&&"DISABLED".equals(status)) throw new IllegalArgumentException("SELF_DISABLE_FORBIDDEN"); AuthUser before=get(actor,id); if(before.role()==Role.ADMIN&&before.active()&&"DISABLED".equals(status)&&activeAdmins()<=1) throw new IllegalArgumentException("LAST_ACTIVE_ADMIN_PROTECTED"); AuthUser after=users.updateStatus(id,status); audit(actor,id,"ACTIVE".equals(status)?"ENABLE_ACCOUNT":"DISABLE_ACCOUNT",before,after); return after; }
@@ -29,4 +43,5 @@ class AdminAccountService {
     private void validate(String u,String p,Role r){ if(u==null||u.isBlank()||u.length()>64||p==null||p.length()<8||r==null) throw new IllegalArgumentException("VALIDATION_ERROR"); }
     private void audit(Principal a,long id,String action,AuthUser before,AuthUser after){ jdbc.update("insert into operator_audit_log(operator_id,target_type,target_id,action,before_snapshot,after_snapshot) values (?, 'USER_ACCOUNT', ?, ?, cast(? as jsonb), cast(? as jsonb))",a.userId(),id,action,snapshot(before),snapshot(after)); }
     private String snapshot(AuthUser u){ return u==null?null:String.format("{\"id\":%d,\"username\":\"%s\",\"role\":\"%s\",\"status\":\"%s\"}",u.id(),u.username(),u.role(),u.status()); }
+    record AccountAudit(long id, long operatorId, long targetId, String action, String traceId, java.time.OffsetDateTime createdAt) {}
 }

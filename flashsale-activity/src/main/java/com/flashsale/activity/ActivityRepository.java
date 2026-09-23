@@ -98,6 +98,12 @@ final class ActivityRepository {
                 """, (rs, n) -> map(rs), barrier, actor, id).stream().findFirst().orElse(null);
     }
 
+    long lockAndReadBarrier(long activityId) {
+        Long barrier = jdbc.queryForObject("select next_event_sequence - 1 from activity_inventory_sequence where activity_id = ? for update", Long.class, activityId);
+        if (barrier == null) throw new IllegalArgumentException("ACTIVITY_NOT_FOUND");
+        return barrier;
+    }
+
     long lastEventSequence(long activityId) {
         Long value = jdbc.queryForObject("select coalesce(max(event_sequence), 0) from activity_inventory_event where activity_id = ?", Long.class, activityId);
         return value == null ? 0 : value;

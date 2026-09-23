@@ -58,6 +58,11 @@ final class ActivityController {
         return ok(service.start(actor(header), id));
     }
 
+    @PostMapping("/admin/activities/{id}/pause")
+    ApiResponse<Activity> pause(@RequestHeader("Authorization") String header, @PathVariable long id) {
+        return ok(service.pause(actor(header), id));
+    }
+
     private Principal actor(String header) {
         try {
             if (header == null || !header.startsWith("Bearer ")) throw new IllegalArgumentException("UNAUTHENTICATED");

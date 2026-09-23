@@ -68,6 +68,17 @@ final class ActivityService {
         return started;
     }
 
+    @Transactional
+    Activity pause(Principal actor, long id) {
+        requireOperator(actor);
+        Activity existing = get(id);
+        if (existing.status() != ActivityStatus.ACTIVE) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
+        // Lua reservations and this gate update are individually atomic: after it closes no new admission can begin.
+        inventory.closeGate(id);
+        long barrier = repository.lockAndReadBarrier(id);
+        return changed(repository.pauseWithBarrier(id, barrier, actor.userId()), "INVALID_ACTIVITY_STATE");
+    }
+
     private Activity get(long id) {
         Activity activity = repository.find(id);
         if (activity == null) throw new IllegalArgumentException("ACTIVITY_NOT_FOUND");

@@ -55,5 +55,13 @@ final class ActivityInventoryEventRepository {
                 order by e.event_sequence
                 """, Long.class, activityId, barrier);
     }
+    EventData event(long activityId, long sequence) {
+        return jdbc.query("""
+                select event_sequence, kind, quantity_delta from activity_inventory_event
+                 where activity_id = ? and event_sequence = ?
+                """, (rs, n) -> new EventData(rs.getLong(1), ActivityInventoryLedger.Kind.valueOf(rs.getString(2)), rs.getInt(3)),
+                activityId, sequence).stream().findFirst().orElse(null);
+    }
+    record EventData(long sequence, ActivityInventoryLedger.Kind kind, int quantityDelta) {}
     private long value(String sql, long id) { Long x = jdbc.queryForObject(sql, Long.class, id); return x == null ? 0 : x; }
 }

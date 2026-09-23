@@ -4,3 +4,10 @@ server.port: ${SERVER_PORT:8080}
 management.endpoints.web.exposure.include: health,info,prometheus
 flashsale.security.jwt-secret: ${JWT_SECRET}
 flashsale.security.jwt-ttl: ${JWT_TTL:PT2H}
+flashsale.gateway:
+  auth-url: ${AUTH_SERVICE_URL:http://auth:8080}
+  product-url: ${PRODUCT_SERVICE_URL:http://product:8080}
+  activity-url: ${ACTIVITY_SERVICE_URL:http://activity:8080}
+  coupon-url: ${COUPON_SERVICE_URL:http://coupon:8080}
+  order-url: ${ORDER_SERVICE_URL:http://order:8080}
+  payment-url: ${PAYMENT_SERVICE_URL:http://payment:8080}

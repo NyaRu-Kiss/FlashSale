@@ -99,3 +99,96 @@
 - 当前任务：`H01`
   - 状态：`DOING`
   - 备注：活动与活动库存 E01-E06 已按完整闭环计划补齐；恢复全量 HTTP 契约验收。
+
+## I. 设计偏离修正任务
+
+本节是对 [`docs/design-deviation-checklist.md`](design-deviation-checklist.md) 中偏离项的逐项修正计划。修正必须严格按编号顺序执行，每次只允许处理一个 `R` 任务；完成当前任务后才可开始下一项。每个任务都必须同时遵守：
+
+- [`docs/sequence-design.md`](sequence-design.md)：业务时序、状态转换、屏障、缓存和订单流程是行为基线；
+- [`docs/cross-cutting-design.md`](cross-cutting-design.md)：事务、Outbox、幂等、补偿、消息和可观测性是跨服务基线；
+- [`docs/design-deviation-checklist.md`](design-deviation-checklist.md)：偏离编号、当前证据和修正范围是验收清单。
+
+任何实现如果只满足其中一份文档、使用内存替代持久化、以同步调用替代 Outbox/MQ、跳过状态屏障、覆盖实时 Redis 状态、减少字段/指标/日志，均视为未完成，不得将任务标记为 `DONE`。每个任务完成后必须：更新本表状态和验证结果、运行任务指定验证、检查 `git diff --check`、单独小步提交。
+
+### 修正任务总表
+
+| ID | 对应偏离 | 任务 | 前置 | 必须完成的结果 | 验证 | 状态 |
+|---|---:|---|---|---|---|---|
+| R01 | 1 | 将网关改为设计要求的 Gateway/Sentinel 入口 | C03 | 接口/IP/热点参数限流；限流前不得进入 Redis、DB、MQ；返回 `RATE_LIMITED` | Sentinel 限流、绕过网关、热点参数和 Trace 契约测试 | TODO |
+| R02 | 2 | 接入 Nacos 注册/配置和 OpenFeign 服务调用 | R01 | 服务发现、配置中心和跨服务调用均由统一组件提供，禁止业务硬编码地址 | Docker Compose 服务发现、配置刷新和调用链测试 | TODO |
+| R03 | 3 | 实现商品/优惠券模板 Cache Aside 读缓存 | R02 | Redis GET；`SET NX PX` owner token 锁；二次 GET；有限退避；TTL 随机抖动；未获锁不得查 DB | 缓存命中、并发 miss、锁超时、DB 穿透和空结果测试 | TODO |
+| R04 | 4 | 实现商品/优惠券延迟双删、审计和本服务 Outbox | R03 | 先删缓存，再本地事务写配置/审计/Outbox，提交后延时二次删除；不得直接回写缓存 | 事务回滚、重复失效、Outbox 重试和审计快照测试 | TODO |
+| R05 | 5 | 重做活动开始前预热流程 | R04 | 调度窗口读取 PostgreSQL 配置，写活动详情/库存键，写 `ACTIVITY_PREHEAT_READY` Outbox；创建接口不得代替预热任务 | 预热窗口、缺键、重复预热和开始前检查测试 | TODO |
+| R06 | 6 | 修正活动开始 CAS 和 Redis 键保护 | R05 | 只有预热键存在时才允许 `NOT_STARTED -> ACTIVE`；开始不得覆盖已存在实时库存键 | 键缺失、键存在、并发开始和 Redis 库存不变测试 | TODO |
+| R07 | 7 | 实现活动暂停屏障和在途请求清算 | R06 | 关闭 Lua 新 `RESERVE` 门闸；等待在途请求提交或补偿；锁 sequence 截取 barrier；再 CAS `ACTIVE -> PAUSED` | 并发预扣、暂停竞争、崩溃恢复和 barrier 边界测试 | TODO |
+| R08 | 8 | 接通活动 RESERVE/RELEASE 的订单、Outbox、MQ 消费链路 | R07 | 暂停前 RESERVE 和暂停期间 RELEASE 不得丢弃/拒绝；事件序号连续、消费幂等、checkpoint 不跨洞 | 重复消息、乱序消息、暂停期间释放和消费失败重试测试 | TODO |
+| R09 | 9 | 实现恢复前完整对账和 Redis 键保护 | R08 | 检查屏障内 Outbox SENT、连续 checkpoint、事件账本、流水、有效保留；Redis 键存在不得覆盖，丢失才可互斥重建 | 对账不一致、Redis 丢失、已有键和重建并发测试 | TODO |
+| R10 | 10 | 完成异步恢复锁、告警和恢复 Outbox | R09 | 每活动互斥恢复；失败保持 PAUSED 并告警；成功才预热详情、CAS ACTIVE 并写 `ACTIVITY_RESUMED` | 重复恢复请求、失败重试、告警和成功状态机测试 | TODO |
+| R11 | 11 | 将订单创建改为 PostgreSQL 本地事务闭环 | R10 | 幂等记录、订单、订单项、库存预占、优惠券锁券、活动 RESERVE 事件和 order_outbox 同事务提交 | 提交失败回滚、同键重试、同键冲突和全量预留测试 | TODO |
+| R12 | 12 | 将取消/超时释放改为 CAS + 事件化处理 | R11 | 订单只允许一次合法终态；库存释放、券恢复、活动 RELEASE 事件和 Outbox 与状态更新满足幂等 | 用户竞争取消/支付/超时、重复释放和补偿测试 | TODO |
+| R13 | 13 | 完成支付幂等、回调、确认和履约事务 | R12 | 支付记录和幂等记录持久化；成功确认库存、核销优惠券、履约并写支付事件；回调重复安全 | 重复支付、重复回调、金额篡改、超时竞争和事务回滚测试 | TODO |
+| R14 | 14 | 将领券高并发入口改为 Redis Lua 预扣 | R13 | Lua 原子校验发行量、用户限领和重复请求；成功后 PostgreSQL 本地事务写用户券和 coupon_outbox | 并发超发、用户限领、Redis 预扣后 DB 失败补偿测试 | TODO |
+| R15 | 15 | 修正领券请求指纹和状态语义 | R14 | 使用规范化请求的 SHA-256；同键同请求复用结果；同键不同请求返回冲突；PROCESSING/FAILED 可恢复 | 指纹一致性、冲突、处理中超时和失败重试测试 | TODO |
+| R16 | 16 | 为每个生产服务接入真实 Outbox 投递器 | R15 | 服务私有表、批量 claim、锁定/租约、退避、SENT/FAILED、重复发送和告警全部接通 | 宕机窗口、重复发送、租约过期、批量和最大重试测试 | TODO |
+| R17 | 17 | 接入数据库消费幂等和 RocketMQ 消费确认 | R16 | 独立幂等记录表；PROCESSING 抢占/超时恢复；业务变更与 SUCCEEDED 同事务；事务成功后才 ACK | 重复投递、业务异常、ACK 前宕机和 PROCESSING 恢复测试 | TODO |
+| R18 | 18 | 补齐商品、活动、优惠券运营审计 | R17 | 每次 CREATE/UPDATE/状态变更写不可变 before/after、operator、Trace、来源审计；与业务事务一致 | 审计完整性、权限、回滚和重复请求测试 | TODO |
+| R19 | 19 | 统一缓存失效事件契约 | R18 | 事件必须含资源类型、资源 ID、缓存键、Trace ID；重复 DEL 安全；失败按 Outbox 重试并告警 | 事件字段契约、重复事件、失败重试和跨服务消费测试 | TODO |
+| R20 | 20 | 将扫描、恢复、超时、对账和补偿接入 XXL-Job | R19 | 任务可领取、租约/幂等、失败重试、补偿记录和人工告警；禁止仅靠本地 `@Scheduled` | XXL-Job executor、重复触发、失败重试和任务恢复测试 | TODO |
+| R21 | 21 | 完成 SkyWalking/Prometheus/Loki/Grafana/Alertmanager 运行时接入 | R20 | HTTP/Feign/JDBC/Redis/RocketMQ Trace；所有服务可抓取指标；日志和告警链路可查询 | Docker 全栈健康检查、Trace、指标和告警演练 | TODO |
+| R22 | 22 | 完成结构化日志字段和跨线程/MQ/任务透传 | R21 | 日志至少含 `timestamp`、`level`、`service`、`trace_id`、`span_id`、`user_id`、`order_id`、`event_id`、`idempotency_key`、`outbox_id`、`error_code` | HTTP、MQ、任务、异常和字段脱敏测试 | TODO |
+| R23 | 23 | 补齐业务指标和告警规则 | R22 | 覆盖吞吐/延迟/错误率、预扣、领券、订单、支付、Outbox、消费重试/死信、幂等冲突、补偿和连接池 | 指标名称/标签契约、Prometheus 抓取和告警触发测试 | TODO |
+| R24 | 24 | 补齐订单、支付、库存 HTTP 入口并完成端到端契约 | R23 | Gateway 路由对应真实 Controller；鉴权、资源归属、错误码、幂等键和 Trace 全部符合 API/时序设计 | Docker 端到端接口契约、权限、绕过网关和故障测试 | TODO |
+
+### R 任务逐项三方依据
+
+以下引用是每个修正步骤的最低必读范围；实现说明、测试用例和提交说明中必须再次引用对应三方依据，不能只引用本表总则。
+
+| 任务 | 偏离清单依据 | 时序设计依据 | 跨切面设计依据 |
+|---|---|---|---|
+| R01 | [偏离 1](design-deviation-checklist.md#L20) | [请求入口、认证与角色隔离](sequence-design.md#L3) | [一期技术边界](cross-cutting-design.md#L5) |
+| R02 | [偏离 2](design-deviation-checklist.md#L21) | [请求入口、认证与角色隔离](sequence-design.md#L3) | [一期技术边界](cross-cutting-design.md#L5) |
+| R03 | [偏离 3](design-deviation-checklist.md#L22) | [商品/优惠券模板读缓存](sequence-design.md#L40) | [读缓存与缓存失效](cross-cutting-design.md#L27) |
+| R04 | [偏离 4](design-deviation-checklist.md#L23) | [商品与优惠券运营写入缓存失效](sequence-design.md#L79) | [读缓存与缓存失效](cross-cutting-design.md#L27) |
+| R05 | [偏离 5](design-deviation-checklist.md#L24) | [活动开始前预热与异步恢复](sequence-design.md#L150) | [读缓存与缓存失效](cross-cutting-design.md#L27) |
+| R06 | [偏离 6](design-deviation-checklist.md#L25) | [活动开始前预热与异步恢复](sequence-design.md#L150) | [Redis 预扣与本地事务](cross-cutting-design.md#L14) |
+| R07 | [偏离 7](design-deviation-checklist.md#L26) | [活动取消与暂停屏障](sequence-design.md#L113) | [Redis 预扣与本地事务](cross-cutting-design.md#L14) |
+| R08 | [偏离 8](design-deviation-checklist.md#L27) | [活动取消与暂停屏障](sequence-design.md#L113) | [Outbox 与 RocketMQ 投递](cross-cutting-design.md#L37)；[消费端幂等](cross-cutting-design.md#L54) |
+| R09 | [偏离 9](design-deviation-checklist.md#L28) | [活动开始前预热与异步恢复](sequence-design.md#L150) | [对账与补偿](cross-cutting-design.md#L69) |
+| R10 | [偏离 10](design-deviation-checklist.md#L29) | [活动开始前预热与异步恢复](sequence-design.md#L150) | [对账与补偿](cross-cutting-design.md#L69)；[可观测性](cross-cutting-design.md#L81) |
+| R11 | [偏离 11](design-deviation-checklist.md#L30) | [创建订单与 Redis 预扣](sequence-design.md#L219) | [Redis 预扣与本地事务](cross-cutting-design.md#L14) |
+| R12 | [偏离 12](design-deviation-checklist.md#L31) | [订单取消/超时后的活动库存回补](sequence-design.md#L360) | [对账与补偿](cross-cutting-design.md#L69) |
+| R13 | [偏离 13](design-deviation-checklist.md#L32) | [支付与延时超时取消竞争](sequence-design.md#L310) | [消费端幂等](cross-cutting-design.md#L54)；[对账与补偿](cross-cutting-design.md#L69) |
+| R14 | [偏离 14](design-deviation-checklist.md#L33) | [领取优惠券](sequence-design.md#L270) | [Redis 预扣与本地事务](cross-cutting-design.md#L14) |
+| R15 | [偏离 15](design-deviation-checklist.md#L34) | [领取优惠券](sequence-design.md#L270) | [消费端幂等](cross-cutting-design.md#L54) |
+| R16 | [偏离 16](design-deviation-checklist.md#L35) | [Outbox 重复投递与消费幂等](sequence-design.md#L401) | [Outbox 与 RocketMQ 投递](cross-cutting-design.md#L37) |
+| R17 | [偏离 17](design-deviation-checklist.md#L36) | [Outbox 重复投递与消费幂等](sequence-design.md#L401) | [消费端幂等](cross-cutting-design.md#L54) |
+| R18 | [偏离 18](design-deviation-checklist.md#L37) | [运营配置与账户管理](sequence-design.md#L435) | [对账与补偿](cross-cutting-design.md#L69) |
+| R19 | [偏离 19](design-deviation-checklist.md#L38) | [商品与优惠券运营写入缓存失效](sequence-design.md#L79) | [读缓存与缓存失效](cross-cutting-design.md#L27)；[Outbox 与 RocketMQ 投递](cross-cutting-design.md#L37) |
+| R20 | [偏离 20](design-deviation-checklist.md#L39) | [活动开始前预热与异步恢复](sequence-design.md#L150) | [对账与补偿](cross-cutting-design.md#L69) |
+| R21 | [偏离 21](design-deviation-checklist.md#L40) | [请求入口、认证与角色隔离](sequence-design.md#L3) | [可观测性](cross-cutting-design.md#L81) |
+| R22 | [偏离 22](design-deviation-checklist.md#L41) | [请求入口、认证与角色隔离](sequence-design.md#L3) | [可观测性](cross-cutting-design.md#L81) |
+| R23 | [偏离 23](design-deviation-checklist.md#L42) | [创建订单与 Redis 预扣](sequence-design.md#L219)；[领取优惠券](sequence-design.md#L270) | [可观测性](cross-cutting-design.md#L81) |
+| R24 | [偏离 24](design-deviation-checklist.md#L43) | [请求入口、认证与角色隔离](sequence-design.md#L3)；[创建订单与 Redis 预扣](sequence-design.md#L219)；[支付与延时超时取消竞争](sequence-design.md#L310) | [一期技术边界](cross-cutting-design.md#L5)；[可观测性](cross-cutting-design.md#L81) |
+
+### 每个 R 任务的强制执行模板
+
+开始某个 `Rxx` 前：
+
+1. 将该行状态改为 `DOING`，并在“备注/验证”中写明本次只处理的偏离编号。
+2. 阅读并在实现说明中逐条引用 `design-deviation-checklist.md` 对应行、`sequence-design.md` 对应章节、`cross-cutting-design.md` 对应章节；没有三方引用不得开始编码。
+3. 先写失败测试或验收场景，再实现；测试必须覆盖正常、重复、并发、失败、重试和恢复路径中适用的部分。
+4. 不得用内存 Map、`synchronized`、本地定时器、直接跨服务数据库写入或同步 MQ 发送替代文档规定的 PostgreSQL 事务、Outbox、RocketMQ、幂等表和补偿任务。
+5. 不得删除设计字段、降低状态机约束、跳过 CAS/屏障/二次检查、覆盖实时 Redis 键或把失败静默吞掉。
+
+完成某个 `Rxx` 后：
+
+1. 运行该任务的全部验证命令，并把实际结果写入本表；失败时保持 `DOING`，不得提前标记 `DONE`。
+2. 更新 `design-deviation-checklist.md` 对应条目的状态或完成标记，并保留修正后的证据链接。
+3. 运行 `git diff --check` 和相关 Docker Java 21 测试；调试/测试启动的服务必须在验证结束后关闭。
+4. 只提交当前 `Rxx` 的代码、测试和文档变更，提交后再开始下一个任务。
+
+### 当前修正执行位置
+
+- 当前任务：`R01`
+- 状态：`TODO`
+- 说明：先修正偏离清单第 1 项；未完成前不得并行处理 R02-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。

@@ -1,0 +1,11 @@
+{
+    "schema_version": 2,
+    "commit": "df6ba7bd09d6a5680c9ef13b07bfbe9a202bfa66",
+    "indexed_at": "2026-09-23T00:09:11Z",
+    "project": "FlashSale",
+    "nodes": 1444,
+    "edges": 3341,
+    "original_size": 3342336,
+    "compressed_size": 537227,
+    "compression_level": 9
+}

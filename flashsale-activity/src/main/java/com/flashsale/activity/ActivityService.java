@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 final class ActivityService {
     private final ActivityRepository repository;
     private final ActivityInventoryPort inventory;
+    private final ActivityRecoveryRepository recoveries;
+    private final ActivityInventoryEventRepository events;
     private final ActivityStateMachine stateMachine = new ActivityStateMachine();
 
-    ActivityService(ActivityRepository repository, ActivityInventoryPort inventory) { this.repository = repository; this.inventory = inventory; }
+    ActivityService(ActivityRepository repository, ActivityInventoryPort inventory, ActivityRecoveryRepository recoveries, ActivityInventoryEventRepository events) { this.repository = repository; this.inventory = inventory; this.recoveries = recoveries; this.events = events; }
 
     @Transactional
     Activity create(Principal actor, Activity input) {
@@ -77,6 +79,21 @@ final class ActivityService {
         inventory.closeGate(id);
         long barrier = repository.lockAndReadBarrier(id);
         return changed(repository.pauseWithBarrier(id, barrier, actor.userId()), "INVALID_ACTIVITY_STATE");
+    }
+
+    @Transactional
+    ActivityRecoveryJob resume(Principal actor, long id) {
+        requireOperator(actor);
+        if (get(id).status() != ActivityStatus.PAUSED) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
+        return recoveries.pendingOrCreate(id, actor.userId());
+    }
+
+    ActivityRecoveryJob recovery(Principal actor, long id) { requireOperator(actor); get(id); return recoveries.latest(id); }
+
+    ActivityMetrics metrics(Principal actor, long id) {
+        requireOperator(actor); Activity activity = get(id); long checkpoint = events.checkpoint(id); long last = events.lastSequence(id);
+        return new ActivityMetrics(activity.status(), activity.availableStock(), last, checkpoint,
+                last, activity.status() == ActivityStatus.PAUSED && checkpoint >= last);
     }
 
     private Activity get(long id) {

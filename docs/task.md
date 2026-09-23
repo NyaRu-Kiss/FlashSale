@@ -58,9 +58,9 @@
 | E01 | 活动创建、预热、开始、结束 | B01-B05,C01 | 活动基础状态和缓存正确 | Docker Java 21 `mvn -B -pl flashsale-activity -am test`：通过（19 tests） | DONE |
 | E02 | 活动库存事件序号与账本 | E01,B05 | RESERVE/RELEASE 连续序号、Outbox 同事务提交 | Docker Java 21 `mvn -B -pl flashsale-activity -am test`：通过（19 tests） | DONE |
 | E03 | 活动库存消费、流水和 checkpoint | E02,B06 | 重复消息不重复变更，checkpoint 不跨洞 | checkpoint 测试 | DONE |
-| E04 | 活动 PAUSING/暂停屏障 | E02-E03 | 关闭新预扣、清算在途、建立 pause barrier；崩溃可恢复 | 暂停屏障测试 | DOING |
-| E05 | 异步恢复任务与 Redis 校验重建 | E04,B05-B06 | Outbox、checkpoint、账本、Redis 校验后才 ACTIVE；不一致可重建 | 恢复判定测试 | DONE |
-| E06 | 活动查询、指标和运营接口 | E01-E05 | 对外查询不泄露内部处理中状态，指标可追踪 | 查询与指标测试 | DONE |
+| E04 | 活动 PAUSING/暂停屏障 | E02-E03 | 关闭新预扣、清算在途、建立 pause barrier；崩溃可恢复 | Docker Java 21 `mvn -B -pl flashsale-activity -am test`：通过（19 tests） | DONE |
+| E05 | 异步恢复任务与 Redis 校验重建 | E04,B05-B06 | Outbox、checkpoint、账本、Redis 校验后才 ACTIVE；不一致可重建 | Docker Java 21 `mvn -B -pl flashsale-activity -am test`：通过（19 tests） | DONE |
+| E06 | 活动查询、指标和运营接口 | E01-E05 | 对外查询不泄露内部处理中状态，指标可追踪 | Docker Java 21 `mvn -B -pl flashsale-activity -am test`：通过（19 tests） | DONE |
 
 ## F. 订单、支付与履约
 

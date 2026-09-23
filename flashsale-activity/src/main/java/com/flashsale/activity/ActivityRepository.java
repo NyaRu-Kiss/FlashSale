@@ -109,6 +109,8 @@ final class ActivityRepository {
         return value == null ? 0 : value;
     }
 
+    long quotaUsers(long activityId) { Long value = jdbc.queryForObject("select count(*) from activity_user_quota where activity_id = ?", Long.class, activityId); return value == null ? 0 : value; }
+
     private long count(String predicate) {
         Long value = jdbc.queryForObject("select count(*) from marketing_activity where " + predicate, Long.class);
         return value == null ? 0 : value;

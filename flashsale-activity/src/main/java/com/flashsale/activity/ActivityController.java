@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -62,6 +63,15 @@ final class ActivityController {
     ApiResponse<Activity> pause(@RequestHeader("Authorization") String header, @PathVariable long id) {
         return ok(service.pause(actor(header), id));
     }
+
+    @PostMapping("/admin/activities/{id}/resume") @ResponseStatus(HttpStatus.ACCEPTED)
+    ApiResponse<ActivityRecoveryJob> resume(@RequestHeader("Authorization") String header, @PathVariable long id) { return ok(service.resume(actor(header), id)); }
+
+    @GetMapping("/admin/activities/{id}/recovery")
+    ApiResponse<ActivityRecoveryJob> recovery(@RequestHeader("Authorization") String header, @PathVariable long id) { return ok(service.recovery(actor(header), id)); }
+
+    @GetMapping("/admin/activities/{id}/metrics")
+    ApiResponse<ActivityMetrics> metrics(@RequestHeader("Authorization") String header, @PathVariable long id) { return ok(service.metrics(actor(header), id)); }
 
     private Principal actor(String header) {
         try {

@@ -93,8 +93,8 @@ final class ActivityService {
         requireOperator(actor);
         Activity existing = get(id);
         if (existing.status() != ActivityStatus.ACTIVE) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
-        // Lua reservations and this gate update are individually atomic: after it closes no new admission can begin.
-        inventory.closeGate(id);
+        // The Redis Lua gate closes before the drain; the sequence lock is deliberately taken afterwards.
+        inventory.closeGateAndAwaitInFlight(id);
         long barrier = repository.lockAndReadBarrier(id);
         return changed(repository.pauseWithBarrier(id, barrier, actor.userId()), "INVALID_ACTIVITY_STATE");
     }

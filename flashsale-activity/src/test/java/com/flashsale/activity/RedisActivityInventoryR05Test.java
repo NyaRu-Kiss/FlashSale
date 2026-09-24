@@ -33,7 +33,7 @@ class RedisActivityInventoryR05Test {
 
     @Test void activateUsesPreheatKeysAndNeverWritesStockDirectly() {
         StringRedisTemplate redis = mock(StringRedisTemplate.class);
-        when(redis.execute(any(), anyList(), anyString())).thenReturn(1L);
+        when(redis.execute(any(), anyList(), anyString())).thenReturn(1L, 0L);
         RedisActivityInventory inventory = new RedisActivityInventory(redis);
         Activity activity = new Activity(9, "sale", 3, 100, 20, 20, 2,
                 OffsetDateTime.now().minusMinutes(1), OffsetDateTime.now().plusHours(1),
@@ -54,5 +54,32 @@ class RedisActivityInventoryR05Test {
         verify(redis).execute(any(), eq(java.util.List.of("activity:9:detail", "activity:9:stock",
                 "activity:9:status", "activity:9:gate")));
         verify(redis, never()).opsForValue();
+    }
+
+    @Test void acceptedReserveRegistersAnInFlightRequestForPauseBarrier() {
+        StringRedisTemplate redis = mock(StringRedisTemplate.class);
+        when(redis.execute(any(), anyList(), anyString(), anyString(), anyString(), anyString())).thenReturn(18L);
+        RedisActivityInventory inventory = new RedisActivityInventory(redis);
+        Activity activity = new Activity(9, "sale", 3, 100, 20, 20, 2,
+                OffsetDateTime.now().minusMinutes(1), OffsetDateTime.now().plusHours(1),
+                ActivityStatus.ACTIVE, false, 7);
+
+        org.junit.jupiter.api.Assertions.assertTrue(inventory.reserve(activity, 8, 2, "request-1").accepted());
+
+        verify(redis).execute(any(), eq(java.util.List.of("activity:9:gate", "activity:9:status",
+                "activity:9:stock", "activity:9:reservation:request-1", "activity:9:quota:8",
+                "activity:9:reserve:in-flight")), anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test void pauseGateClosesAtomicallyBeforeBarrierCapture() {
+        StringRedisTemplate redis = mock(StringRedisTemplate.class);
+        ValueOperations<String, String> values = mock(ValueOperations.class);
+        when(redis.execute(any(), anyList(), anyString())).thenReturn(0L);
+        when(redis.opsForValue()).thenReturn(values);
+        RedisActivityInventory inventory = new RedisActivityInventory(redis);
+
+        inventory.closeGateAndAwaitInFlight(9);
+
+        verify(redis).execute(any(), eq(java.util.List.of("activity:9:gate", "activity:9:reserve:in-flight")), anyString());
     }
 }

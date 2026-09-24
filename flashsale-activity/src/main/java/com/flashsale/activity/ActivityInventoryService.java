@@ -3,6 +3,8 @@ package com.flashsale.activity;
 import com.flashsale.common.trace.TraceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /** Coordinates Redis admission with durable, contiguous activity inventory events. */
 @Service
@@ -23,8 +25,15 @@ final class ActivityInventoryService {
         ActivityInventoryPort.Reservation result = inventory.reserve(activity, userId, quantity, reservationKey);
         if (!result.accepted()) throw new IllegalArgumentException(result.reason());
         if ("DUPLICATE".equals(result.reason())) return null;
-        return events.append(activityId, ActivityInventoryLedger.Kind.RESERVE, quantity, reservationId,
-                "order", TraceContext.getOrCreate());
+        try {
+            ActivityInventoryLedger.Event event = events.append(activityId, ActivityInventoryLedger.Kind.RESERVE, quantity,
+                    reservationId, "order", TraceContext.getOrCreate());
+            settleAfterTransaction(activity, userId, quantity, reservationKey);
+            return event;
+        } catch (RuntimeException error) {
+            compensateAndComplete(activity, userId, quantity, reservationKey);
+            throw error;
+        }
     }
 
     @Transactional
@@ -45,5 +54,28 @@ final class ActivityInventoryService {
         Activity activity = activities.find(id);
         if (activity == null) throw new IllegalArgumentException("ACTIVITY_NOT_FOUND");
         return activity;
+    }
+
+    private void settleAfterTransaction(Activity activity, long userId, int quantity, String reservationKey) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            inventory.completeInFlight(activity.id(), reservationKey);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCompletion(int status) {
+                if (status == STATUS_COMMITTED) {
+                    inventory.completeInFlight(activity.id(), reservationKey);
+                } else {
+                    compensateAndComplete(activity, userId, quantity, reservationKey);
+                }
+            }
+        });
+    }
+
+    private void compensateAndComplete(Activity activity, long userId, int quantity, String reservationKey) {
+        if (!inventory.release(activity, userId, quantity, reservationKey)) {
+            throw new IllegalStateException("ACTIVITY_RESERVATION_COMPENSATION_FAILED");
+        }
+            inventory.completeInFlight(activity.id(), reservationKey);
     }
 }

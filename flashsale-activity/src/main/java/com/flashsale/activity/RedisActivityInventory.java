@@ -21,7 +21,19 @@ final class RedisActivityInventory implements ActivityInventoryPort {
             redis.call('DECRBY', KEYS[3], ARGV[1])
             redis.call('INCRBY', KEYS[5], ARGV[1])
             redis.call('SET', KEYS[4], '1', 'EX', ARGV[3])
+            local now = redis.call('TIME')[1]
+            redis.call('ZADD', KEYS[6], now + 30, ARGV[4])
             return stock - tonumber(ARGV[1])
+            """, Long.class);
+    private static final DefaultRedisScript<Long> CLOSE_GATE = new DefaultRedisScript<>("""
+            redis.call('SET', KEYS[1], 'CLOSED', 'EX', ARGV[1])
+            local now = redis.call('TIME')[1]
+            redis.call('ZREMRANGEBYSCORE', KEYS[2], '-inf', now)
+            return redis.call('ZCARD', KEYS[2])
+            """, Long.class);
+    private static final DefaultRedisScript<Long> COMPLETE_IN_FLIGHT = new DefaultRedisScript<>("""
+            redis.call('ZREM', KEYS[1], ARGV[1])
+            return redis.call('ZCARD', KEYS[1])
             """, Long.class);
     private static final DefaultRedisScript<Long> RELEASE = new DefaultRedisScript<>("""
             if redis.call('SETNX', KEYS[4], '1') == 0 then return 0 end
@@ -59,9 +71,10 @@ final class RedisActivityInventory implements ActivityInventoryPort {
         if (quantity <= 0) throw new IllegalArgumentException("VALIDATION_ERROR");
         Long result = redis.execute(RESERVE,
                 java.util.List.of(gateKey(activity.id()), statusKey(activity.id()), stockKey(activity.id()),
-                        reservationKey(activity.id(), reservationKey), quotaKey(activity.id(), userId)),
+                        reservationKey(activity.id(), reservationKey), quotaKey(activity.id(), userId),
+                        inFlightKey(activity.id())),
                 Integer.toString(quantity), Integer.toString(activity.purchaseLimitPerUser()),
-                Long.toString(TTL.toSeconds()));
+                Long.toString(TTL.toSeconds()), reservationKey);
         if (result == null || result == -1) return new Reservation(false, -1, "ACTIVITY_NOT_ACTIVE");
         if (result == -2) return new Reservation(false, 0, "STOCK_NOT_ENOUGH");
         if (result == -3) return new Reservation(false, 0, "ACTIVITY_PURCHASE_LIMIT_EXCEEDED");
@@ -78,6 +91,25 @@ final class RedisActivityInventory implements ActivityInventoryPort {
     }
 
     @Override public void closeGate(long activityId) { redis.opsForValue().set(gateKey(activityId), "CLOSED", TTL); }
+
+    @Override public void closeGateAndAwaitInFlight(long activityId) {
+        Long remaining = redis.execute(CLOSE_GATE, java.util.List.of(gateKey(activityId), inFlightKey(activityId)),
+                Long.toString(TTL.toSeconds()));
+        while (remaining != null && remaining > 0) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("ACTIVITY_PAUSE_INTERRUPTED", interrupted);
+            }
+            remaining = redis.execute(CLOSE_GATE, java.util.List.of(gateKey(activityId), inFlightKey(activityId)),
+                    Long.toString(TTL.toSeconds()));
+        }
+    }
+
+    @Override public void completeInFlight(long activityId, String reservationKey) {
+        redis.execute(COMPLETE_IN_FLIGHT, java.util.List.of(inFlightKey(activityId)), reservationKey);
+    }
 
     @Override public boolean hasPreheatedKeys(long activityId) {
         Long result = redis.execute(PREHEATED,
@@ -111,6 +143,7 @@ final class RedisActivityInventory implements ActivityInventoryPort {
     static String stockKey(long id) { return "activity:" + id + ":stock"; }
     static String statusKey(long id) { return "activity:" + id + ":status"; }
     static String gateKey(long id) { return "activity:" + id + ":gate"; }
+    static String inFlightKey(long id) { return "activity:" + id + ":reserve:in-flight"; }
     private static String quotaKey(long id, long userId) { return "activity:" + id + ":quota:" + userId; }
     private static String reservationKey(long id, String key) { return "activity:" + id + ":reservation:" + key; }
     private static String releaseKey(long id, String key) { return "activity:" + id + ":release:" + key; }

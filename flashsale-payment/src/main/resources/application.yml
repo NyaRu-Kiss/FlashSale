@@ -3,7 +3,20 @@ spring:
   config.import: optional:nacos:${spring.application.name}.yaml?group=${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
   cloud.nacos.discovery.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
   cloud.nacos.config.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+  datasource.url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/flashsale}
+  datasource.username: ${SPRING_DATASOURCE_USERNAME:flashsale}
+  datasource.password: ${SPRING_DATASOURCE_PASSWORD:flashsale}
 server.port: ${SERVER_PORT:8080}
 management.endpoints.web.exposure.include: health,info,prometheus
 flashsale.security.jwt-secret: ${JWT_SECRET}
 flashsale.security.jwt-ttl: ${JWT_TTL:PT2H}
+flashsale.outbox:
+  enabled: ${FLASHSALE_OUTBOX_ENABLED:false}
+  producer-group: ${FLASHSALE_OUTBOX_PRODUCER_GROUP:flashsale-payment}
+  namesrv-addr: ${ROCKETMQ_NAMESRV_ADDR:rocketmq-namesrv:9876}
+  topic: ${FLASHSALE_OUTBOX_TOPIC:FLASHSALE_EVENTS}
+  batch-size: ${FLASHSALE_OUTBOX_BATCH_SIZE:100}
+  lease: ${FLASHSALE_OUTBOX_LEASE:PT30S}
+  max-attempts: ${FLASHSALE_OUTBOX_MAX_ATTEMPTS:8}
+  backoff-initial: ${FLASHSALE_OUTBOX_BACKOFF_INITIAL:PT1S}
+  backoff-maximum: ${FLASHSALE_OUTBOX_BACKOFF_MAXIMUM:PT5M}

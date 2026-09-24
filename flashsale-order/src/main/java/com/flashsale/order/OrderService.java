@@ -1,61 +1,40 @@
 package com.flashsale.order;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.Objects;
 
-/** Application service; persistence implementations can replace the in-memory ports. */
+/** The database store owns the creation transaction and idempotency claim. */
 public final class OrderService {
-    private final OrderPreviewService previewService;
-    private final InventoryGateway inventory;
-    private final OrderRepository orders;
-    private final Clock clock;
-    private final Map<String, Submission> submissions = new ConcurrentHashMap<>();
+    private final OrderCreationStore store;
+    private final OrderPreviewService previews;
 
-    public OrderService(OrderPreviewService previewService, InventoryGateway inventory,
-                        OrderRepository orders, Clock clock) {
-        this.previewService = Objects.requireNonNull(previewService);
-        this.inventory = Objects.requireNonNull(inventory);
-        this.orders = Objects.requireNonNull(orders);
-        this.clock = Objects.requireNonNull(clock);
+    public OrderService(OrderCreationStore store, OrderPreviewService previews) {
+        this.store = Objects.requireNonNull(store);
+        this.previews = Objects.requireNonNull(previews);
     }
 
-    public synchronized Order create(OrderCreateRequest request) {
-        if (request == null || request.userId() <= 0 || request.idempotencyKey() == null || request.idempotencyKey().isBlank())
+    public Order create(OrderCreateRequest request) {
+        if (request == null || request.userId() <= 0 || request.idempotencyKey() == null
+                || !request.idempotencyKey().startsWith("ORDER_SUBMIT_") || request.idempotencyKey().length() > 128
+                || request.preview() == null || request.preview().userId() != request.userId())
             throw new IllegalArgumentException("VALIDATION_ERROR");
-        String fingerprint = request.preview().toString();
-        String key = request.userId() + ":" + request.idempotencyKey();
-        Submission prior = submissions.get(key);
-        if (prior != null) {
-            if (!prior.fingerprint().equals(fingerprint)) throw new IllegalArgumentException("IDEMPOTENCY_CONFLICT");
-            return orders.findByNumber(prior.orderNumber()).orElseThrow();
-        }
-        var preview = previewService.preview(request.preview());
-        String number = "O" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 8);
-        List<InventoryGateway.Reservation> reservations;
-        try {
-            reservations = inventory.reserve(request.userId(), number,
-                    preview.items().stream().map(i -> new InventoryGateway.ReservationRequest(i.productId(), i.quantity())).toList());
-        } catch (RuntimeException ex) {
-            throw ex;
-        }
-        var byProduct = reservations.stream().iterator();
-        var items = new ArrayList<Order.Item>();
-        for (var item : preview.items()) {
-            if (!byProduct.hasNext()) throw new IllegalStateException("INVENTORY_RESERVATION_MISMATCH");
-            items.add(new Order.Item(item.productId(), item.quantity(), item.sku(), item.productName(),
-                    item.listPriceMinor(), item.salePriceMinor(), item.activityDiscountMinor(), item.lineAmountMinor(), byProduct.next().reservationKey()));
-        }
-        var order = new Order(number, request.userId(), preview.kind(), request.preview().activityId(),
-                preview.itemSubtotalMinor(), preview.activityDiscountMinor(), preview.couponDiscountMinor(),
-                preview.payableAmountMinor(), "CNY", Order.Status.PENDING_PAYMENT,
-                OffsetDateTime.now(clock).plus(Duration.ofMinutes(15)), List.copyOf(items));
-        orders.save(order);
-        submissions.put(key, new Submission(fingerprint, number));
-        return order;
+        return store.create(request, fingerprint(request.preview()), () -> previews.preview(request.preview()));
     }
 
-    private record Submission(String fingerprint, String orderNumber) {}
+    static String fingerprint(OrderPreviewRequest request) {
+        StringBuilder canonical = new StringBuilder().append(request.userId()).append('|')
+                .append(request.kind()).append('|').append(request.activityId()).append('|')
+                .append(request.couponId());
+        if (request.items() != null) for (var item : request.items())
+            canonical.append('|').append(item == null ? "null" : item.productId() + ":" + item.quantity());
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(canonical.toString().getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
+    }
 }

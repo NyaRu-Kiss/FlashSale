@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderPreviewServiceTest {
     private final ProductGateway products = id -> new ProductGateway.ProductSnapshot(id, "SKU-"+id,
-            "P"+id, 1000, 800, true);
+            "P"+id, 1000, 1000, true);
     private final ActivityGateway activities = id -> new ActivityGateway.ActivitySnapshot(id, 1, 500,
             Instant.parse("2026-01-01T00:00:00Z").atOffset(ZoneOffset.UTC),
             Instant.parse("2027-01-01T00:00:00Z").atOffset(ZoneOffset.UTC), "ACTIVE", 1);

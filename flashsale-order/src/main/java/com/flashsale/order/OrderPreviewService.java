@@ -36,7 +36,7 @@ public final class OrderPreviewService {
             if (!product.onSale()) throw error("PRODUCT_NOT_ON_SALE");
             if (activity != null && product.productId() != activity.productId())
                 throw error("ACTIVITY_PRODUCT_MISMATCH");
-            long unit = activity == null ? product.salePriceMinor() : activity.salePriceMinor();
+            long unit = activity == null ? product.listPriceMinor() : activity.salePriceMinor();
             long line = Math.multiplyExact(unit, input.quantity());
             long lineList = Math.multiplyExact(product.listPriceMinor(), input.quantity());
             long discount = activity == null ? 0 : Math.max(0, lineList - line);

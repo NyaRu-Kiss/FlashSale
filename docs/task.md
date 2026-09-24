@@ -127,7 +127,7 @@
 | R11 | 11 | 将订单创建改为 PostgreSQL 本地事务闭环 | R10 | 幂等记录、订单、订单项、库存预占、优惠券锁券、活动 RESERVE 事件和 order_outbox 同事务提交 | Docker Java 21：`mvn -B test` 全量通过；临时 PostgreSQL/Redis：订单模块 12 tests passed，覆盖同键并发、同键冲突、失败回滚/恢复、多商品全量预留、优惠券锁定、活动连续事件和 Outbox；容器均 `--rm` 清理 | DONE |
 | R12 | 12 | 将取消/超时释放改为 CAS + 事件化处理 | R11 | 订单只允许一次合法终态；库存释放、券恢复、活动 RELEASE 事件和 Outbox 与状态更新满足幂等 | Docker Java 21：`mvn -B -pl flashsale-order -am test` 通过（公共 14 项、订单 15 项）；临时 PostgreSQL 16：取消/活动释放集成测试 8 项通过；容器已关闭 | DONE |
 | R13 | 13 | 完成支付幂等、回调、确认和履约事务 | R12 | 支付记录和幂等记录持久化；成功确认库存、核销优惠券、履约并写支付事件；回调重复安全 | Docker Java 21：`mvn -B -o -pl flashsale-payment -am -Dtest=JdbcPaymentServiceIntegrationTest test`：2 tests passed；临时 PostgreSQL 16 集成验证通过；容器已关闭 | DONE |
-| R14 | 14 | 将领券高并发入口改为 Redis Lua 预扣 | R13 | Lua 原子校验发行量、用户限领和重复请求；成功后 PostgreSQL 本地事务写用户券和 coupon_outbox | 并发超发、用户限领、Redis 预扣后 DB 失败补偿测试 | TODO |
+| R14 | 14 | 将领券高并发入口改为 Redis Lua 预扣 | R13 | Lua 原子校验发行量、用户限领和重复请求；成功后 PostgreSQL 本地事务写用户券和 coupon_outbox | Docker Java 21 `mvn -B -o -pl flashsale-coupon -am test`：公共 14 项、Coupon 5 项通过（Redis 环境缺失时集成测试跳过）；临时 Redis 容器并发/限购/补偿集成测试 1 项通过；容器已关闭 | DONE |
 | R15 | 15 | 修正领券请求指纹和状态语义 | R14 | 使用规范化请求的 SHA-256；同键同请求复用结果；同键不同请求返回冲突；PROCESSING/FAILED 可恢复 | 指纹一致性、冲突、处理中超时和失败重试测试 | TODO |
 | R16 | 16 | 为每个生产服务接入真实 Outbox 投递器 | R15 | 服务私有表、批量 claim、锁定/租约、退避、SENT/FAILED、重复发送和告警全部接通 | 宕机窗口、重复发送、租约过期、批量和最大重试测试 | TODO |
 | R17 | 17 | 接入数据库消费幂等和 RocketMQ 消费确认 | R16 | 独立幂等记录表；PROCESSING 抢占/超时恢复；业务变更与 SUCCEEDED 同事务；事务成功后才 ACK | 重复投递、业务异常、ACK 前宕机和 PROCESSING 恢复测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R14`
+- 当前任务：`R15`
   - 状态：`TODO`
-  - 说明：R13 已完成支付幂等、回调校验、库存确认、优惠券核销、履约记录和支付 Outbox；下一项处理 Redis Lua 领券预扣。
+  - 说明：R14 已完成 Redis Lua 领券预扣、发行量/用户限购/重复请求原子校验和 PostgreSQL 失败后的 Redis 补偿；下一项修正领券请求指纹和状态语义。

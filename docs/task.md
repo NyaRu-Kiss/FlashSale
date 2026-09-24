@@ -129,7 +129,7 @@
 | R13 | 13 | 完成支付幂等、回调、确认和履约事务 | R12 | 支付记录和幂等记录持久化；成功确认库存、核销优惠券、履约并写支付事件；回调重复安全 | Docker Java 21：`mvn -B -o -pl flashsale-payment -am -Dtest=JdbcPaymentServiceIntegrationTest test`：2 tests passed；临时 PostgreSQL 16 集成验证通过；容器已关闭 | DONE |
 | R14 | 14 | 将领券高并发入口改为 Redis Lua 预扣 | R13 | Lua 原子校验发行量、用户限领和重复请求；成功后 PostgreSQL 本地事务写用户券和 coupon_outbox | Docker Java 21 `mvn -B -o -pl flashsale-coupon -am test`：公共 14 项、Coupon 5 项通过（Redis 环境缺失时集成测试跳过）；临时 Redis 容器并发/限购/补偿集成测试 1 项通过；容器已关闭 | DONE |
 | R15 | 15 | 修正领券请求指纹和状态语义 | R14 | 使用规范化请求的 SHA-256；同键同请求复用结果；同键不同请求返回冲突；PROCESSING/FAILED 可恢复 | Docker Java 21 `mvn -B -pl flashsale-coupon -am test`：公共 14 项、Coupon 7 项通过（Redis 集成测试因未提供测试 Redis 跳过）；指纹 SHA-256、Redis 指纹键和幂等状态接线已验证 | DONE |
-| R16 | 16 | 为每个生产服务接入真实 Outbox 投递器 | R15 | **DOING：本次只处理偏离 16；接入六个服务私有表的 JDBC claim/租约/退避/SENT/FAILED 和 RocketMQ 任务入口** | 待验证 | DOING |
+| R16 | 16 | 为每个生产服务接入真实 Outbox 投递器 | R15 | 六个服务私有表各自接入 PostgreSQL 批量 `SKIP LOCKED` 领取、租约条件回写、退避、最大重试、RocketMQ 确认发送和一次性任务入口；R20 接 XXL-Job | Docker Java 21 六模块 `mvn -B -pl flashsale-product,flashsale-coupon,flashsale-activity,flashsale-order,flashsale-payment,flashsale-inventory -am test -q` 通过；临时 PostgreSQL 验证六表批量、租约过期、旧租约回写拒绝及最大重试；临时 RocketMQ broker 验证确认发送；容器已关闭 | DONE |
 | R17 | 17 | 接入数据库消费幂等和 RocketMQ 消费确认 | R16 | 独立幂等记录表；PROCESSING 抢占/超时恢复；业务变更与 SUCCEEDED 同事务；事务成功后才 ACK | 重复投递、业务异常、ACK 前宕机和 PROCESSING 恢复测试 | TODO |
 | R18 | 18 | 补齐商品、活动、优惠券运营审计 | R17 | 每次 CREATE/UPDATE/状态变更写不可变 before/after、operator、Trace、来源审计；与业务事务一致 | 审计完整性、权限、回滚和重复请求测试 | TODO |
 | R19 | 19 | 统一缓存失效事件契约 | R18 | 事件必须含资源类型、资源 ID、缓存键、Trace ID；重复 DEL 安全；失败按 Outbox 重试并告警 | 事件字段契约、重复事件、失败重试和跨服务消费测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R16`
-  - 状态：`DOING`
-  - 说明：本次只修复偏离 16；R15 已完成规范化 SHA-256 指纹、同键冲突检测、PROCESSING 超时回收和 FAILED 重试。
+- 当前任务：`R17`
+  - 状态：`TODO`
+  - 说明：R16 已接通六个服务私有 Outbox 投递任务，下一项接入数据库消费幂等和 RocketMQ 消费确认。

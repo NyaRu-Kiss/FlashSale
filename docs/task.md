@@ -131,7 +131,7 @@
 | R15 | 15 | 修正领券请求指纹和状态语义 | R14 | 使用规范化请求的 SHA-256；同键同请求复用结果；同键不同请求返回冲突；PROCESSING/FAILED 可恢复 | Docker Java 21 `mvn -B -pl flashsale-coupon -am test`：公共 14 项、Coupon 7 项通过（Redis 集成测试因未提供测试 Redis 跳过）；指纹 SHA-256、Redis 指纹键和幂等状态接线已验证 | DONE |
 | R16 | 16 | 为每个生产服务接入真实 Outbox 投递器 | R15 | 六个服务私有表各自接入 PostgreSQL 批量 `SKIP LOCKED` 领取、租约条件回写、退避、最大重试、RocketMQ 确认发送和一次性任务入口；R20 接 XXL-Job | Docker Java 21 六模块 `mvn -B -pl flashsale-product,flashsale-coupon,flashsale-activity,flashsale-order,flashsale-payment,flashsale-inventory -am test -q` 通过；临时 PostgreSQL 验证六表批量、租约过期、旧租约回写拒绝及最大重试；临时 RocketMQ broker 验证确认发送；容器已关闭 | DONE |
 | R17 | 17 | 接入数据库消费幂等和 RocketMQ 消费确认 | R16 | 独立幂等记录表；PROCESSING 抢占/超时恢复；业务变更与 SUCCEEDED 同事务；事务成功后才 ACK | Docker Java 21：`flashsale-common` 测试通过；`flashsale-activity` 测试通过；临时 PostgreSQL 消费幂等集成测试 3 项通过；临时 PostgreSQL 全新库 Flyway V1+V2 迁移通过；验证后容器已关闭 | DONE |
-| R18 | 18 | 补齐商品、活动、优惠券运营审计 | R17 | 每次 CREATE/UPDATE/状态变更写不可变 before/after、operator、Trace、来源审计；与业务事务一致 | 审计完整性、权限、回滚和重复请求测试 | TODO |
+| R18 | 18 | 补齐商品、活动、优惠券运营审计 | R17 | 每次 CREATE/UPDATE/状态变更写不可变 before/after、operator、Trace、来源审计；与业务事务一致 | 审计完整性、权限、回滚和重复请求测试；本次只处理偏离 18 | DOING |
 | R19 | 19 | 统一缓存失效事件契约 | R18 | 事件必须含资源类型、资源 ID、缓存键、Trace ID；重复 DEL 安全；失败按 Outbox 重试并告警 | 事件字段契约、重复事件、失败重试和跨服务消费测试 | TODO |
 | R20 | 20 | 将扫描、恢复、超时、对账和补偿接入 XXL-Job | R19 | 任务可领取、租约/幂等、失败重试、补偿记录和人工告警；禁止仅靠本地 `@Scheduled` | XXL-Job executor、重复触发、失败重试和任务恢复测试 | TODO |
 | R21 | 21 | 完成 SkyWalking/Prometheus/Loki/Grafana/Alertmanager 运行时接入 | R20 | HTTP/Feign/JDBC/Redis/RocketMQ Trace；所有服务可抓取指标；日志和告警链路可查询 | Docker 全栈健康检查、Trace、指标和告警演练 | TODO |

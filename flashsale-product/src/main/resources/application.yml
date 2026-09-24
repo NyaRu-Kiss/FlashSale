@@ -12,3 +12,10 @@ server.port: ${SERVER_PORT:8080}
 management.endpoints.web.exposure.include: health,info,prometheus
 flashsale.security.jwt-secret: ${JWT_SECRET}
 flashsale.security.jwt-ttl: ${JWT_TTL:PT2H}
+flashsale.cache:
+  ttl: ${PRODUCT_CACHE_TTL:PT5M}
+  negative-ttl: ${PRODUCT_CACHE_NEGATIVE_TTL:PT30S}
+  lock-ttl: ${PRODUCT_CACHE_LOCK_TTL:PT5S}
+  retry-count: ${PRODUCT_CACHE_RETRY_COUNT:3}
+  retry-backoff: ${PRODUCT_CACHE_RETRY_BACKOFF:PT0.025S}
+  ttl-jitter: ${PRODUCT_CACHE_TTL_JITTER:PT1M}

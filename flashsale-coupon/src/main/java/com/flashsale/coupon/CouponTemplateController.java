@@ -1,7 +1,7 @@
 package com.flashsale.coupon;
 import com.flashsale.common.api.ApiResponse;import com.flashsale.common.security.*;import com.flashsale.common.trace.TraceContext;import org.springframework.web.bind.annotation.*;import java.time.OffsetDateTime;import java.util.List;
 @RestController @RequestMapping("/api/v1") class CouponTemplateController {private final CouponTemplateService s;private final JwtTokenService t;CouponTemplateController(CouponTemplateService s,JwtTokenService t){this.s=s;this.t=t;}
- @GetMapping("/coupon-templates/claimable")ApiResponse<List<CouponTemplate>> claimable(){return ApiResponse.success(s.list(true),TraceContext.getOrCreate());}
+ @GetMapping("/coupon-templates/claimable")ApiResponse<List<CouponTemplate>> claimable(){return ApiResponse.success(s.claimable(),TraceContext.getOrCreate());}
  @GetMapping("/admin/coupon-templates")ApiResponse<List<CouponTemplate>> list(@RequestHeader("Authorization")String h){return ApiResponse.success(s.list(false),TraceContext.getOrCreate());}
  @GetMapping("/admin/coupon-templates/{id}")ApiResponse<CouponTemplate> get(@RequestHeader("Authorization")String h,@PathVariable long id){actor(h);return ApiResponse.success(s.get(id),TraceContext.getOrCreate());}
  @PostMapping("/admin/coupon-templates")ApiResponse<CouponTemplate> create(@RequestHeader("Authorization")String h,@RequestBody Request r){return ok(s.create(actor(h),r.to(0)));}

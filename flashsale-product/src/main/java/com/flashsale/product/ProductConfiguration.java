@@ -1,4 +1,9 @@
 package com.flashsale.product;
 
-/** Product-specific configuration is intentionally empty for now. */
+import com.flashsale.common.cache.CacheAsideProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableConfigurationProperties(CacheAsideProperties.class)
 final class ProductConfiguration { private ProductConfiguration() {} }

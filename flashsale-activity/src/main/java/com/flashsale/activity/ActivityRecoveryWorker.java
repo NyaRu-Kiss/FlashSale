@@ -1,9 +1,52 @@
 package com.flashsale.activity;
-import java.time.OffsetDateTime; import org.springframework.scheduling.annotation.Scheduled; import org.springframework.stereotype.Component; import org.springframework.transaction.annotation.Transactional;
-/** Activity recovery job entrypoint; can be called by XXL-Job or its local polling fallback. */
-@Component final class ActivityRecoveryWorker {
- private final ActivityRepository activities;private final ActivityInventoryEventRepository events;private final ActivityRecoveryRepository jobs;private final ActivityInventoryPort inventory;
- ActivityRecoveryWorker(ActivityRepository a,ActivityInventoryEventRepository e,ActivityRecoveryRepository j,ActivityInventoryPort i){activities=a;events=e;jobs=j;inventory=i;}
- @Scheduled(fixedDelayString="${flashsale.activity.recovery-poll-ms:10000}") void executeDueJobs(){jobs.pendingIds().forEach(this::run);}
- @Transactional void run(long id){ActivityRecoveryJob initial=jobs.byId(id);if(initial==null)return;long barrier=activities.lockAndReadBarrier(initial.activityId());ActivityRecoveryJob job=jobs.claim(id,barrier);if(job==null)return;try{Activity a=activities.find(job.activityId());if(a==null||a.status()!=ActivityStatus.PAUSED)throw new IllegalStateException("ACTIVITY_NOT_PAUSED");if(!events.unsentBefore(a.id(),barrier).isEmpty())throw new IllegalStateException("OUTBOX_NOT_SENT");if(events.checkpoint(a.id())<barrier)throw new IllegalStateException("CHECKPOINT_GAP");OffsetDateTime now=OffsetDateTime.now();if(now.isBefore(a.startsAt())||!now.isBefore(a.endsAt()))throw new IllegalStateException("ACTIVITY_NOT_READY");Activity projected=new Activity(a.id(),a.name(),a.productId(),a.salePriceMinor(),a.initialStock(),a.availableStock(),a.purchaseLimitPerUser(),a.startsAt(),a.endsAt(),ActivityStatus.ACTIVE,false,a.updatedBy());inventory.rebuild(projected,projected.availableStock());Activity active=activities.casStatus(a.id(),ActivityStatus.PAUSED,ActivityStatus.ACTIVE,job.requestedBy());if(active==null)throw new IllegalStateException("ACTIVITY_NOT_PAUSED");jobs.succeeded(id);}catch(RuntimeException error){inventory.closeGate(initial.activityId());jobs.failed(id,error.getMessage());}}
+
+import java.time.OffsetDateTime;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+/** Recovery remains PAUSED unless all barrier evidence has been verified. */
+@Component
+final class ActivityRecoveryWorker {
+    private final ActivityRepository activities;
+    private final ActivityRecoveryRepository jobs;
+    private final ActivityInventoryPort inventory;
+    private final ActivityRecoveryVerifier verifier;
+
+    ActivityRecoveryWorker(ActivityRepository activities, ActivityRecoveryRepository jobs, ActivityInventoryPort inventory,
+                           ActivityRecoveryVerifier verifier) {
+        this.activities = activities;
+        this.jobs = jobs;
+        this.inventory = inventory;
+        this.verifier = verifier;
+    }
+
+    @Scheduled(fixedDelayString = "${flashsale.activity.recovery-poll-ms:10000}")
+    void executeDueJobs() { jobs.pendingIds().forEach(this::run); }
+
+    @Transactional
+    void run(long id) {
+        ActivityRecoveryJob initial = jobs.byId(id);
+        if (initial == null) return;
+        long barrier = activities.lockAndReadBarrier(initial.activityId());
+        ActivityRecoveryJob job = jobs.claim(id, barrier);
+        if (job == null) return;
+        try {
+            Activity activity = activities.find(job.activityId());
+            if (activity == null || activity.status() != ActivityStatus.PAUSED) throw new IllegalStateException("ACTIVITY_NOT_PAUSED");
+            verifier.verify(activity, barrier);
+            OffsetDateTime now = OffsetDateTime.now();
+            if (now.isBefore(activity.startsAt()) || !now.isBefore(activity.endsAt())) throw new IllegalStateException("ACTIVITY_NOT_READY");
+            Activity projected = new Activity(activity.id(), activity.name(), activity.productId(), activity.salePriceMinor(),
+                    activity.initialStock(), activity.availableStock(), activity.purchaseLimitPerUser(), activity.startsAt(),
+                    activity.endsAt(), ActivityStatus.ACTIVE, false, activity.updatedBy());
+            inventory.ensureRecoveryProjection(projected, projected.availableStock());
+            Activity active = activities.casStatus(activity.id(), ActivityStatus.PAUSED, ActivityStatus.ACTIVE, job.requestedBy());
+            if (active == null) throw new IllegalStateException("ACTIVITY_NOT_PAUSED");
+            jobs.succeeded(id);
+        } catch (RuntimeException error) {
+            inventory.closeGate(initial.activityId());
+            jobs.failed(id, error.getMessage());
+        }
+    }
 }

@@ -55,6 +55,17 @@ final class RedisActivityInventory implements ActivityInventoryPort {
             if redis.call('GET', KEYS[3]) ~= 'NOT_STARTED' then return 0 end
             return 1
             """, Long.class);
+    private static final DefaultRedisScript<Long> ENSURE_RECOVERY_PROJECTION = new DefaultRedisScript<>("""
+            if redis.call('EXISTS', KEYS[2]) == 1 then
+                redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[3], 'NX')
+                return 0
+            end
+            redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[3])
+            redis.call('SET', KEYS[2], ARGV[2], 'EX', ARGV[3])
+            redis.call('SET', KEYS[3], 'PAUSED', 'EX', ARGV[3])
+            redis.call('SET', KEYS[4], 'CLOSED', 'EX', ARGV[3])
+            return 1
+            """, Long.class);
 
     private final StringRedisTemplate redis;
     RedisActivityInventory(StringRedisTemplate redis) { this.redis = redis; }
@@ -128,6 +139,12 @@ final class RedisActivityInventory implements ActivityInventoryPort {
         redis.opsForValue().set(stockKey(activity.id()), Integer.toString(availableStock), TTL);
         redis.opsForValue().set(statusKey(activity.id()), activity.status().name(), TTL);
         redis.opsForValue().set(gateKey(activity.id()), activity.status() == ActivityStatus.ACTIVE ? "RESERVE" : "CLOSED", TTL);
+    }
+
+    @Override public void ensureRecoveryProjection(Activity activity, int availableStock) {
+        redis.execute(ENSURE_RECOVERY_PROJECTION,
+                java.util.List.of(detailKey(activity.id()), stockKey(activity.id()), statusKey(activity.id()), gateKey(activity.id())),
+                detail(activity), Integer.toString(availableStock), Long.toString(TTL.toSeconds()));
     }
 
     private void setIfAbsent(String key, String value) { redis.opsForValue().setIfAbsent(key, value, TTL); }

@@ -13,5 +13,6 @@ interface ActivityInventoryPort {
     boolean hasPreheatedKeys(long activityId);
     boolean activate(Activity activity);
     void rebuild(Activity activity, int availableStock);
+    void ensureRecoveryProjection(Activity activity, int availableStock);
     record Reservation(boolean accepted, int remainingStock, String reason) {}
 }

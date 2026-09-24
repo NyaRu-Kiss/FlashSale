@@ -10,11 +10,14 @@ import java.util.Objects;
 public final class RocketMqMessageTransport implements MessageTransport, AutoCloseable {
     private final DefaultMQProducer producer;
     private final String topic;
+    private final com.fasterxml.jackson.databind.ObjectMapper json;
 
-    public RocketMqMessageTransport(String producerGroup, String namesrvAddr, String topic) {
+    public RocketMqMessageTransport(String producerGroup, String namesrvAddr, String topic,
+                                    com.fasterxml.jackson.databind.ObjectMapper json) {
         if (producerGroup == null || producerGroup.isBlank() || namesrvAddr == null || namesrvAddr.isBlank()
                 || topic == null || topic.isBlank()) throw new IllegalArgumentException("RocketMQ configuration required");
         this.topic = topic;
+        this.json = Objects.requireNonNull(json);
         this.producer = new DefaultMQProducer(producerGroup);
         this.producer.setNamesrvAddr(namesrvAddr);
     }
@@ -23,7 +26,7 @@ public final class RocketMqMessageTransport implements MessageTransport, AutoClo
 
     @Override public void send(MessageEnvelope message) throws Exception {
         Objects.requireNonNull(message);
-        String body = message.payload().toString();
+        String body = json.writeValueAsString(message);
         Message mqMessage = new Message(topic, message.eventType(), body.getBytes(StandardCharsets.UTF_8));
         mqMessage.setKeys(message.idempotencyKey());
         mqMessage.putUserProperty("event_id", message.eventId().toString());

@@ -9,7 +9,7 @@ public final class OutboxStateMachine {
     public OutboxStateMachine(BackoffPolicy backoff) { this.backoff = backoff; }
 
     public Instant nextAttempt(OutboxRecord record, Instant now) {
-        return now.plus(backoff.delay(record.attemptCount() + 1));
+        return now.plus(backoff.delay(record.attemptCount()));
     }
 
     public Duration lease(Duration requested) {

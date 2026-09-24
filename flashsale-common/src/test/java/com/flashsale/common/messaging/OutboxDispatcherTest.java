@@ -30,6 +30,6 @@ class OutboxDispatcherTest {
         var failed = outbox.find(record.id()).orElseThrow();
         assertEquals(OutboxStatus.FAILED, failed.status());
         assertEquals(1, failed.attemptCount());
-        assertEquals(Instant.parse("2026-01-01T00:00:04Z"), failed.availableAt());
+        assertEquals(Instant.parse("2026-01-01T00:00:02Z"), failed.availableAt());
     }
 }

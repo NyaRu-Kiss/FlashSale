@@ -36,13 +36,13 @@ public final class OutboxDispatcher {
         for (OutboxRecord record : records) {
             try {
                 transport.send(record.message());
-                outbox.markSent(record.id(), Instant.now(clock));
-                sent++;
+                if (outbox.markSent(record, Instant.now(clock))) sent++;
             } catch (Exception error) {
-                failed++;
                 Instant next = stateMachine.nextAttempt(record, now);
-                outbox.markFailed(record.id(), next, abbreviate(error));
-                if (record.attemptCount() + 1 >= maxAttempts) dead++;
+                if (outbox.markFailed(record, next, abbreviate(error))) {
+                    failed++;
+                    if (record.attemptCount() >= maxAttempts) dead++;
+                }
             }
         }
         return new DispatchReport(records.size(), sent, failed, dead);

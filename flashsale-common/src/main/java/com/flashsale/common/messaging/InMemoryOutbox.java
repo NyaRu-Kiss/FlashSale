@@ -26,13 +26,19 @@ public final class InMemoryOutbox implements OutboxPort {
                     records.put(r.id(), claimed); return claimed;
                 }).toList();
     }
-    @Override public synchronized void markSent(long id, Instant sentAt) {
-        var r = require(id); records.put(id, new OutboxRecord(r.id(), r.eventId(), r.idempotencyKey(), r.message(),
+    @Override public synchronized boolean markSent(OutboxRecord record, Instant sentAt) {
+        var r = require(record.id());
+        if (!Objects.equals(r.lockedUntil(), record.lockedUntil()) || r.status() == OutboxStatus.SENT) return false;
+        records.put(record.id(), new OutboxRecord(r.id(), r.eventId(), r.idempotencyKey(), r.message(),
                 OutboxStatus.SENT, r.attemptCount(), r.availableAt(), null));
+        return true;
     }
-    @Override public synchronized void markFailed(long id, Instant nextAttemptAt, String error) {
-        var r = require(id); records.put(id, new OutboxRecord(r.id(), r.eventId(), r.idempotencyKey(), r.message(),
+    @Override public synchronized boolean markFailed(OutboxRecord record, Instant nextAttemptAt, String error) {
+        var r = require(record.id());
+        if (!Objects.equals(r.lockedUntil(), record.lockedUntil()) || r.status() == OutboxStatus.SENT) return false;
+        records.put(record.id(), new OutboxRecord(r.id(), r.eventId(), r.idempotencyKey(), r.message(),
                 OutboxStatus.FAILED, r.attemptCount(), nextAttemptAt, null));
+        return true;
     }
     public Optional<OutboxRecord> find(long id) { return Optional.ofNullable(records.get(id)); }
     private OutboxRecord require(long id) { return Optional.ofNullable(records.get(id)).orElseThrow(); }

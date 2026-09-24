@@ -32,6 +32,13 @@ class OrderCreationConfiguration {
     @Bean OrderService orderService(OrderCreationStore store, OrderPreviewService previews) {
         return new OrderService(store, previews);
     }
+    @Bean OrderCancellationStore orderCancellationStore(JdbcTemplate jdbc, PlatformTransactionManager manager,
+                                                         ObjectMapper json) {
+        return new JdbcOrderCancellationStore(jdbc, manager, json);
+    }
+    @Bean OrderCancellationService orderCancellationService(OrderCancellationStore store, Clock clock) {
+        return new OrderCancellationService(store, clock);
+    }
     @Bean ProductGateway orderProductGateway(OrderProductClient client) {
         return id -> {
             ApiResponse<ProductView> response = client.get(id);

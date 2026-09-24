@@ -26,6 +26,7 @@ class JdbcOrderCreationStoreIntegrationTest {
     private long product;
     private FakeActivityRedis redis;
     private JdbcOrderCreationStore store;
+    private JdbcOrderCancellationStore cancellation;
 
     @BeforeEach void setup() {
         String url = System.getenv("FLASHSALE_TEST_JDBC_URL");
@@ -46,6 +47,7 @@ class JdbcOrderCreationStoreIntegrationTest {
         redis = new FakeActivityRedis();
         store = new JdbcOrderCreationStore(jdbc, new DataSourceTransactionManager(source), redis,
                 new ObjectMapper());
+        cancellation = new JdbcOrderCancellationStore(jdbc, new DataSourceTransactionManager(source), new ObjectMapper());
     }
 
     @Test void directOrderIsAtomicAndIdempotent() {
@@ -56,7 +58,7 @@ class JdbcOrderCreationStoreIntegrationTest {
         assertEquals(1, value("select count(*) from customer_order where user_id=?", customer));
         assertEquals(1, value("select available_stock from product where id=?", product));
         assertEquals(1, value("select count(*) from inventory_reservation r join order_item i on i.id=r.order_item_id join customer_order o on o.id=i.order_id where o.user_id=?", customer));
-        assertEquals(1, value("select count(*) from order_outbox where aggregate_id=?", first.orderNumber()));
+        assertEquals(2, value("select count(*) from order_outbox where aggregate_id=?", first.orderNumber()));
         assertThrows(IllegalArgumentException.class, () -> create(request("ORDER_SUBMIT_short", OrderKind.DIRECT, null, null, 2)));
         assertEquals(0, value("select count(*) from order_submission_idempotency where idempotency_key='ORDER_SUBMIT_short'"));
         assertEquals(1, value("select available_stock from product where id=?", product));
@@ -84,7 +86,7 @@ class JdbcOrderCreationStoreIntegrationTest {
         Order order = create(request);
         assertEquals(40, order.payableAmountMinor());
         assertEquals(1, value("select count(*) from activity_inventory_event where activity_id=?", activity));
-        assertEquals(2, value("select count(*) from order_outbox where aggregate_id=? or aggregate_id=?", order.orderNumber(), Long.toString(activity)));
+        assertEquals(3, value("select count(*) from order_outbox where aggregate_id=? or aggregate_id=?", order.orderNumber(), Long.toString(activity)));
         assertEquals("flashsale-order", jdbc.queryForObject("""
                 select payload->>'producer' from order_outbox where event_type='ACTIVITY_INVENTORY_RESERVE'
                   and aggregate_id=?
@@ -126,6 +128,32 @@ class JdbcOrderCreationStoreIntegrationTest {
         assertEquals(recovered, create(request));
         assertEquals(0, value("select available_stock from product where id=?", product));
         assertEquals(1, value("select count(*) from customer_order where user_id=?", customer));
+    }
+
+    @Test void directCancellationUsesCasAndReleasesOnce() {
+        Order order = create(request("ORDER_SUBMIT_cancel", OrderKind.DIRECT, null, null, 2));
+        assertEquals(Order.Status.CANCELLED, cancellation.cancel(customer, order.orderNumber(), "USER_CANCEL", OffsetDateTime.now()).status());
+        assertEquals(Order.Status.CANCELLED, cancellation.cancel(customer, order.orderNumber(), "USER_CANCEL", OffsetDateTime.now()).status());
+        assertEquals(3, value("select available_stock from product where id=?", product));
+        assertEquals(1, value("select count(*) from inventory_reservation where status='RELEASED'"));
+        assertEquals(1, value("select count(*) from inventory_movement where reason='RELEASE'"));
+    }
+
+    @Test void activityCancellationWritesReleaseEventAndOutbox() {
+        long activity = jdbc.queryForObject("""
+                insert into marketing_activity(name,product_id,sale_price_minor,initial_stock,available_stock,
+                    purchase_limit_per_user,starts_at,ends_at,status,created_by,updated_by)
+                values (?,?,50,3,3,2,now()-interval '1 hour',now()+interval '1 hour','ACTIVE',?,?) returning id
+                """, Long.class, "Cancel Sale", product, operator, operator);
+        jdbc.update("insert into activity_inventory_sequence(activity_id) values (?)", activity);
+        jdbc.update("insert into activity_inventory_checkpoint(activity_id) values (?)", activity);
+        Order order = create(request("ORDER_SUBMIT_activity_cancel", OrderKind.ACTIVITY, activity, null, 1));
+        assertEquals(Order.Status.CANCELLED, cancellation.cancel(customer, order.orderNumber(), "USER_CANCEL", OffsetDateTime.now()).status());
+        assertEquals(1, value("select count(*) from activity_inventory_event where activity_id=? and kind='RELEASE'", activity));
+        assertEquals(1, value("select count(*) from order_outbox where event_type='STOCK_RELEASE' and aggregate_id=?", Long.toString(activity)));
+        assertEquals(1, value("select count(*) from inventory_movement where activity_id=? and reason='RELEASE'", activity));
+        assertEquals(0, value("select committed_quantity from activity_user_quota where activity_id=? and user_id=?", activity, customer));
+        assertEquals(3, value("select next_event_sequence from activity_inventory_sequence where activity_id=?", activity));
     }
 
     @Test void multiProductFailureRollsBackEveryReservation() {

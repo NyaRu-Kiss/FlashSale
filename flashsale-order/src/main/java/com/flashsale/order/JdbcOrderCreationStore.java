@@ -131,6 +131,12 @@ public final class JdbcOrderCreationStore implements OrderCreationStore {
                         "event_type", "ORDER_CREATED", "producer", "flashsale-order", "aggregate_id", number,
                         "created_at", createdAt.toString(), "order_number", number,
                         "user_id", request.userId(), "trace_id", TraceContext.getOrCreate()));
+        UUID timeoutEvent = UUID.randomUUID();
+        outbox(timeoutEvent, "ORDER_PAYMENT_TIMEOUT", "ORDER_PAYMENT_TIMEOUT:" + number, "ORDER", number,
+                Map.of("event_id", timeoutEvent.toString(), "idempotency_key", "ORDER_PAYMENT_TIMEOUT:" + number,
+                        "event_type", "ORDER_PAYMENT_TIMEOUT", "producer", "flashsale-order", "aggregate_id", number,
+                        "order_number", number, "user_id", request.userId(), "deliver_after", expiry.toString(),
+                        "trace_id", TraceContext.getOrCreate(), "created_at", createdAt.toString()));
         jdbc.update("""
                 update order_submission_idempotency set status='SUCCEEDED',order_id=?,response_code='OK',completed_at=now()
                 where user_id=? and idempotency_key=? and status='PROCESSING'

@@ -1,9 +1,29 @@
 package com.flashsale.order;
-import org.junit.jupiter.api.Test; import java.time.*; import java.util.*; import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class OrderCancellationServiceTest {
- @Test void cancellationReleasesOnlyOnce(){
-  var repo=new InMemoryOrderRepository(); var released=new ArrayList<String>(); var inv=new InventoryGateway(){public List<Reservation> reserve(long u,String o,List<ReservationRequest> r){return List.of(new Reservation("r",1,1));} public void release(String k){released.add(k);} public void confirm(String k){}};
-  var o=new Order("o",1,OrderKind.DIRECT,null,1,0,0,1,"CNY",Order.Status.PENDING_PAYMENT,OffsetDateTime.now().plusMinutes(5),List.of(new Order.Item(1,1,"s","p",1,1,0,1,"r"))); repo.save(o);
-  var s=new OrderCancellationService(repo,inv,Clock.systemUTC()); assertEquals(Order.Status.CANCELLED,s.cancel(1,"o","USER_CANCEL").status()); assertEquals(Order.Status.CANCELLED,s.cancel(1,"o","USER_CANCEL").status()); assertEquals(1,released.size());
- }
+    @Test void cancellationDelegatesOneDurableCasAndRepeatedCallReadsFinalState() {
+        AtomicInteger calls = new AtomicInteger();
+        Order cancelled = new Order("o", 1, OrderKind.DIRECT, null, 1, 0, 0, 1, "CNY",
+                Order.Status.CANCELLED, OffsetDateTime.parse("2026-01-01T00:15:00Z"), java.util.List.of());
+        OrderCancellationStore store = new OrderCancellationStore() {
+            @Override public Order cancel(long user, String number, String reason, OffsetDateTime now) {
+                calls.incrementAndGet();
+                assertEquals("USER_CANCEL", reason);
+                return cancelled;
+            }
+            @Override public Order cancelTimeout(String number, OffsetDateTime now) { return cancelled; }
+        };
+        var service = new OrderCancellationService(store, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC));
+        assertEquals(Order.Status.CANCELLED, service.cancel(1, "o", "USER_CANCEL").status());
+        assertEquals(Order.Status.CANCELLED, service.cancel(1, "o", "USER_CANCEL").status());
+        assertEquals(2, calls.get());
+    }
 }

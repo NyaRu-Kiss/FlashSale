@@ -119,7 +119,7 @@
 | R03 | 3 | 实现商品/优惠券模板 Cache Aside 读缓存 | R02 | Redis GET；`SET NX PX` owner token 锁；二次 GET；有限退避；TTL 随机抖动；未获锁不得查 DB | Docker Java 21：`mvn -B -pl flashsale-product,flashsale-coupon -am test`：公共 14 项、Coupon 2 项通过；Product/Coupon 编译通过；公共组件已接入商品详情/列表和可领取券模板列表，管理接口仍直读 PostgreSQL | DONE |
 | R04 | 4 | 实现商品/优惠券延迟双删、审计和本服务 Outbox | R03 | 先删缓存，再本地事务写配置/审计/Outbox，提交后延时二次删除；不得直接回写缓存 | Docker Java 21：`mvn -B -pl flashsale-product,flashsale-coupon -am test` 通过；首删、审计快照、Outbox payload 契约已接入；实际投递由 R16 完成 | DONE |
 | R05 | 5 | 重做活动开始前预热流程 | R04 | 调度窗口读取 PostgreSQL 配置，写活动详情/库存键，写 `ACTIVITY_PREHEAT_READY` Outbox；创建接口不得代替预热任务 | Docker Java 21：`mvn -B -pl flashsale-activity -am test` 通过（公共 14 项、活动 9 项）；覆盖 PT10M 窗口、创建不预热、重复预热、详情/库存键和幂等 Outbox 契约；未接入本地定时器，XXL-Job 运行时留给 R20 | DONE |
-| R06 | 6 | 修正活动开始 CAS 和 Redis 键保护 | R05 | 只有预热键存在时才允许 `NOT_STARTED -> ACTIVE`；开始不得覆盖已存在实时库存键 | 键缺失、键存在、并发开始和 Redis 库存不变测试 | TODO |
+| R06 | 6 | 修正活动开始 CAS 和 Redis 键保护 | R05 | 只有预热键存在时才允许 `NOT_STARTED -> ACTIVE`；开始不得覆盖已存在实时库存键 | Docker Java 21：`mvn -B -pl flashsale-activity -am test` 通过（公共 14 项、活动 14 项）；覆盖预热键缺失、预热键存在、CAS 并发失败不激活 Redis，以及 Lua 激活不写库存键 | DONE |
 | R07 | 7 | 实现活动暂停屏障和在途请求清算 | R06 | 关闭 Lua 新 `RESERVE` 门闸；等待在途请求提交或补偿；锁 sequence 截取 barrier；再 CAS `ACTIVE -> PAUSED` | 并发预扣、暂停竞争、崩溃恢复和 barrier 边界测试 | TODO |
 | R08 | 8 | 接通活动 RESERVE/RELEASE 的订单、Outbox、MQ 消费链路 | R07 | 暂停前 RESERVE 和暂停期间 RELEASE 不得丢弃/拒绝；事件序号连续、消费幂等、checkpoint 不跨洞 | 重复消息、乱序消息、暂停期间释放和消费失败重试测试 | TODO |
 | R09 | 9 | 实现恢复前完整对账和 Redis 键保护 | R08 | 检查屏障内 Outbox SENT、连续 checkpoint、事件账本、流水、有效保留；Redis 键存在不得覆盖，丢失才可互斥重建 | 对账不一致、Redis 丢失、已有键和重建并发测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R06`
+- 当前任务：`R07`
 - 状态：`TODO`
-- 说明：R01-R05 已完成。R05 完成活动开始前 PT10M 窗口预热、活动详情/库存键初始化和 `ACTIVITY_PREHEAT_READY` Outbox 契约；XXL-Job 运行时接线仍由 R20 统一处理。未完成前不得并行处理 R07-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。
+- 说明：R01-R06 已完成。R06 在活动开始时先 Lua 校验预热详情/库存/状态/门闸键，再 PostgreSQL CAS `NOT_STARTED -> ACTIVE`，最后只更新 Redis 状态和门闸；库存键不被覆盖。R07 处理暂停屏障和在途请求清算；不得并行处理 R08-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。

@@ -82,8 +82,9 @@ final class ActivityService {
         if (existing.status() != ActivityStatus.NOT_STARTED) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
         OffsetDateTime now = OffsetDateTime.now();
         if (now.isBefore(existing.startsAt()) || !now.isBefore(existing.endsAt())) throw new IllegalArgumentException("ACTIVITY_NOT_READY");
+        if (!inventory.hasPreheatedKeys(id)) throw new IllegalArgumentException("ACTIVITY_NOT_READY");
         Activity started = changed(repository.casStatusAt(id, ActivityStatus.NOT_STARTED, ActivityStatus.ACTIVE, actor.userId()), "ACTIVITY_NOT_READY");
-        inventory.rebuild(started, started.availableStock());
+        if (!inventory.activate(started)) throw new IllegalStateException("ACTIVITY_PREHEAT_MISSING");
         return started;
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ActivityServiceR05Test {
@@ -56,6 +57,45 @@ class ActivityServiceR05Test {
         verify(inventory).preheat(second);
         verify(repository).recordPreheatReady(eq(first), anyString());
         verify(repository).recordPreheatReady(eq(second), anyString());
+    }
+
+    @Test void startRequiresPreheatedRedisKeysAndDoesNotRebuildStock() {
+        Activity existing = activity(11, OffsetDateTime.now().minusMinutes(1));
+        when(repository.find(11)).thenReturn(existing);
+        when(inventory.hasPreheatedKeys(11)).thenReturn(false);
+        ActivityService service = new ActivityService(repository, inventory, recoveries, events);
+
+        assertThrows(IllegalArgumentException.class, () -> service.start(operator, 11));
+        verify(repository, never()).casStatusAt(anyLong(), any(), any(), anyLong());
+        verify(inventory, never()).activate(any());
+        verify(inventory, never()).rebuild(any(), anyInt());
+    }
+
+    @Test void startActivatesPreheatedKeysWithoutOverwritingRealtimeStock() {
+        Activity existing = activity(11, OffsetDateTime.now().minusMinutes(1));
+        Activity started = new Activity(existing.id(), existing.name(), existing.productId(), existing.salePriceMinor(),
+                existing.initialStock(), 7, existing.purchaseLimitPerUser(), existing.startsAt(), existing.endsAt(),
+                ActivityStatus.ACTIVE, true, operator.userId());
+        when(repository.find(11)).thenReturn(existing);
+        when(inventory.hasPreheatedKeys(11)).thenReturn(true);
+        when(inventory.activate(started)).thenReturn(true);
+        when(repository.casStatusAt(11, ActivityStatus.NOT_STARTED, ActivityStatus.ACTIVE, operator.userId())).thenReturn(started);
+        ActivityService service = new ActivityService(repository, inventory, recoveries, events);
+
+        assertEquals(started, service.start(operator, 11));
+        verify(inventory).activate(started);
+        verify(inventory, never()).rebuild(any(), anyInt());
+    }
+
+    @Test void concurrentStartCasLoserDoesNotActivateRedis() {
+        Activity existing = activity(11, OffsetDateTime.now().minusMinutes(1));
+        when(repository.find(11)).thenReturn(existing);
+        when(inventory.hasPreheatedKeys(11)).thenReturn(true);
+        when(repository.casStatusAt(11, ActivityStatus.NOT_STARTED, ActivityStatus.ACTIVE, operator.userId())).thenReturn(null);
+        ActivityService service = new ActivityService(repository, inventory, recoveries, events);
+
+        assertThrows(IllegalArgumentException.class, () -> service.start(operator, 11));
+        verify(inventory, never()).activate(any());
     }
 
     private static Activity activity(long id, OffsetDateTime startsAt) {

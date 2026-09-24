@@ -6,6 +6,8 @@ interface ActivityInventoryPort {
     Reservation reserve(Activity activity, long userId, int quantity, String reservationKey);
     boolean release(Activity activity, long userId, int quantity, String reservationKey);
     void closeGate(long activityId);
+    boolean hasPreheatedKeys(long activityId);
+    boolean activate(Activity activity);
     void rebuild(Activity activity, int availableStock);
     record Reservation(boolean accepted, int remainingStock, String reason) {}
 }

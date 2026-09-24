@@ -30,6 +30,19 @@ final class RedisActivityInventory implements ActivityInventoryPort {
             redis.call('DECRBY', KEYS[2], ARGV[1])
             return 1
             """, Long.class);
+    private static final DefaultRedisScript<Long> ACTIVATE = new DefaultRedisScript<>("""
+            if redis.call('EXISTS', KEYS[1]) == 0 or redis.call('EXISTS', KEYS[2]) == 0 then return 0 end
+            if redis.call('GET', KEYS[3]) ~= 'NOT_STARTED' then return 0 end
+            redis.call('SET', KEYS[3], 'ACTIVE', 'EX', ARGV[1])
+            redis.call('SET', KEYS[4], 'RESERVE', 'EX', ARGV[1])
+            return 1
+            """, Long.class);
+    private static final DefaultRedisScript<Long> PREHEATED = new DefaultRedisScript<>("""
+            if redis.call('EXISTS', KEYS[1]) == 0 or redis.call('EXISTS', KEYS[2]) == 0
+                    or redis.call('EXISTS', KEYS[3]) == 0 or redis.call('EXISTS', KEYS[4]) == 0 then return 0 end
+            if redis.call('GET', KEYS[3]) ~= 'NOT_STARTED' then return 0 end
+            return 1
+            """, Long.class);
 
     private final StringRedisTemplate redis;
     RedisActivityInventory(StringRedisTemplate redis) { this.redis = redis; }
@@ -65,6 +78,19 @@ final class RedisActivityInventory implements ActivityInventoryPort {
     }
 
     @Override public void closeGate(long activityId) { redis.opsForValue().set(gateKey(activityId), "CLOSED", TTL); }
+
+    @Override public boolean hasPreheatedKeys(long activityId) {
+        Long result = redis.execute(PREHEATED,
+                java.util.List.of(detailKey(activityId), stockKey(activityId), statusKey(activityId), gateKey(activityId)));
+        return result != null && result == 1;
+    }
+
+    @Override public boolean activate(Activity activity) {
+        Long result = redis.execute(ACTIVATE,
+                java.util.List.of(detailKey(activity.id()), stockKey(activity.id()), statusKey(activity.id()), gateKey(activity.id())),
+                Long.toString(TTL.toSeconds()));
+        return result != null && result == 1;
+    }
 
     @Override public void rebuild(Activity activity, int availableStock) {
         redis.opsForValue().set(stockKey(activity.id()), Integer.toString(availableStock), TTL);

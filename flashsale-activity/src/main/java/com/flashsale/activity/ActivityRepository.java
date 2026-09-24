@@ -3,6 +3,7 @@ package com.flashsale.activity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,6 +45,50 @@ final class ActivityRepository {
                        purchase_limit_per_user, starts_at, ends_at, status, updated_by
                   from marketing_activity where id = ?
                 """, (rs, n) -> map(rs), id).stream().findFirst().orElse(null);
+    }
+
+    Activity findPreheatCandidate(long id, Duration window) {
+        return jdbc.query("""
+                select id, name, product_id, sale_price_minor, initial_stock, available_stock,
+                       purchase_limit_per_user, starts_at, ends_at, status, updated_by
+                  from marketing_activity
+                 where id = ? and status = 'NOT_STARTED'
+                   and starts_at > now()
+                   and starts_at <= now() + (? * interval '1 millisecond')
+                """, (rs, n) -> map(rs), id, window.toMillis()).stream().findFirst().orElse(null);
+    }
+
+    List<Activity> findPreheatCandidates(Duration window) {
+        return jdbc.query("""
+                select id, name, product_id, sale_price_minor, initial_stock, available_stock,
+                       purchase_limit_per_user, starts_at, ends_at, status, updated_by
+                  from marketing_activity
+                 where status = 'NOT_STARTED'
+                   and starts_at > now()
+                   and starts_at <= now() + (? * interval '1 millisecond')
+                 order by starts_at, id
+                """, (rs, n) -> map(rs), window.toMillis());
+    }
+
+    void recordPreheatReady(Activity activity, String traceId) {
+        String detailKey = RedisActivityInventory.detailKey(activity.id());
+        String stockKey = RedisActivityInventory.stockKey(activity.id());
+        String statusKey = RedisActivityInventory.statusKey(activity.id());
+        String gateKey = RedisActivityInventory.gateKey(activity.id());
+        String payload = "{\"activity_id\":" + activity.id()
+                + ",\"detail_key\":\"" + detailKey + "\""
+                + ",\"stock_key\":\"" + stockKey + "\""
+                + ",\"status_key\":\"" + statusKey + "\""
+                + ",\"gate_key\":\"" + gateKey + "\""
+                + ",\"trace_id\":\"" + traceId + "\""
+                + ",\"preheated_at\":\"" + OffsetDateTime.now() + "\"}";
+        jdbc.update("""
+                insert into activity_outbox(event_id, event_type, idempotency_key, aggregate_type,
+                    aggregate_id, payload, trace_id)
+                values (?, 'ACTIVITY_PREHEAT_READY', ?, 'ACTIVITY', ?, ?::jsonb, ?)
+                on conflict (idempotency_key) do nothing
+                """, UUID.randomUUID(), "ACTIVITY:PREHEAT_READY:" + activity.id(),
+                Long.toString(activity.id()), payload, traceId);
     }
 
     Activity findPublic(long id) {

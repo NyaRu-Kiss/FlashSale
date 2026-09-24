@@ -35,10 +35,11 @@ final class RedisActivityInventory implements ActivityInventoryPort {
     RedisActivityInventory(StringRedisTemplate redis) { this.redis = redis; }
 
     @Override public void preheat(Activity activity) {
+        setIfAbsent(detailKey(activity.id()), detail(activity));
         setIfAbsent(stockKey(activity.id()), Integer.toString(activity.initialStock()));
         setIfAbsent(statusKey(activity.id()), activity.status().name());
         setIfAbsent(gateKey(activity.id()), activity.status() == ActivityStatus.ACTIVE ? "RESERVE" : "CLOSED");
-        redis.expire(stockKey(activity.id()), TTL); redis.expire(statusKey(activity.id()), TTL); redis.expire(gateKey(activity.id()), TTL);
+        redis.expire(detailKey(activity.id()), TTL); redis.expire(stockKey(activity.id()), TTL); redis.expire(statusKey(activity.id()), TTL); redis.expire(gateKey(activity.id()), TTL);
     }
 
     @Override public Reservation reserve(Activity activity, long userId, int quantity, String reservationKey) {
@@ -72,9 +73,18 @@ final class RedisActivityInventory implements ActivityInventoryPort {
     }
 
     private void setIfAbsent(String key, String value) { redis.opsForValue().setIfAbsent(key, value, TTL); }
-    private static String stockKey(long id) { return "activity:" + id + ":stock"; }
-    private static String statusKey(long id) { return "activity:" + id + ":status"; }
-    private static String gateKey(long id) { return "activity:" + id + ":gate"; }
+    private String detail(Activity a) {
+        return "{\"id\":" + a.id() + ",\"name\":\"" + escape(a.name()) + "\",\"productId\":" + a.productId()
+                + ",\"salePriceMinor\":" + a.salePriceMinor() + ",\"initialStock\":" + a.initialStock()
+                + ",\"availableStock\":" + a.availableStock() + ",\"purchaseLimitPerUser\":" + a.purchaseLimitPerUser()
+                + ",\"startsAt\":\"" + a.startsAt() + "\",\"endsAt\":\"" + a.endsAt()
+                + "\",\"status\":\"" + a.status() + "\"}";
+    }
+    private static String escape(String value) { return value.replace("\\", "\\\\").replace("\"", "\\\""); }
+    static String detailKey(long id) { return "activity:" + id + ":detail"; }
+    static String stockKey(long id) { return "activity:" + id + ":stock"; }
+    static String statusKey(long id) { return "activity:" + id + ":status"; }
+    static String gateKey(long id) { return "activity:" + id + ":gate"; }
     private static String quotaKey(long id, long userId) { return "activity:" + id + ":quota:" + userId; }
     private static String reservationKey(long id, String key) { return "activity:" + id + ":reservation:" + key; }
     private static String releaseKey(long id, String key) { return "activity:" + id + ":release:" + key; }

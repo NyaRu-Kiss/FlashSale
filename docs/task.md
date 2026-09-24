@@ -118,7 +118,7 @@
 | R02 | 2 | 接入 Nacos 注册/配置和 OpenFeign 服务调用 | R01 | 服务发现、配置中心和跨服务调用均由统一组件提供，禁止业务硬编码地址 | Docker Java 21 全量 `mvn -B test` 通过；Gateway 实际启动成功并注册 Nacos `flashsale-gateway`，`/actuator/health` 返回 UP；Gateway 使用 `lb://` 路由；Order Feign Trace 透传测试通过；容器使用 `--rm`/`timeout` 自动关闭 | DONE |
 | R03 | 3 | 实现商品/优惠券模板 Cache Aside 读缓存 | R02 | Redis GET；`SET NX PX` owner token 锁；二次 GET；有限退避；TTL 随机抖动；未获锁不得查 DB | Docker Java 21：`mvn -B -pl flashsale-product,flashsale-coupon -am test`：公共 14 项、Coupon 2 项通过；Product/Coupon 编译通过；公共组件已接入商品详情/列表和可领取券模板列表，管理接口仍直读 PostgreSQL | DONE |
 | R04 | 4 | 实现商品/优惠券延迟双删、审计和本服务 Outbox | R03 | 先删缓存，再本地事务写配置/审计/Outbox，提交后延时二次删除；不得直接回写缓存 | Docker Java 21：`mvn -B -pl flashsale-product,flashsale-coupon -am test` 通过；首删、审计快照、Outbox payload 契约已接入；实际投递由 R16 完成 | DONE |
-| R05 | 5 | 重做活动开始前预热流程 | R04 | 调度窗口读取 PostgreSQL 配置，写活动详情/库存键，写 `ACTIVITY_PREHEAT_READY` Outbox；创建接口不得代替预热任务 | 预热窗口、缺键、重复预热和开始前检查测试 | TODO |
+| R05 | 5 | 重做活动开始前预热流程 | R04 | 调度窗口读取 PostgreSQL 配置，写活动详情/库存键，写 `ACTIVITY_PREHEAT_READY` Outbox；创建接口不得代替预热任务 | Docker Java 21：`mvn -B -pl flashsale-activity -am test` 通过（公共 14 项、活动 9 项）；覆盖 PT10M 窗口、创建不预热、重复预热、详情/库存键和幂等 Outbox 契约；未接入本地定时器，XXL-Job 运行时留给 R20 | DONE |
 | R06 | 6 | 修正活动开始 CAS 和 Redis 键保护 | R05 | 只有预热键存在时才允许 `NOT_STARTED -> ACTIVE`；开始不得覆盖已存在实时库存键 | 键缺失、键存在、并发开始和 Redis 库存不变测试 | TODO |
 | R07 | 7 | 实现活动暂停屏障和在途请求清算 | R06 | 关闭 Lua 新 `RESERVE` 门闸；等待在途请求提交或补偿；锁 sequence 截取 barrier；再 CAS `ACTIVE -> PAUSED` | 并发预扣、暂停竞争、崩溃恢复和 barrier 边界测试 | TODO |
 | R08 | 8 | 接通活动 RESERVE/RELEASE 的订单、Outbox、MQ 消费链路 | R07 | 暂停前 RESERVE 和暂停期间 RELEASE 不得丢弃/拒绝；事件序号连续、消费幂等、checkpoint 不跨洞 | 重复消息、乱序消息、暂停期间释放和消费失败重试测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R05`
+- 当前任务：`R06`
 - 状态：`TODO`
-- 说明：R01-R04 已完成。R04 完成商品/优惠券首删、事务审计、缓存失效 Outbox 和延迟删除契约；真实 Outbox 投递与第二次删除仍由 R16 统一接入。未完成前不得并行处理 R06-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。
+- 说明：R01-R05 已完成。R05 完成活动开始前 PT10M 窗口预热、活动详情/库存键初始化和 `ACTIVITY_PREHEAT_READY` Outbox 契约；XXL-Job 运行时接线仍由 R20 统一处理。未完成前不得并行处理 R07-R24，也不得以已有 H01-H05 验收任务替代本节修正任务。

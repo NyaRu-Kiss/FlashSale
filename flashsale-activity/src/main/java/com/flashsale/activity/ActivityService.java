@@ -2,8 +2,10 @@ package com.flashsale.activity;
 
 import com.flashsale.common.security.Principal;
 import java.time.OffsetDateTime;
+import java.time.Duration;
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ final class ActivityService {
     private final ActivityRecoveryRepository recoveries;
     private final ActivityInventoryEventRepository events;
     private final ActivityStateMachine stateMachine = new ActivityStateMachine();
+    @Value("${flashsale.activity.preheat-window:PT10M}")
+    private Duration preheatWindow = Duration.ofMinutes(10);
 
     ActivityService(ActivityRepository repository, ActivityInventoryPort inventory, ActivityRecoveryRepository recoveries, ActivityInventoryEventRepository events) { this.repository = repository; this.inventory = inventory; this.recoveries = recoveries; this.events = events; }
 
@@ -21,9 +25,7 @@ final class ActivityService {
     Activity create(Principal actor, Activity input) {
         requireOperator(actor);
         validate(input);
-        Activity activity = repository.create(input, actor.userId());
-        inventory.preheat(activity);
-        return activity;
+        return repository.create(input, actor.userId());
     }
 
     Activity getPublic(long id) {
@@ -50,9 +52,27 @@ final class ActivityService {
     @Transactional
     Activity preheat(Principal actor, long id) {
         requireOperator(actor);
-        Activity existing = get(id);
-        if (existing.status() != ActivityStatus.NOT_STARTED) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
+        return preheat(id);
+    }
+
+    @Transactional
+    Activity preheat(long id) {
+        Activity existing = repository.findPreheatCandidate(id, preheatWindow);
+        if (existing == null) throw new IllegalArgumentException("ACTIVITY_NOT_IN_PREHEAT_WINDOW");
+        inventory.preheat(existing);
+        repository.recordPreheatReady(existing, com.flashsale.common.trace.TraceContext.getOrCreate());
         return existing;
+    }
+
+    @Transactional
+    int preheatDueActivities() {
+        int count = 0;
+        for (Activity activity : repository.findPreheatCandidates(preheatWindow)) {
+            inventory.preheat(activity);
+            repository.recordPreheatReady(activity, com.flashsale.common.trace.TraceContext.getOrCreate());
+            count++;
+        }
+        return count;
     }
 
     @Transactional

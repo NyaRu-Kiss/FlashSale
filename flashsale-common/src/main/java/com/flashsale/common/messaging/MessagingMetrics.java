@@ -15,6 +15,7 @@ public final class MessagingMetrics {
     private final AtomicInteger deadLetters = new AtomicInteger();
     private final Counter outboxSent;
     private final Counter outboxFailed;
+    private final Counter outboxExhausted;
     private final Counter duplicateMessages;
     private final Counter compensationSucceeded;
     private final Counter compensationFailed;
@@ -23,6 +24,7 @@ public final class MessagingMetrics {
     public MessagingMetrics(MeterRegistry registry) {
         outboxSent = registry.counter("flashsale_outbox_sent_total");
         outboxFailed = registry.counter("flashsale_outbox_failed_total");
+        outboxExhausted = registry.counter("flashsale_outbox_exhausted_total");
         duplicateMessages = registry.counter("flashsale_consumer_duplicate_total");
         compensationSucceeded = registry.counter("flashsale_compensation_succeeded_total");
         compensationFailed = registry.counter("flashsale_compensation_failed_total");
@@ -35,6 +37,7 @@ public final class MessagingMetrics {
     public void outboxPending(int value, Duration oldestAge) { outboxPending.set(Math.max(0, value)); outboxOldestAgeSeconds.set((int)Math.max(0, oldestAge.toSeconds())); }
     public void outboxSent() { outboxSent.increment(); }
     public void outboxFailed() { outboxFailed.increment(); }
+    public void outboxExhausted() { outboxExhausted.increment(); }
     public void consumerStarted() { consumerProcessing.incrementAndGet(); }
     public void consumerFinished(Duration duration) { consumerProcessing.updateAndGet(v -> Math.max(0, v - 1)); consumerProcessingTimer.record(duration); }
     public void duplicateMessage() { duplicateMessages.increment(); }

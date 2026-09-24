@@ -29,11 +29,13 @@ class JdbcOutboxPortIntegrationTest {
         Instant now = Instant.now().plusSeconds(1);
         var first = port.claimDue(now, 2, Duration.ofSeconds(5));
         assertEquals(2, first.size());
+        assertEquals(3, port.backlog(now).pending());
         assertEquals(1, port.claimDue(now, 2, Duration.ofSeconds(5)).size());
         assertTrue(port.markSent(first.getFirst(), now.plusSeconds(1)));
         assertFalse(port.markSent(first.getFirst(), now.plusSeconds(1)));
         assertEquals("SENT", jdbc.queryForObject("SELECT status::text FROM product_outbox WHERE id=?",
                 String.class, first.getFirst().id()));
+        assertEquals(2, port.backlog(now).pending());
         jdbc.update("DELETE FROM product_outbox WHERE event_type='TEST'");
     }
 

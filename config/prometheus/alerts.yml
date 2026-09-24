@@ -11,6 +11,10 @@ groups:
         for: 5m
         labels: { severity: critical }
         annotations: { summary: "Oldest Outbox message is stale" }
+      - alert: FlashSaleOutboxRetriesExhausted
+        expr: increase(flashsale_outbox_exhausted_total[5m]) > 0
+        labels: { severity: critical }
+        annotations: { summary: "Outbox delivery exhausted its retry limit" }
       - alert: FlashSaleConsumerDeadLetter
         expr: increase(flashsale_consumer_dead_letter[5m]) > 0
         labels: { severity: critical }

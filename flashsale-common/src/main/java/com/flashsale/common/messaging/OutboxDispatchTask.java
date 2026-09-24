@@ -16,9 +16,11 @@ public final class OutboxDispatchTask {
 
     public OutboxDispatcher.DispatchReport dispatchOnce() {
         var report = dispatcher.dispatchOnce();
+        var backlog = dispatcher.backlog();
+        metrics.outboxPending(backlog.pending(), backlog.oldestAge());
         for (int i = 0; i < report.sent(); i++) metrics.outboxSent();
         for (int i = 0; i < report.failed(); i++) metrics.outboxFailed();
-        for (int i = 0; i < report.deadLetterCandidates(); i++) metrics.deadLetter();
+        for (int i = 0; i < report.deadLetterCandidates(); i++) metrics.outboxExhausted();
         if (report.deadLetterCandidates() > 0) LOG.error("Outbox exhausted retries: {}", report.deadLetterCandidates());
         return report;
     }

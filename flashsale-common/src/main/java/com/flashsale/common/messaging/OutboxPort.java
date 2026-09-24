@@ -9,4 +9,5 @@ public interface OutboxPort {
     List<OutboxRecord> claimDue(Instant now, int batchSize, Duration lease);
     boolean markSent(OutboxRecord record, Instant sentAt);
     boolean markFailed(OutboxRecord record, Instant nextAttemptAt, String error);
+    OutboxBacklog backlog(Instant now);
 }

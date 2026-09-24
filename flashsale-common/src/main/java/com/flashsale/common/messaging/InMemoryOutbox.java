@@ -41,5 +41,9 @@ public final class InMemoryOutbox implements OutboxPort {
         return true;
     }
     public Optional<OutboxRecord> find(long id) { return Optional.ofNullable(records.get(id)); }
+    @Override public OutboxBacklog backlog(Instant now) {
+        int pending = (int) records.values().stream().filter(r -> r.status() != OutboxStatus.SENT).count();
+        return new OutboxBacklog(pending, Duration.ZERO);
+    }
     private OutboxRecord require(long id) { return Optional.ofNullable(records.get(id)).orElseThrow(); }
 }

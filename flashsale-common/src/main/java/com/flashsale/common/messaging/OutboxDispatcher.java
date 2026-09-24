@@ -48,6 +48,8 @@ public final class OutboxDispatcher {
         return new DispatchReport(records.size(), sent, failed, dead);
     }
 
+    public OutboxBacklog backlog() { return outbox.backlog(Instant.now(clock)); }
+
     private String abbreviate(Exception error) {
         String message = error.getMessage();
         return error.getClass().getSimpleName() + (message == null ? "" : ": " + message);

@@ -63,6 +63,17 @@ public final class JdbcOutboxPort implements OutboxPort {
                 Timestamp.from(nextAttemptAt), error, record.id(), Timestamp.from(record.lockedUntil()), record.attemptCount()) == 1;
     }
 
+    @Override
+    public OutboxBacklog backlog(Instant now) {
+        return jdbc.queryForObject("SELECT count(*) AS pending, min(created_at) AS oldest FROM " + table
+                + " WHERE status IN ('PENDING','FAILED')", (rs, row) -> {
+            var oldest = rs.getTimestamp("oldest");
+            return new OutboxBacklog(rs.getInt("pending"), oldest == null ? Duration.ZERO
+                    : Duration.between(oldest.toInstant(), now).isNegative() ? Duration.ZERO
+                    : Duration.between(oldest.toInstant(), now));
+        });
+    }
+
     private OutboxRecord read(ResultSet rs, int row) throws SQLException {
         Map<String, Object> payload;
         try {

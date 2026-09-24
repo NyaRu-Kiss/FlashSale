@@ -26,4 +26,11 @@ final class ActivityInventoryConsumer {
         events.advanceCheckpoint(activityId, sequence);
         return true;
     }
+
+    /** MQ adapter entrypoint. Sequence ordering remains the source of truth; duplicate event IDs are harmless. */
+    @Transactional
+    boolean consume(ActivityInventoryMessage message) {
+        if (message == null) throw new IllegalArgumentException("INVALID_ACTIVITY_INVENTORY_MESSAGE");
+        return consume(message.activityId(), message.sequence());
+    }
 }

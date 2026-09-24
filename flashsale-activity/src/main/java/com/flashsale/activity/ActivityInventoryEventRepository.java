@@ -34,7 +34,10 @@ final class ActivityInventoryEventRepository {
                     payload, trace_id)
                 values (?, 'ACTIVITY_INVENTORY_' || ?, ?, 'ACTIVITY', ?, ?::jsonb, ?)
                 """, outboxId, kind.name(), "ACTIVITY:INVENTORY:" + eventId, Long.toString(activityId),
-                "{\"event_id\":\"" + eventId + "\",\"sequence\":" + sequence + "}", traceId);
+                "{\"event_id\":\"" + eventId + "\",\"idempotency_key\":\"ACTIVITY_INVENTORY:" + eventId
+                        + "\",\"activity_id\":" + activityId + ",\"sequence\":" + sequence
+                        + ",\"kind\":\"" + kind.name() + "\",\"quantity\":" + quantity
+                        + ",\"trace_id\":\"" + traceId + "\"}", traceId);
         return new ActivityInventoryLedger.Event(sequence, kind, quantity);
     }
 

@@ -173,10 +173,15 @@ public final class JdbcOrderCreationStore implements OrderCreationStore {
                 """, eventId, activityId, sequence, reservationId, -quantity, eventId);
         outbox(eventId, "ACTIVITY_INVENTORY_RESERVE", "ORDER:ACTIVITY_INVENTORY:" + eventId,
                 "ACTIVITY", Long.toString(activityId),
-                Map.of("event_id", eventId.toString(), "idempotency_key", "ORDER:ACTIVITY_INVENTORY:" + eventId,
-                        "activity_id", activityId, "sequence", sequence, "kind", "RESERVE", "quantity", quantity,
-                        "order_number", number, "trace_id", TraceContext.getOrCreate(),
-                        "event_type", "ACTIVITY_INVENTORY_RESERVE", "producer", "flashsale-order"));
+                Map.ofEntries(Map.entry("event_id", eventId.toString()),
+                        Map.entry("idempotency_key", "ORDER:ACTIVITY_INVENTORY:" + eventId),
+                        Map.entry("activity_id", activityId), Map.entry("aggregate_id", Long.toString(activityId)),
+                        Map.entry("sequence", sequence), Map.entry("kind", "RESERVE"),
+                        Map.entry("quantity", quantity), Map.entry("order_number", number),
+                        Map.entry("trace_id", TraceContext.getOrCreate()),
+                        Map.entry("event_type", "ACTIVITY_INVENTORY_RESERVE"),
+                        Map.entry("producer", "flashsale-order"),
+                        Map.entry("created_at", OffsetDateTime.now().toString())));
     }
 
     private void outbox(UUID eventId, String type, String key, String aggregate, String id, Map<String, ?> payload) {

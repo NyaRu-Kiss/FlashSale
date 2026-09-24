@@ -85,6 +85,15 @@ class JdbcOrderCreationStoreIntegrationTest {
         assertEquals(40, order.payableAmountMinor());
         assertEquals(1, value("select count(*) from activity_inventory_event where activity_id=?", activity));
         assertEquals(2, value("select count(*) from order_outbox where aggregate_id=? or aggregate_id=?", order.orderNumber(), Long.toString(activity)));
+        assertEquals("flashsale-order", jdbc.queryForObject("""
+                select payload->>'producer' from order_outbox where event_type='ACTIVITY_INVENTORY_RESERVE'
+                  and aggregate_id=?
+                """, String.class, Long.toString(activity)));
+        assertEquals(1, value("""
+                select count(*) from order_outbox where event_type='ACTIVITY_INVENTORY_RESERVE'
+                  and aggregate_id=? and jsonb_exists(payload, 'created_at')
+                  and jsonb_exists(payload, 'trace_id') and jsonb_exists(payload, 'idempotency_key')
+                """, Long.toString(activity)));
         assertEquals(2, value("select next_event_sequence from activity_inventory_sequence where activity_id=?", activity));
         assertEquals(1, value("select committed_quantity from activity_user_quota where activity_id=? and user_id=?", activity, customer));
         assertEquals(1, value("select count(*) from coupon_reservation where user_coupon_id=?", coupon));

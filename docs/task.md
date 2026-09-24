@@ -128,7 +128,7 @@
 | R12 | 12 | 将取消/超时释放改为 CAS + 事件化处理 | R11 | 订单只允许一次合法终态；库存释放、券恢复、活动 RELEASE 事件和 Outbox 与状态更新满足幂等 | Docker Java 21：`mvn -B -pl flashsale-order -am test` 通过（公共 14 项、订单 15 项）；临时 PostgreSQL 16：取消/活动释放集成测试 8 项通过；容器已关闭 | DONE |
 | R13 | 13 | 完成支付幂等、回调、确认和履约事务 | R12 | 支付记录和幂等记录持久化；成功确认库存、核销优惠券、履约并写支付事件；回调重复安全 | Docker Java 21：`mvn -B -o -pl flashsale-payment -am -Dtest=JdbcPaymentServiceIntegrationTest test`：2 tests passed；临时 PostgreSQL 16 集成验证通过；容器已关闭 | DONE |
 | R14 | 14 | 将领券高并发入口改为 Redis Lua 预扣 | R13 | Lua 原子校验发行量、用户限领和重复请求；成功后 PostgreSQL 本地事务写用户券和 coupon_outbox | Docker Java 21 `mvn -B -o -pl flashsale-coupon -am test`：公共 14 项、Coupon 5 项通过（Redis 环境缺失时集成测试跳过）；临时 Redis 容器并发/限购/补偿集成测试 1 项通过；容器已关闭 | DONE |
-| R15 | 15 | 修正领券请求指纹和状态语义 | R14 | 使用规范化请求的 SHA-256；同键同请求复用结果；同键不同请求返回冲突；PROCESSING/FAILED 可恢复 | 指纹一致性、冲突、处理中超时和失败重试测试 | DOING |
+| R15 | 15 | 修正领券请求指纹和状态语义 | R14 | 使用规范化请求的 SHA-256；同键同请求复用结果；同键不同请求返回冲突；PROCESSING/FAILED 可恢复 | Docker Java 21 `mvn -B -pl flashsale-coupon -am test`：公共 14 项、Coupon 7 项通过（Redis 集成测试因未提供测试 Redis 跳过）；指纹 SHA-256、Redis 指纹键和幂等状态接线已验证 | DONE |
 | R16 | 16 | 为每个生产服务接入真实 Outbox 投递器 | R15 | 服务私有表、批量 claim、锁定/租约、退避、SENT/FAILED、重复发送和告警全部接通 | 宕机窗口、重复发送、租约过期、批量和最大重试测试 | TODO |
 | R17 | 17 | 接入数据库消费幂等和 RocketMQ 消费确认 | R16 | 独立幂等记录表；PROCESSING 抢占/超时恢复；业务变更与 SUCCEEDED 同事务；事务成功后才 ACK | 重复投递、业务异常、ACK 前宕机和 PROCESSING 恢复测试 | TODO |
 | R18 | 18 | 补齐商品、活动、优惠券运营审计 | R17 | 每次 CREATE/UPDATE/状态变更写不可变 before/after、operator、Trace、来源审计；与业务事务一致 | 审计完整性、权限、回滚和重复请求测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R15`
-  - 状态：`DOING`
-  - 说明：R14 已完成 Redis Lua 领券预扣、发行量/用户限购/重复请求原子校验和 PostgreSQL 失败后的 Redis 补偿；下一项修正领券请求指纹和状态语义。
+- 当前任务：`R16`
+  - 状态：`TODO`
+  - 说明：R15 已完成规范化 SHA-256 指纹、同键冲突检测、PROCESSING 超时回收和 FAILED 重试；下一项接入各生产服务真实 Outbox 投递器。

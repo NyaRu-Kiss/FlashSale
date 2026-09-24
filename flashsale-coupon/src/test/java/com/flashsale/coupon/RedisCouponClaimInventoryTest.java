@@ -16,10 +16,11 @@ class RedisCouponClaimInventoryTest {
         when(redis.execute(any(), anyList(), anyString(), anyString(), anyString(), anyString())).thenReturn(1L);
         RedisCouponClaimInventory inventory = new RedisCouponClaimInventory(redis);
 
-        assertTrue(inventory.reserve(9, 7, "claim-1", 10, 2, 2, 0).accepted());
+        String fingerprint = CouponClaimRequestFingerprint.sha256(7, 9);
+        assertTrue(inventory.reserve(9, 7, fingerprint, 10, 2, 2, 0).accepted());
 
         ArgumentCaptor<DefaultRedisScript<Long>> script = ArgumentCaptor.forClass(DefaultRedisScript.class);
-        verify(redis).execute(script.capture(), eq(List.of("coupon:9:stock", "coupon:9:quota:7", "coupon:9:claim:7:" + Integer.toHexString("claim-1".hashCode()))),
+        verify(redis).execute(script.capture(), eq(List.of("coupon:9:stock", "coupon:9:quota:7", "coupon:9:claim:7:" + fingerprint)),
                 eq("8"), eq("0"), eq("2"), anyString());
         String lua = script.getValue().getScriptAsString();
         assertTrue(lua.contains("EXISTS', KEYS[3]"));
@@ -44,8 +45,9 @@ class RedisCouponClaimInventoryTest {
         when(redis.execute(any(), anyList())).thenReturn(1L, 0L);
         RedisCouponClaimInventory inventory = new RedisCouponClaimInventory(redis);
 
-        assertTrue(inventory.compensate(9, 7, "claim-1"));
-        assertFalse(inventory.compensate(9, 7, "claim-1"));
-        verify(redis, times(2)).execute(any(), eq(List.of("coupon:9:stock", "coupon:9:quota:7", "coupon:9:claim:7:" + Integer.toHexString("claim-1".hashCode()))));
+        String fingerprint = CouponClaimRequestFingerprint.sha256(7, 9);
+        assertTrue(inventory.compensate(9, 7, fingerprint));
+        assertFalse(inventory.compensate(9, 7, fingerprint));
+        verify(redis, times(2)).execute(any(), eq(List.of("coupon:9:stock", "coupon:9:quota:7", "coupon:9:claim:7:" + fingerprint)));
     }
 }

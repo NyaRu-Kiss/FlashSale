@@ -35,12 +35,12 @@ final class RedisCouponClaimInventory {
 
     RedisCouponClaimInventory(StringRedisTemplate redis) { this.redis = redis; }
 
-    Reservation reserve(long templateId, long userId, String idempotencyKey,
+    Reservation reserve(long templateId, long userId, String requestFingerprint,
                         int issueLimit, int issuedCount, int claimLimit, int claimedCount) {
         if (issueLimit <= issuedCount || claimLimit <= claimedCount) {
             return new Reservation(false, issueLimit <= issuedCount ? "COUPON_NOT_AVAILABLE" : "COUPON_CLAIM_LIMIT_EXCEEDED");
         }
-        Long result = redis.execute(RESERVE, keys(templateId, userId, idempotencyKey),
+        Long result = redis.execute(RESERVE, keys(templateId, userId, requestFingerprint),
                 Integer.toString(issueLimit - issuedCount), Integer.toString(claimedCount),
                 Integer.toString(claimLimit), Long.toString(TTL.toSeconds()));
         if (result == null || result == -1) return new Reservation(false, "COUPON_NOT_AVAILABLE");
@@ -49,13 +49,13 @@ final class RedisCouponClaimInventory {
         return new Reservation(true, "OK");
     }
 
-    boolean compensate(long templateId, long userId, String idempotencyKey) {
-        Long result = redis.execute(COMPENSATE, keys(templateId, userId, idempotencyKey));
+    boolean compensate(long templateId, long userId, String requestFingerprint) {
+        Long result = redis.execute(COMPENSATE, keys(templateId, userId, requestFingerprint));
         return result != null && result == 1;
     }
 
-    private static List<String> keys(long templateId, long userId, String idempotencyKey) {
-        String marker = Integer.toHexString(idempotencyKey.hashCode());
+    private static List<String> keys(long templateId, long userId, String requestFingerprint) {
+        String marker = requestFingerprint;
         String prefix = "coupon:" + templateId;
         return List.of(prefix + ":stock", prefix + ":quota:" + userId, prefix + ":claim:" + userId + ":" + marker);
     }

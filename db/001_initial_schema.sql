@@ -37,8 +37,8 @@ COMMENT ON TYPE payment_status IS '模拟支付记录状态枚举。';
 CREATE TYPE fulfillment_status AS ENUM ('COMPLETED');
 -- fulfillment_status: COMPLETED=模拟履约完成。
 COMMENT ON TYPE fulfillment_status IS '模拟履约状态枚举。';
-CREATE TYPE idempotency_status AS ENUM ('PROCESSING', 'SUCCEEDED', 'REJECTED');
--- idempotency_status: PROCESSING=处理中；SUCCEEDED=已成功并保存结果；REJECTED=已拒绝并保存结果。
+CREATE TYPE idempotency_status AS ENUM ('PROCESSING', 'SUCCEEDED', 'FAILED', 'REJECTED');
+-- idempotency_status: PROCESSING=处理中；SUCCEEDED=已成功并保存结果；FAILED=本次失败，可恢复重试；REJECTED=已拒绝并保存结果。
 COMMENT ON TYPE idempotency_status IS '下单幂等请求处理状态枚举。';
 CREATE TYPE outbox_status AS ENUM ('PENDING', 'SENT', 'FAILED');
 -- outbox_status: PENDING=待投递；SENT=已成功投递；FAILED=达到重试条件后暂时失败，等待补偿或人工处理。

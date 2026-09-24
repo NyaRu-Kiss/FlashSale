@@ -17,6 +17,12 @@ public final class RocketMqConsumerAdapter implements AutoCloseable {
 
     public RocketMqConsumerAdapter(String consumerGroup, String namesrvAddr, String topic, String selectorExpression,
                                    Function<byte[], MessageEnvelope> decoder, ConsumerMessageHandler handler) {
+        this(consumerGroup, namesrvAddr, topic, selectorExpression, decoder, envelope -> handler.handle(envelope));
+    }
+
+    public RocketMqConsumerAdapter(String consumerGroup, String namesrvAddr, String topic, String selectorExpression,
+                                   Function<byte[], MessageEnvelope> decoder,
+                                   Function<MessageEnvelope, ConsumerMessageHandler.HandleResult> handler) {
         if (consumerGroup == null || consumerGroup.isBlank() || namesrvAddr == null || namesrvAddr.isBlank()
                 || topic == null || topic.isBlank()) throw new IllegalArgumentException("RocketMQ configuration required");
         Objects.requireNonNull(decoder); Objects.requireNonNull(handler);
@@ -29,7 +35,7 @@ public final class RocketMqConsumerAdapter implements AutoCloseable {
         consumer.registerMessageListener((MessageListenerConcurrently) (messages, context) -> {
             for (MessageExt message : messages) {
                 MessageEnvelope envelope = decoder.apply(message.getBody());
-                if (handler.handle(envelope) == ConsumerMessageHandler.HandleResult.RETRY)
+                if (handler.apply(envelope) == ConsumerMessageHandler.HandleResult.RETRY)
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

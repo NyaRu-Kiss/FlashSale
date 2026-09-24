@@ -22,4 +22,10 @@ flashsale.outbox:
   max-attempts: ${FLASHSALE_OUTBOX_MAX_ATTEMPTS:8}
   backoff-initial: ${FLASHSALE_OUTBOX_BACKOFF_INITIAL:PT1S}
   backoff-maximum: ${FLASHSALE_OUTBOX_BACKOFF_MAXIMUM:PT5M}
+flashsale.consumer:
+  enabled: ${FLASHSALE_CONSUMER_ENABLED:false}
+  group: ${FLASHSALE_CONSUMER_GROUP:flashsale-activity-consumer}
+  namesrv-addr: ${ROCKETMQ_NAMESRV_ADDR:rocketmq-namesrv:9876}
+  topic: ${FLASHSALE_OUTBOX_TOPIC:FLASHSALE_EVENTS}
+  processing-timeout: ${FLASHSALE_CONSUMER_PROCESSING_TIMEOUT:PT5M}
 flashsale.activity.preheat-window: ${ACTIVITY_PREHEAT_WINDOW:PT10M}

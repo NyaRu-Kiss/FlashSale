@@ -46,7 +46,9 @@ final class ActivityService {
         requireOperator(actor);
         Activity existing = get(id);
         if (existing.status() != ActivityStatus.NOT_STARTED) throw new IllegalArgumentException("INVALID_ACTIVITY_STATE");
-        return changed(repository.casStatus(id, ActivityStatus.NOT_STARTED, ActivityStatus.CANCELLED, actor.userId()), "ACTIVITY_NOT_FOUND");
+        Activity cancelled = changed(repository.casStatus(id, ActivityStatus.NOT_STARTED, ActivityStatus.CANCELLED, actor.userId()), "ACTIVITY_NOT_FOUND");
+        repository.audit(actor.userId(), cancelled.id(), "CANCEL", existing, cancelled);
+        return cancelled;
     }
 
     @Transactional
@@ -85,6 +87,7 @@ final class ActivityService {
         if (!inventory.hasPreheatedKeys(id)) throw new IllegalArgumentException("ACTIVITY_NOT_READY");
         Activity started = changed(repository.casStatusAt(id, ActivityStatus.NOT_STARTED, ActivityStatus.ACTIVE, actor.userId()), "ACTIVITY_NOT_READY");
         if (!inventory.activate(started)) throw new IllegalStateException("ACTIVITY_PREHEAT_MISSING");
+        repository.audit(actor.userId(), started.id(), "RESUME", existing, started);
         return started;
     }
 
@@ -96,15 +99,19 @@ final class ActivityService {
         // The Redis Lua gate closes before the drain; the sequence lock is deliberately taken afterwards.
         inventory.closeGateAndAwaitInFlight(id);
         long barrier = repository.lockAndReadBarrier(id);
-        return changed(repository.pauseWithBarrier(id, barrier, actor.userId()), "INVALID_ACTIVITY_STATE");
+        Activity paused = changed(repository.pauseWithBarrier(id, barrier, actor.userId()), "INVALID_ACTIVITY_STATE");
+        repository.audit(actor.userId(), paused.id(), "PAUSE", existing, paused);
+        return paused;
     }
 
     @Transactional
     Activity end(Principal actor, long id) {
-        requireOperator(actor); get(id);
+        requireOperator(actor); Activity existing = get(id);
         Activity ended = repository.endIfDue(id, actor.userId());
         if (ended == null) throw new IllegalArgumentException("ACTIVITY_NOT_ACTIVE");
-        inventory.closeGate(id); return ended;
+        inventory.closeGate(id);
+        repository.audit(actor.userId(), ended.id(), "UPDATE", existing, ended);
+        return ended;
     }
 
     @Transactional

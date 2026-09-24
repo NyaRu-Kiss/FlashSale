@@ -1,7 +1,10 @@
 package com.flashsale.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flashsale.common.security.Principal;
 import com.flashsale.common.security.Role;
+import com.flashsale.common.trace.TraceContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,8 @@ class AdminAccountService {
     private final AuthUserRepository users;
     private final PasswordEncoder encoder;
     private final org.springframework.jdbc.core.JdbcTemplate jdbc;
-    AdminAccountService(AuthUserRepository users, PasswordEncoder encoder, org.springframework.jdbc.core.JdbcTemplate jdbc) { this.users=users; this.encoder=encoder; this.jdbc=jdbc; }
+    private final ObjectMapper mapper;
+    AdminAccountService(AuthUserRepository users, PasswordEncoder encoder, org.springframework.jdbc.core.JdbcTemplate jdbc, ObjectMapper mapper) { this.users=users; this.encoder=encoder; this.jdbc=jdbc; this.mapper=mapper; }
     @Transactional public AuthUser create(Principal actor, String username, String password, Role role) {
         requireAdmin(actor); validate(username,password,role);
         try { AuthUser u=users.create(username,encoder.encode(password),role); audit(actor,u.id(),"CREATE_ACCOUNT",null,u); return u; }
@@ -41,7 +45,22 @@ class AdminAccountService {
     private long activeAdmins(){ Long n=jdbc.queryForObject("select count(*) from app_user where role='ADMIN' and status='ACTIVE'",Long.class); return n==null?0:n; }
     private void requireAdmin(Principal p){ if(p==null||!p.canManageAccounts()) throw new IllegalArgumentException("FORBIDDEN"); }
     private void validate(String u,String p,Role r){ if(u==null||u.isBlank()||u.length()>64||p==null||p.length()<8||r==null) throw new IllegalArgumentException("VALIDATION_ERROR"); }
-    private void audit(Principal a,long id,String action,AuthUser before,AuthUser after){ jdbc.update("insert into operator_audit_log(operator_id,target_type,target_id,action,before_snapshot,after_snapshot) values (?, 'USER_ACCOUNT', ?, ?, cast(? as jsonb), cast(? as jsonb))",a.userId(),id,action,snapshot(before),snapshot(after)); }
-    private String snapshot(AuthUser u){ return u==null?null:String.format("{\"id\":%d,\"username\":\"%s\",\"role\":\"%s\",\"status\":\"%s\"}",u.id(),u.username(),u.role(),u.status()); }
+    private void audit(Principal a,long id,String action,AuthUser before,AuthUser after){
+        String traceId = TraceContext.getOrCreate();
+        jdbc.update("insert into operator_audit_log(operator_id,target_type,target_id,action,before_snapshot,after_snapshot,trace_id,request_source) values (?, 'USER_ACCOUNT', ?, ?, cast(? as jsonb), cast(? as jsonb), ?, ?)",
+                a.userId(),id,action,snapshot(before),snapshot(after),traceId,"admin:" + a.userId());
+    }
+    private String snapshot(AuthUser u){
+        if (u == null) return null;
+        try {
+            var node = mapper.createObjectNode();
+            node.put("id", u.id());
+            node.put("username", u.username());
+            node.put("role", u.role().name());
+            node.put("status", u.status());
+            return mapper.writeValueAsString(node);
+        }
+        catch (JsonProcessingException e) { throw new IllegalStateException("AUDIT_SERIALIZATION_FAILED", e); }
+    }
     record AccountAudit(long id, long operatorId, long targetId, String action, String traceId, java.time.OffsetDateTime createdAt) {}
 }

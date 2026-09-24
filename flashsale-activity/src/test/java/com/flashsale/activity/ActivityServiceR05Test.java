@@ -34,6 +34,20 @@ class ActivityServiceR05Test {
 
         assertEquals(created, service.create(operator, input));
         verify(inventory, never()).preheat(any());
+        verify(repository).create(input, operator.userId());
+    }
+
+    @Test void cancelWritesImmutableActivityAudit() {
+        Activity existing = activity(11, OffsetDateTime.now().plusMinutes(1));
+        Activity cancelled = new Activity(existing.id(), existing.name(), existing.productId(), existing.salePriceMinor(),
+                existing.initialStock(), existing.availableStock(), existing.purchaseLimitPerUser(), existing.startsAt(),
+                existing.endsAt(), ActivityStatus.CANCELLED, false, operator.userId());
+        when(repository.find(11)).thenReturn(existing);
+        when(repository.casStatus(11, ActivityStatus.NOT_STARTED, ActivityStatus.CANCELLED, operator.userId())).thenReturn(cancelled);
+        ActivityService service = new ActivityService(repository, inventory, recoveries, events);
+
+        assertEquals(cancelled, service.cancel(operator, 11));
+        verify(repository).audit(operator.userId(), 11, "CANCEL", existing, cancelled);
     }
 
     @Test void preheatTaskInitializesCandidateAndWritesReadyEvent() {

@@ -1,4 +1,7 @@
 package com.flashsale.activity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flashsale.common.trace.TraceContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,8 +16,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 final class ActivityRepository {
     private final JdbcTemplate jdbc;
+    private final ObjectMapper mapper;
 
-    ActivityRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+    ActivityRepository(JdbcTemplate jdbc, ObjectMapper mapper) { this.jdbc = jdbc; this.mapper = mapper; }
 
     Activity create(Activity input, long actor) {
         Activity result = jdbc.queryForObject("""
@@ -36,7 +40,17 @@ final class ActivityRepository {
                 """, UUID.randomUUID(), "ACTIVITY:CREATE:" + result.id(),
                 Long.toString(result.id()), "{\"activity_id\":" + result.id() + "}",
                 com.flashsale.common.trace.TraceContext.getOrCreate());
+        audit(actor, result.id(), "CREATE", null, result);
         return result;
+    }
+
+    void audit(long operatorId, long targetId, String action, Activity before, Activity after) {
+        jdbc.update("""
+                insert into operator_audit_log(operator_id, target_type, target_id, action,
+                    before_snapshot, after_snapshot, trace_id, request_source)
+                values (?, 'ACTIVITY', ?, ?, cast(? as jsonb), cast(? as jsonb), ?, ?)
+                """, operatorId, targetId, action, snapshot(before), snapshot(after),
+                TraceContext.getOrCreate(), "operator:" + operatorId);
     }
 
     Activity find(long id) {
@@ -185,5 +199,11 @@ final class ActivityRepository {
                 rs.getInt("purchase_limit_per_user"), rs.getObject("starts_at", OffsetDateTime.class),
                 rs.getObject("ends_at", OffsetDateTime.class), ActivityStatus.valueOf(rs.getString("status")),
                 false, rs.getLong("updated_by"));
+    }
+
+    private String snapshot(Activity value) {
+        if (value == null) return null;
+        try { return mapper.writeValueAsString(value); }
+        catch (JsonProcessingException e) { throw new IllegalStateException("AUDIT_SERIALIZATION_FAILED", e); }
     }
 }

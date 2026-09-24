@@ -49,6 +49,7 @@ final class ActivityRecoveryWorker {
             inventory.ensureRecoveryProjection(projected, projected.availableStock());
             Activity active = activities.casStatus(activity.id(), ActivityStatus.PAUSED, ActivityStatus.ACTIVE, job.requestedBy());
             if (active == null) throw new IllegalStateException("ACTIVITY_NOT_PAUSED");
+            activities.audit(job.requestedBy(), active.id(), "RESUME", activity, active);
             jobs.succeeded(id, activity.id(), TraceContext.getOrCreate());
         } catch (RuntimeException error) {
             inventory.closeGate(initial.activityId());

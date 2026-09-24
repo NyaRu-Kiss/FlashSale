@@ -14,6 +14,7 @@ class ActivityRecoveryWorkerR09Test {
     @Mock ActivityRecoveryRepository jobs;
     @Mock ActivityInventoryPort inventory;
     @Mock ActivityRecoveryVerifier verifier;
+    @Mock ActivityRecoveryAlert alerts;
 
     @Test void reconciliationFailureKeepsRedisStockUntouchedAndRecoveryFailed() {
         ActivityRecoveryJob job = job();
@@ -23,13 +24,14 @@ class ActivityRecoveryWorkerR09Test {
         when(jobs.claim(5, 4)).thenReturn(job);
         when(activities.find(11)).thenReturn(paused);
         doThrow(new IllegalStateException("ACTIVITY_LEDGER_MISMATCH")).when(verifier).verify(paused, 4L);
-        ActivityRecoveryWorker worker = new ActivityRecoveryWorker(activities, jobs, inventory, verifier);
+        ActivityRecoveryWorker worker = new ActivityRecoveryWorker(activities, jobs, inventory, verifier, alerts);
 
         worker.run(5);
 
         verify(inventory, never()).ensureRecoveryProjection(any(), anyInt());
         verify(inventory).closeGate(11);
         verify(jobs).failed(5, "ACTIVITY_LEDGER_MISMATCH");
+        verify(alerts).recoveryFailed(11, 5, "ACTIVITY_LEDGER_MISMATCH");
         verify(activities, never()).casStatus(anyLong(), any(), any(), anyLong());
     }
 
@@ -42,12 +44,25 @@ class ActivityRecoveryWorkerR09Test {
         when(activities.find(11)).thenReturn(paused);
         Activity active = active();
         when(activities.casStatus(11, ActivityStatus.PAUSED, ActivityStatus.ACTIVE, 7)).thenReturn(active);
-        ActivityRecoveryWorker worker = new ActivityRecoveryWorker(activities, jobs, inventory, verifier);
+        ActivityRecoveryWorker worker = new ActivityRecoveryWorker(activities, jobs, inventory, verifier, alerts);
 
         worker.run(5);
 
         verify(inventory).ensureRecoveryProjection(any(Activity.class), eq(20));
         verify(inventory, never()).rebuild(any(), anyInt());
+        verify(jobs).succeeded(eq(5L), eq(11L), anyString());
+    }
+
+    @Test void aConcurrentClaimForTheSameActivityDoesNotRunRecoveryTwice() {
+        when(jobs.byId(5)).thenReturn(job());
+        when(activities.lockAndReadBarrier(11)).thenReturn(4L);
+        when(jobs.claim(5, 4)).thenReturn(null);
+        ActivityRecoveryWorker worker = new ActivityRecoveryWorker(activities, jobs, inventory, verifier, alerts);
+
+        worker.run(5);
+
+        verifyNoInteractions(verifier, inventory, alerts);
+        verify(jobs, never()).failed(anyLong(), anyString());
     }
 
     private static ActivityRecoveryJob job() {

@@ -117,6 +117,17 @@ class JdbcOrderCreationStoreIntegrationTest {
         assertEquals(1, value("select available_stock from product where id=?", product));
     }
 
+    @Test void failedSubmissionRetriesWithSameKeyAfterStockRecovers() {
+        var request = request("ORDER_SUBMIT_recover", OrderKind.DIRECT, null, null, 4);
+        assertThrows(IllegalArgumentException.class, () -> create(request));
+        assertEquals(0, value("select count(*) from order_submission_idempotency where idempotency_key='ORDER_SUBMIT_recover'"));
+        jdbc.update("update product set available_stock=4 where id=?", product);
+        Order recovered = create(request);
+        assertEquals(recovered, create(request));
+        assertEquals(0, value("select available_stock from product where id=?", product));
+        assertEquals(1, value("select count(*) from customer_order where user_id=?", customer));
+    }
+
     @Test void multiProductFailureRollsBackEveryReservation() {
         long soldOut = jdbc.queryForObject("""
                 insert into product(sku,name,list_price_minor,available_stock,status,created_by,updated_by)

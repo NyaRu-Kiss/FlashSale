@@ -124,7 +124,7 @@
 | R08 | 8 | 接通活动 RESERVE/RELEASE 的订单、Outbox、MQ 消费链路 | R07 | 暂停前 RESERVE 和暂停期间 RELEASE 不得丢弃/拒绝；事件序号连续、消费幂等、checkpoint 不跨洞 | Docker Java 21：`mvn -B -pl flashsale-activity -am test` 通过（公共 14 项、活动 24 项）；覆盖事件 payload、重复/乱序消息、暂停期间 RELEASE、消费失败重试和连续 checkpoint | DONE |
 | R09 | 9 | 实现恢复前完整对账和 Redis 键保护 | R08 | 检查屏障内 Outbox SENT、连续 checkpoint、事件账本、流水、有效保留；Redis 键存在不得覆盖，丢失才可互斥重建 | Docker Java 21：`mvn -B -pl flashsale-activity -am test` 通过（公共 14 项、活动 30 项）；覆盖 Outbox/checkpoint/账本/流水/有效保留对账、对账失败不重建、已有库存键不覆盖和缺失库存键原子重建为 PAUSED/CLOSED | DONE |
 | R10 | 10 | 完成异步恢复锁、告警和恢复 Outbox | R09 | 每活动互斥恢复；失败保持 PAUSED 并告警；成功才预热详情、CAS ACTIVE 并写 `ACTIVITY_RESUMED` | Docker Java 21：`mvn -B -pl flashsale-activity -am test` 通过（公共 14 项、活动 32 项）；覆盖同活动并发 claim、失败关闭门闸/告警、成功 CAS 与 `ACTIVITY_RESUMED` Outbox 幂等契约 | DONE |
-| R11 | 11 | 将订单创建改为 PostgreSQL 本地事务闭环 | R10 | 幂等记录、订单、订单项、库存预占、优惠券锁券、活动 RESERVE 事件和 order_outbox 同事务提交 | 提交失败回滚、同键重试、同键冲突和全量预留测试 | TODO |
+| R11 | 11 | 将订单创建改为 PostgreSQL 本地事务闭环 | R10 | 幂等记录、订单、订单项、库存预占、优惠券锁券、活动 RESERVE 事件和 order_outbox 同事务提交 | Docker Java 21：`mvn -B test` 全量通过；临时 PostgreSQL/Redis：订单模块 12 tests passed，覆盖同键并发、同键冲突、失败回滚/恢复、多商品全量预留、优惠券锁定、活动连续事件和 Outbox；容器均 `--rm` 清理 | DONE |
 | R12 | 12 | 将取消/超时释放改为 CAS + 事件化处理 | R11 | 订单只允许一次合法终态；库存释放、券恢复、活动 RELEASE 事件和 Outbox 与状态更新满足幂等 | 用户竞争取消/支付/超时、重复释放和补偿测试 | TODO |
 | R13 | 13 | 完成支付幂等、回调、确认和履约事务 | R12 | 支付记录和幂等记录持久化；成功确认库存、核销优惠券、履约并写支付事件；回调重复安全 | 重复支付、重复回调、金额篡改、超时竞争和事务回滚测试 | TODO |
 | R14 | 14 | 将领券高并发入口改为 Redis Lua 预扣 | R13 | Lua 原子校验发行量、用户限领和重复请求；成功后 PostgreSQL 本地事务写用户券和 coupon_outbox | 并发超发、用户限领、Redis 预扣后 DB 失败补偿测试 | TODO |
@@ -189,6 +189,6 @@
 
 ### 当前修正执行位置
 
-- 当前任务：`R11`
-- 状态：`TODO`
-- 说明：R01-R10 已完成。R10 在同一 PostgreSQL 事务中锁活动 sequence 行取得恢复屏障并条件 claim，失败关闭门闸、标记 FAILED、发送告警，成功 CAS PAUSED -> ACTIVE 后写入幂等 ACTIVITY_RESUMED Outbox；不得并行处理 R12-R24。
+- 当前任务：`R12`
+  - 状态：`TODO`
+  - 说明：R11 已完成订单创建 PostgreSQL 本地事务闭环；下一项只处理取消/超时释放的 CAS、活动 RELEASE 事件、优惠券恢复和 Outbox。

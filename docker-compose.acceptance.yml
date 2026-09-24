@@ -1,4 +1,4 @@
-x-workspace: &workspace [".:/workspace", "flashsale-acceptance-m2:/root/.m2"]
+x-workspace: &workspace [".:/workspace", "flashsale-m2:/root/.m2"]
 
 services:
   migration:
@@ -108,4 +108,4 @@ services:
     healthcheck: *http-health
 
 volumes:
-  flashsale-acceptance-m2:
+  flashsale-m2:

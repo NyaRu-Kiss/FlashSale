@@ -26,6 +26,7 @@ services:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/flashsale
       FLYWAY_USER: flashsale
       FLYWAY_PASSWORD: flashsale
+    volumes: ["flashsale-m2:/root/.m2"]
     command: ["mvn", "-B", "-f", "flashsale-migration/pom.xml", "compile", "exec:java"]
 
   redis:
@@ -234,6 +235,7 @@ services:
       retries: 20
 
 volumes:
+  flashsale-m2:
   postgres-data:
   redis-data:
   minio-data:

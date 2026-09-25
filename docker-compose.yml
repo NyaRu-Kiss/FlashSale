@@ -9,6 +9,8 @@ x-observed-env: &observed-env
   SPRING_DATA_REDIS_HOST: redis
   ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
   JWT_SECRET: ${JWT_SECRET:-local-only-jwt-secret-at-least-32-bytes}
+  ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-local-admin-password}
   SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
   JAVA_TOOL_OPTIONS: -Xms64m -Xmx256m
 

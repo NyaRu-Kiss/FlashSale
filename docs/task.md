@@ -136,7 +136,7 @@
 | R20 | 20 | 将扫描、恢复、超时、对账和补偿接入 XXL-Job | R19 | 任务可领取、租约/幂等、失败重试、补偿记录和人工告警；禁止仅靠本地 `@Scheduled` | Docker Java 21：`mvn -B test -q` 全量通过；`docker compose config` 通过；临时 PostgreSQL Flyway V1→V3 迁移通过；XXL executor/handler、重复触发幂等、补偿失败记录+人工告警、失败重试测试通过；测试容器已关闭 | DONE |
 | R21 | 21 | 完成 SkyWalking/Prometheus/Loki/Grafana/Alertmanager 运行时接入 | R20 | HTTP/Feign/JDBC/Redis/RocketMQ Trace；所有服务可抓取指标；日志和告警链路可查询 | Docker Java 21 全量 `mvn -B test -q` 通过；Compose R21 配置、Prometheus 6 条规则、Promtail 语法通过；九服务分批健康启动、Prometheus 9/9 曾抓取 UP、SkyWalking 注册 9/9；实际 Trace 含 Gateway→Auth、Feign、JDBC、Redis、RocketMQ；RocketMQ/PostgreSQL/Redis/主机 exporter UP；Grafana 双数据源、Loki 日志、Alertmanager 告警可查询；测试容器已关闭 | DONE |
 | R22 | 22 | 完成结构化日志字段和跨线程/MQ/任务透传 | R21 | 日志至少含 `timestamp`、`level`、`service`、`trace_id`、`span_id`、`user_id`、`order_id`、`event_id`、`idempotency_key`、`outbox_id`、`error_code` | Docker Java 21：`mvn -B -pl flashsale-common,flashsale-gateway,flashsale-job -am test -q` 通过；结构化 MDC、MQ 消费、异常字段、Gateway/任务透传测试通过；容器已关闭 | DONE |
-| R23 | 23 | 补齐业务指标和告警规则 | R22 | 覆盖吞吐/延迟/错误率、预扣、领券、订单、支付、Outbox、消费重试/死信、幂等冲突、补偿和连接池 | 指标名称/标签契约、Prometheus 抓取和告警触发测试 | TODO |
+| R23 | 23 | 补齐业务指标和告警规则 | R22 | 覆盖吞吐/延迟/错误率、预扣、领券、订单、支付、Outbox、消费重试/死信、幂等冲突、补偿和连接池 | 指标名称/标签契约、Prometheus 抓取和告警触发测试 | DOING |
 | R24 | 24 | 补齐订单、支付、库存 HTTP 入口并完成端到端契约 | R23 | Gateway 路由对应真实 Controller；鉴权、资源归属、错误码、幂等键和 Trace 全部符合 API/时序设计 | Docker 端到端接口契约、权限、绕过网关和故障测试 | TODO |
 
 ### R 任务逐项三方依据

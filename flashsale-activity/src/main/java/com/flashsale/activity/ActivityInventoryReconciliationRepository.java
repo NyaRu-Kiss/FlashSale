@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 /** PostgreSQL evidence checks required before a paused activity may be recovered. */
 @Repository
-final class ActivityInventoryReconciliationRepository {
+class ActivityInventoryReconciliationRepository {
     private final JdbcTemplate jdbc;
 
     ActivityInventoryReconciliationRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }

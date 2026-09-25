@@ -1,7 +1,7 @@
 package com.flashsale.activity;
 import java.sql.ResultSet; import java.sql.SQLException; import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate; import org.springframework.stereotype.Repository;
-@Repository final class ActivityRecoveryRepository {
+@Repository class ActivityRecoveryRepository {
  private final JdbcTemplate jdbc; ActivityRecoveryRepository(JdbcTemplate jdbc){this.jdbc=jdbc;}
  ActivityRecoveryJob pendingOrCreate(long activityId,long actor){ActivityRecoveryJob x=active(activityId);if(x!=null)return x;return jdbc.queryForObject("insert into activity_recovery_job(activity_id,requested_by) values (?,?) returning id,activity_id,requested_by,recovery_barrier_sequence,status,last_error,requested_at,completed_at",(r,n)->map(r),activityId,actor);}
  ActivityRecoveryJob latest(long activityId){return jdbc.query("select id,activity_id,requested_by,recovery_barrier_sequence,status,last_error,requested_at,completed_at from activity_recovery_job where activity_id=? order by id desc limit 1",(r,n)->map(r),activityId).stream().findFirst().orElse(null);}

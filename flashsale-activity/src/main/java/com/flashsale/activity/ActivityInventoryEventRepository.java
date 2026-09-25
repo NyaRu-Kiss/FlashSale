@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 /** Allocates contiguous activity event sequences under a row lock. */
 @Repository
-final class ActivityInventoryEventRepository {
+class ActivityInventoryEventRepository {
     private final JdbcTemplate jdbc;
     ActivityInventoryEventRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
 

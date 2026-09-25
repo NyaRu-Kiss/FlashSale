@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 /** PostgreSQL authority for activity state. Every lifecycle write is conditional. */
 @Repository
-final class ActivityRepository {
+class ActivityRepository {
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper;
 

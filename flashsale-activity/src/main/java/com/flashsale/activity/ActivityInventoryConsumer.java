@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** Applies durable inventory projection strictly in event sequence order. */
 @Service
-final class ActivityInventoryConsumer {
+class ActivityInventoryConsumer {
     private final ActivityInventoryEventRepository events;
     private final JdbcTemplate jdbc;
     ActivityInventoryConsumer(ActivityInventoryEventRepository events, JdbcTemplate jdbc) { this.events = events; this.jdbc = jdbc; }

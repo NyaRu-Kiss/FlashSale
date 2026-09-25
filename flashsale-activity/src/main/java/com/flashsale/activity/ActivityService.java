@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-final class ActivityService {
+class ActivityService {
     private final ActivityRepository repository;
     private final ActivityInventoryPort inventory;
     private final ActivityRecoveryRepository recoveries;

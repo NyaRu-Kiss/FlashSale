@@ -8,7 +8,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 /** Coordinates Redis admission with durable, contiguous activity inventory events. */
 @Service
-final class ActivityInventoryService {
+class ActivityInventoryService {
     private final ActivityRepository activities;
     private final ActivityInventoryPort inventory;
     private final ActivityInventoryEventRepository events;

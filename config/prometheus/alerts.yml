@@ -1,4 +1,11 @@
 groups:
+  - name: flashsale-runtime
+    rules:
+      - alert: FlashSaleServiceDown
+        expr: up{job="flashsale-services"} == 0
+        for: 1m
+        labels: { severity: critical }
+        annotations: { summary: "FlashSale service {{ $labels.instance }} is unavailable" }
   - name: flashsale-messaging
     rules:
       - alert: FlashSaleOutboxBacklog

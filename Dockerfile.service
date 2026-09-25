@@ -7,5 +7,7 @@ RUN mvn -B -pl "${MODULE}" -am -DskipTests package
 FROM eclipse-temurin:21-jre
 ARG MODULE
 COPY --from=apache/skywalking-java-agent:9.4.0-java21 /skywalking/agent /opt/skywalking/agent
+RUN cp /opt/skywalking/agent/optional-plugins/apm-spring-cloud-gateway-4.x-plugin-*.jar /opt/skywalking/agent/plugins/ \
+    && cp /opt/skywalking/agent/optional-plugins/apm-spring-webflux-6.x-plugin-*.jar /opt/skywalking/agent/plugins/
 COPY --from=build /workspace/${MODULE}/target/${MODULE}-0.1.0-SNAPSHOT.jar /app/app.jar
 ENTRYPOINT ["java", "-javaagent:/opt/skywalking/agent/skywalking-agent.jar", "-jar", "/app/app.jar"]

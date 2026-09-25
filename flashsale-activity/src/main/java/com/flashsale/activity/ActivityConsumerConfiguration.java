@@ -25,7 +25,7 @@ final class ActivityConsumerConfiguration {
         ConsumerMessageHandler.BusinessHandler business = message -> consumer.consume(decode(message, json));
         var durable = new JdbcConsumerMessageHandler(jdbc, manager, "activity_message_idempotency", timeout, business);
         var adapter = new RocketMqConsumerAdapter(group, namesrv, topic,
-                "ACTIVITY_INVENTORY_RESERVE || ACTIVITY_INVENTORY_RELEASE",
+                "ACTIVITY_INVENTORY_RESERVE || ACTIVITY_INVENTORY_RELEASE || STOCK_RELEASE",
                 body -> decodeEnvelope(body, json), message -> durable.handle(message, message.eventId().toString()));
         adapter.start();
         return adapter;

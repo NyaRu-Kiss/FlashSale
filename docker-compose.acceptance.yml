@@ -94,6 +94,7 @@ services:
     environment:
       <<: *acceptance-env
       SERVICE_NAME: flashsale-inventory
+      INVENTORY_ACCEPTANCE_SEED: 9001=10
     <<: *acceptance-service
   coupon:
     image: flashsale-coupon:acceptance

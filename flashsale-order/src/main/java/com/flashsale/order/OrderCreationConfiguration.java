@@ -29,8 +29,9 @@ class OrderCreationConfiguration {
                                                  CouponGateway coupons, Clock clock) {
         return new OrderPreviewService(products, activities, coupons, clock);
     }
-    @Bean OrderService orderService(OrderCreationStore store, OrderPreviewService previews) {
-        return new OrderService(store, previews);
+    @Bean OrderService orderService(OrderCreationStore store, OrderPreviewService previews,
+                                    com.flashsale.common.metrics.BusinessMetrics metrics) {
+        return new OrderService(store, previews, metrics);
     }
     @Bean OrderCancellationStore orderCancellationStore(JdbcTemplate jdbc, PlatformTransactionManager manager,
                                                          ObjectMapper json) {

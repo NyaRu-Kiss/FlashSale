@@ -2,6 +2,7 @@ package com.flashsale.coupon;
 
 import com.flashsale.common.security.Principal;
 import com.flashsale.common.trace.TraceContext;
+import com.flashsale.common.metrics.BusinessMetrics;
 import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -16,14 +17,17 @@ class CouponClaimService {
     private final JdbcTemplate jdbc;
     private final RedisCouponClaimInventory redis;
     private final TransactionTemplate transactions;
+    private final BusinessMetrics metrics;
 
-    CouponClaimService(JdbcTemplate jdbc, RedisCouponClaimInventory redis) { this(jdbc, redis, null); }
+    CouponClaimService(JdbcTemplate jdbc, RedisCouponClaimInventory redis) { this(jdbc, redis, null, null); }
+    CouponClaimService(JdbcTemplate jdbc, RedisCouponClaimInventory redis, PlatformTransactionManager manager) { this(jdbc, redis, manager, null); }
 
     @org.springframework.beans.factory.annotation.Autowired
-    CouponClaimService(JdbcTemplate jdbc, RedisCouponClaimInventory redis, PlatformTransactionManager manager) {
+    CouponClaimService(JdbcTemplate jdbc, RedisCouponClaimInventory redis, PlatformTransactionManager manager, BusinessMetrics metrics) {
         this.jdbc = jdbc;
         this.redis = redis;
         this.transactions = manager == null ? null : new TransactionTemplate(manager);
+        this.metrics = metrics;
     }
 
     long claim(Principal principal, long templateId, String idempotencyKey) {
@@ -33,17 +37,20 @@ class CouponClaimService {
         String key = normalizeKey(idempotencyKey);
         String fingerprint = CouponClaimRequestFingerprint.sha256(principal.userId(), templateId);
         ClaimDecision decision = inTransaction(() -> claimIdempotency(principal.userId(), templateId, key, fingerprint));
-        if (decision.replayed()) return decision.userCouponId();
+        if (decision.replayed()) { if (metrics != null) metrics.couponClaim("SUCCESS"); return decision.userCouponId(); }
 
         boolean[] reserved = {false};
         try {
-            return inTransaction(() -> createClaim(principal, templateId, key, fingerprint, reserved));
+            long result = inTransaction(() -> createClaim(principal, templateId, key, fingerprint, reserved));
+            if (metrics != null) metrics.couponClaim("SUCCESS");
+            return result;
         } catch (RuntimeException failure) {
             if (reserved[0] && !redis.compensate(templateId, principal.userId(), fingerprint)) {
                 recordFailure(principal.userId(), templateId, key, fingerprint, "COUPON_REDIS_COMPENSATION_FAILED");
                 throw new IllegalStateException("COUPON_REDIS_COMPENSATION_FAILED", failure);
             }
             String code = failure instanceof ClaimFailure claimFailure ? claimFailure.code : "COUPON_CLAIM_FAILED";
+            if (metrics != null) metrics.couponClaim(code);
             recordFailure(principal.userId(), templateId, key, fingerprint, code);
             throw failure instanceof ClaimFailure ? new IllegalArgumentException(code) : failure;
         }

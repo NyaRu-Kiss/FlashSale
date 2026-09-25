@@ -12,7 +12,8 @@ class PaymentConfiguration {
     @Bean Clock paymentClock() { return Clock.systemUTC(); }
     @Bean PaymentGateway paymentGateway() { return new SimulatedPaymentGateway(); }
     @Bean JdbcPaymentService jdbcPaymentService(JdbcTemplate jdbc, PlatformTransactionManager manager,
-                                                PaymentGateway gateway, ObjectMapper json, Clock clock) {
-        return new JdbcPaymentService(jdbc, manager, gateway, json, clock);
+                                                PaymentGateway gateway, ObjectMapper json, Clock clock,
+                                                com.flashsale.common.metrics.BusinessMetrics metrics) {
+        return new JdbcPaymentService(jdbc, manager, gateway, json, clock, metrics);
     }
 }

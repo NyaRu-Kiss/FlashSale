@@ -3,6 +3,7 @@ package com.flashsale.payment;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flashsale.common.trace.TraceContext;
+import com.flashsale.common.metrics.BusinessMetrics;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.nio.charset.StandardCharsets;
@@ -21,24 +22,40 @@ public final class JdbcPaymentService {
     private final PaymentGateway gateway;
     private final ObjectMapper json;
     private final Clock clock;
+    private final BusinessMetrics metrics;
 
     public JdbcPaymentService(JdbcTemplate jdbc, PlatformTransactionManager manager,
                               PaymentGateway gateway, ObjectMapper json, Clock clock) {
+        this(jdbc, manager, gateway, json, clock, null);
+    }
+
+    public JdbcPaymentService(JdbcTemplate jdbc, PlatformTransactionManager manager,
+                              PaymentGateway gateway, ObjectMapper json, Clock clock, BusinessMetrics metrics) {
         this.jdbc = jdbc;
         this.transactions = new TransactionTemplate(manager);
         this.gateway = gateway;
         this.json = json;
         this.clock = clock;
+        this.metrics = metrics;
     }
 
     public Result pay(long userId, String orderNumber, String idempotencyKey,
                       long amountMinor, String currency, String paymentStatus) {
-        return transactions.execute(status -> payInTransaction(
-                userId, orderNumber, idempotencyKey, amountMinor, currency, paymentStatus));
+        try {
+            Result result = transactions.execute(status -> payInTransaction(
+                    userId, orderNumber, idempotencyKey, amountMinor, currency, paymentStatus));
+            if (metrics != null) metrics.payment("pay", result.success() ? "SUCCESS" : result.failureCode());
+            return result;
+        } catch (RuntimeException error) {
+            if (metrics != null) metrics.payment("pay", error.getMessage() == null ? "ERROR" : error.getMessage());
+            throw error;
+        }
     }
 
     public Result callback(PaymentGateway.CallbackRequest request) {
-        return transactions.execute(status -> callbackInTransaction(request));
+        Result result = transactions.execute(status -> callbackInTransaction(request));
+        if (metrics != null) metrics.payment("callback", result.success() ? "SUCCESS" : result.failureCode());
+        return result;
     }
 
     private Result payInTransaction(long userId, String orderNumber, String key,

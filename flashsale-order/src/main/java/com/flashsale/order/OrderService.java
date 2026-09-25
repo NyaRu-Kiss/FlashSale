@@ -1,5 +1,6 @@
 package com.flashsale.order;
 
+import com.flashsale.common.metrics.BusinessMetrics;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,10 +11,16 @@ import java.util.Objects;
 public final class OrderService {
     private final OrderCreationStore store;
     private final OrderPreviewService previews;
+    private final BusinessMetrics metrics;
 
     public OrderService(OrderCreationStore store, OrderPreviewService previews) {
+        this(store, previews, null);
+    }
+
+    public OrderService(OrderCreationStore store, OrderPreviewService previews, BusinessMetrics metrics) {
         this.store = Objects.requireNonNull(store);
         this.previews = Objects.requireNonNull(previews);
+        this.metrics = metrics;
     }
 
     public Order create(OrderCreateRequest request) {
@@ -21,7 +28,14 @@ public final class OrderService {
                 || !request.idempotencyKey().startsWith("ORDER_SUBMIT_") || request.idempotencyKey().length() > 128
                 || request.preview() == null || request.preview().userId() != request.userId())
             throw new IllegalArgumentException("VALIDATION_ERROR");
-        return store.create(request, fingerprint(request.preview()), () -> previews.preview(request.preview()));
+        try {
+            Order order = store.create(request, fingerprint(request.preview()), () -> previews.preview(request.preview()));
+            if (metrics != null) metrics.order("create", "SUCCESS");
+            return order;
+        } catch (RuntimeException error) {
+            if (metrics != null) metrics.order("create", error.getMessage() == null ? "ERROR" : error.getMessage());
+            throw error;
+        }
     }
 
     static String fingerprint(OrderPreviewRequest request) {

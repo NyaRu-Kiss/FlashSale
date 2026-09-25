@@ -8,6 +8,46 @@ groups:
         annotations: { summary: "FlashSale service {{ $labels.instance }} is unavailable" }
   - name: flashsale-messaging
     rules:
+      - alert: FlashSaleRequestErrorRate
+        expr: sum by (service, operation) (rate(flashsale_request_error_total[5m])) / clamp_min(sum by (service, operation) (rate(flashsale_request_total[5m])), 1) > 0.05
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale request error rate is above 5%" }
+      - alert: FlashSaleRequestLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le, service, operation) (rate(flashsale_request_duration_seconds_bucket[5m]))) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale request p95 latency is above one second" }
+      - alert: FlashSaleReserveFailures
+        expr: sum by (service) (rate(flashsale_reserve_total{result!="SUCCESS"}[5m])) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale reservation failures are elevated" }
+      - alert: FlashSaleCouponClaimFailures
+        expr: sum(rate(flashsale_coupon_claim_total{result!="SUCCESS"}[5m])) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale coupon claim failures are elevated" }
+      - alert: FlashSaleOrderFailures
+        expr: sum by (operation) (rate(flashsale_order_total{result!="SUCCESS"}[5m])) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale order failures are elevated" }
+      - alert: FlashSalePaymentFailures
+        expr: sum by (operation) (rate(flashsale_payment_total{result!="SUCCESS"}[5m])) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale payment failures are elevated" }
+      - alert: FlashSaleIdempotencyConflicts
+        expr: sum by (domain) (rate(flashsale_idempotency_conflict_total[5m])) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: "FlashSale idempotency conflicts are elevated" }
+      - alert: FlashSaleConnectionPoolExhaustion
+        expr: max by (service) (hikaricp_connections_pending) > 0
+        for: 5m
+        labels: { severity: critical }
+        annotations: { summary: "FlashSale database connection pool has pending waiters" }
       - alert: FlashSaleOutboxBacklog
         expr: flashsale_outbox_pending > 100
         for: 5m

@@ -87,7 +87,7 @@ class CouponClaimService {
                 """, coupon, principal.userId(), templateId, key);
         jdbc.update("""
                 insert into coupon_outbox(event_id,event_type,idempotency_key,aggregate_type,aggregate_id,payload,trace_id)
-                values(?,?,?,?,?,?,?)
+                values(?,?,?,?,?,cast(? as jsonb),?)
                 """, UUID.randomUUID(), "COUPON_CLAIMED", "COUPON_CLAIM_" + key, "USER_COUPON", coupon,
                 "{\"template_id\":" + templateId + ",\"user_id\":" + principal.userId() + "}", TraceContext.getOrCreate());
         return coupon;

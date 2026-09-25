@@ -291,11 +291,31 @@ services:
       timeout: 5s
       retries: 20
 
+  skywalking-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: skywalking
+      POSTGRES_USER: skywalking
+      POSTGRES_PASSWORD: ${SKYWALKING_DB_PASSWORD:-skywalking-local}
+    volumes: ["skywalking-postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skywalking -d skywalking"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   skywalking-oap:
     image: apache/skywalking-oap-server:10.2.0
     environment:
-      SW_STORAGE: h2
+      SW_STORAGE: postgresql
+      SW_JDBC_URL: jdbc:postgresql://skywalking-postgres:5432/skywalking
+      SW_DATA_SOURCE_USER: skywalking
+      SW_DATA_SOURCE_PASSWORD: ${SKYWALKING_DB_PASSWORD:-skywalking-local}
+      JAVA_OPTS: -Xms256m -Xmx512m
     ports: ["${SKYWALKING_OAP_PORT:-12800}:12800"]
+    depends_on:
+      skywalking-postgres:
+        condition: service_healthy
 
   skywalking-ui:
     image: apache/skywalking-ui:10.2.0
@@ -410,3 +430,4 @@ volumes:
   loki-data:
   grafana-data:
   xxl-mysql-data:
+  skywalking-postgres-data:

@@ -97,8 +97,8 @@
 ## 当前执行位置
 
 - 当前任务：`R21`
-  - 状态：`TODO`
-  - 备注：R20 已完成偏离 20；下一项只处理运行时可观测性接入。
+  - 状态：`DOING`
+  - 备注：本次只修复偏离 21：SkyWalking、Prometheus、Loki、Grafana、Alertmanager 运行时接入。
 
 ## I. 设计偏离修正任务
 
@@ -134,7 +134,7 @@
 | R18 | 18 | 补齐商品、活动、优惠券运营审计 | R17 | 每次 CREATE/UPDATE/状态变更写不可变 before/after、operator、Trace、来源审计；与业务事务一致 | Docker Java 21：`mvn -B -pl flashsale-product,flashsale-activity,flashsale-coupon,flashsale-auth -am test -q` 通过；活动审计单测覆盖 CREATE/CANCEL，账户快照不含 password_hash；容器已关闭 | DONE |
 | R19 | 19 | 统一缓存失效事件契约 | R18 | 事件必须含资源类型、资源 ID、缓存键、Trace ID；重复 DEL 安全；失败按 Outbox 重试并告警 | Docker Java 21 全量 `mvn -B test -q` 通过；商品、优惠券、活动事件契约测试通过；临时 Redis 跨服务事件重复 DEL 集成测试通过，容器已关闭；失败触发 MQ 重投与错误日志，Outbox 发送失败按原有退避/耗尽告警路径处理 | DONE |
 | R20 | 20 | 将扫描、恢复、超时、对账和补偿接入 XXL-Job | R19 | 任务可领取、租约/幂等、失败重试、补偿记录和人工告警；禁止仅靠本地 `@Scheduled` | Docker Java 21：`mvn -B test -q` 全量通过；`docker compose config` 通过；临时 PostgreSQL Flyway V1→V3 迁移通过；XXL executor/handler、重复触发幂等、补偿失败记录+人工告警、失败重试测试通过；测试容器已关闭 | DONE |
-| R21 | 21 | 完成 SkyWalking/Prometheus/Loki/Grafana/Alertmanager 运行时接入 | R20 | HTTP/Feign/JDBC/Redis/RocketMQ Trace；所有服务可抓取指标；日志和告警链路可查询 | Docker 全栈健康检查、Trace、指标和告警演练 | TODO |
+| R21 | 21 | 完成 SkyWalking/Prometheus/Loki/Grafana/Alertmanager 运行时接入 | R20 | HTTP/Feign/JDBC/Redis/RocketMQ Trace；所有服务可抓取指标；日志和告警链路可查询 | Docker 全栈健康检查、Trace、指标和告警演练 | DOING |
 | R22 | 22 | 完成结构化日志字段和跨线程/MQ/任务透传 | R21 | 日志至少含 `timestamp`、`level`、`service`、`trace_id`、`span_id`、`user_id`、`order_id`、`event_id`、`idempotency_key`、`outbox_id`、`error_code` | HTTP、MQ、任务、异常和字段脱敏测试 | TODO |
 | R23 | 23 | 补齐业务指标和告警规则 | R22 | 覆盖吞吐/延迟/错误率、预扣、领券、订单、支付、Outbox、消费重试/死信、幂等冲突、补偿和连接池 | 指标名称/标签契约、Prometheus 抓取和告警触发测试 | TODO |
 | R24 | 24 | 补齐订单、支付、库存 HTTP 入口并完成端到端契约 | R23 | Gateway 路由对应真实 Controller；鉴权、资源归属、错误码、幂等键和 Trace 全部符合 API/时序设计 | Docker 端到端接口契约、权限、绕过网关和故障测试 | TODO |
@@ -190,5 +190,5 @@
 ### 当前修正执行位置
 
 - 当前任务：`R21`
-  - 状态：`TODO`
-  - 说明：R20 已依据偏离清单第 20 项、时序设计第 5 节和第 11 节、跨切面设计第 6 节完成；下一项为可观测性运行时接入。
+  - 状态：`DOING`
+  - 说明：本次只修复偏离 21 的运行时可观测性接入。

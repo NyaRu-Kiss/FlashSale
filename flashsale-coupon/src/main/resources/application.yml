@@ -22,6 +22,10 @@ flashsale.outbox:
   max-attempts: ${FLASHSALE_OUTBOX_MAX_ATTEMPTS:8}
   backoff-initial: ${FLASHSALE_OUTBOX_BACKOFF_INITIAL:PT1S}
   backoff-maximum: ${FLASHSALE_OUTBOX_BACKOFF_MAXIMUM:PT5M}
+flashsale.cache-invalidation.consumer:
+  enabled: ${FLASHSALE_CACHE_INVALIDATION_CONSUMER_ENABLED:false}
+  namesrv-addr: ${ROCKETMQ_NAMESRV_ADDR:rocketmq-namesrv:9876}
+  topic: ${FLASHSALE_OUTBOX_TOPIC:FLASHSALE_EVENTS}
 flashsale.cache:
   ttl: ${COUPON_CACHE_TTL:PT5M}
   negative-ttl: ${COUPON_CACHE_NEGATIVE_TTL:PT30S}

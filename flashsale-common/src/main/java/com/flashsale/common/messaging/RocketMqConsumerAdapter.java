@@ -10,9 +10,12 @@ import org.apache.rocketmq.common.message.MessageExt;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** RocketMQ consumer adapter. Decoder belongs to the service because payload schemas are service-owned. */
 public final class RocketMqConsumerAdapter implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(RocketMqConsumerAdapter.class);
     private final DefaultMQPushConsumer consumer;
 
     public RocketMqConsumerAdapter(String consumerGroup, String namesrvAddr, String topic, String selectorExpression,
@@ -34,9 +37,15 @@ public final class RocketMqConsumerAdapter implements AutoCloseable {
         } catch (Exception e) { throw new IllegalArgumentException("invalid RocketMQ subscription", e); }
         consumer.registerMessageListener((MessageListenerConcurrently) (messages, context) -> {
             for (MessageExt message : messages) {
-                MessageEnvelope envelope = decoder.apply(message.getBody());
-                if (handler.apply(envelope) == ConsumerMessageHandler.HandleResult.RETRY)
+                try {
+                    MessageEnvelope envelope = decoder.apply(message.getBody());
+                    if (handler.apply(envelope) == ConsumerMessageHandler.HandleResult.RETRY)
+                        return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                } catch (RuntimeException error) {
+                    LOG.error("RocketMQ consumer failed; message will be retried topic={} keys={} reconsumeTimes={}",
+                            message.getTopic(), message.getKeys(), message.getReconsumeTimes(), error);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                }
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });

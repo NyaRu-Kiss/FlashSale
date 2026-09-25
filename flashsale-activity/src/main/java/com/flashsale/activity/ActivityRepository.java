@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -33,13 +34,15 @@ final class ActivityRepository {
                 input.startsAt(), input.endsAt(), actor, actor);
         jdbc.update("insert into activity_inventory_sequence(activity_id) values (?)", result.id());
         jdbc.update("insert into activity_inventory_checkpoint(activity_id) values (?)", result.id());
+        String traceId = TraceContext.getOrCreate();
+        String payload = json(Map.of("resource_type", "ACTIVITY", "resource_id", result.id(),
+                "cache_keys", List.of(RedisActivityInventory.detailKey(result.id())), "trace_id", traceId));
         jdbc.update("""
                 insert into activity_outbox(event_id, event_type, idempotency_key, aggregate_type,
                     aggregate_id, payload, trace_id)
                 values (?, 'ACTIVITY_CACHE_INVALIDATE', ?, 'ACTIVITY', ?, ?::jsonb, ?)
                 """, UUID.randomUUID(), "ACTIVITY:CREATE:" + result.id(),
-                Long.toString(result.id()), "{\"activity_id\":" + result.id() + "}",
-                com.flashsale.common.trace.TraceContext.getOrCreate());
+                Long.toString(result.id()), payload, traceId);
         audit(actor, result.id(), "CREATE", null, result);
         return result;
     }
@@ -203,6 +206,10 @@ final class ActivityRepository {
 
     private String snapshot(Activity value) {
         if (value == null) return null;
+        return json(value);
+    }
+
+    private String json(Object value) {
         try { return mapper.writeValueAsString(value); }
         catch (JsonProcessingException e) { throw new IllegalStateException("AUDIT_SERIALIZATION_FAILED", e); }
     }

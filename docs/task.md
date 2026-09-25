@@ -88,7 +88,60 @@
 
 | ID | 任务 | 前置 | 完成标准 | 验证 | 状态 |
 |---|---|---|---|---|---|
-| H01 | 全量 HTTP 接口契约与权限验收 | C01-C03,D01-D05,E01-E06,F01-F07,G04 | Auth、商品、优惠券、活动、订单、支付、库存和运营接口逐项符合 `api-design.md`：路径/方法、请求响应字段、分页、错误码、JWT 角色、资源归属、幂等键和 Trace ID 一致；未授权、越权、重复请求和非法参数均返回规定结果 | 2026-09-25～2026-09-26：按 `docker-compose.yml` + `docker-compose.acceptance.yml --profile r21` 分层执行验收，测试完成后已停止本轮启动服务，仅保留预先存在的独立 `redis` 容器。已验证且当前无异常：Compose/Flyway；Auth 注册、登录、JWT、Trace；Product CRUD/上下架/查询；Coupon 创建、规则限制、暂停/恢复、领取、重复领取幂等；Activity 创建、取消/重复取消、指标、预热、开始、暂停/重复暂停、恢复请求/查询；Order 预览、创建、列表、详情、明细、重复与冲突幂等、取消/重复取消；Payment 成功支付、重复支付幂等、回调及回调幂等、金额/币种异常；Inventory 运营 JWT、未授权、非法数量、资源不存在，以及 acceptance seed `INVENTORY_ACCEPTANCE_SEED=9001=10` 下预占/重复预占、确认/重复确认、已确认释放错误、释放/重复释放；CUSTOMER/OPERATOR/ADMIN 权限隔离和 Trace ID。已验证库存活动链路：Redis 库存从 9 减至 8 后经取消释放恢复至 8；活动库存事件 payload、Outbox、消费者幂等和 checkpoint 推进测试通过；活动 5 暂停后屏障为 `3`，延迟启用 Outbox/Activity Consumer 后 3 条事件连续消费至 checkpoint `3`，幂等记录均为 `SUCCEEDED`，未发现库存流水、账本、Redis 不一致。已完成的代码修复已分别提交：`bacf0e3`、`f7f2e22`、`80a495d` 等。不能严格保证/尚未完成：没有完成一次“存在未消费库存事件且 barrier>0 → 暂停 → 追平 → 恢复成功 → 最终库存对账”的真实 HTTP 闭环；活动 5 后续恢复因时间窗口过期返回 `ACTIVITY_NOT_READY`，不是库存校验失败；活动 7 的恢复任务 `id=4` 虽为 `SUCCEEDED` 且活动回到 `ACTIVE`，但 `barrier=0`，只证明无待处理事件时恢复成功。该边缘场景暂不继续处理，保留为 H01 未完成项，后续需单独补做。 | DOING |
+| H01 | 全量 HTTP 接口契约与权限验收 | C01-C03,D01-D05,E01-E06,F01-F07,G04 | Auth、商品、优惠券、活动、订单、支付、库存和运营接口逐项符合 `api-design.md`：路径/方法、请求响应字段、分页、错误码、JWT 角色、资源归属、幂等键和 Trace ID 一致；未授权、越权、重复请求和非法参数均返回规定结果 | 2026-09-25～2026-09-26：按 `docker-compose.yml` + `docker-compose.acceptance.yml --profile r21` 分层执行验收，测试完成后已停止本轮启动服务，仅保留预先存在的独立 `redis` 容器。已验证且当前无异常：Compose/Flyway；Auth 注册、登录、JWT、Trace；Product CRUD/上下架/查询；Coupon 创建、规则限制、暂停/恢复、领取、重复领取幂等；Activity 创建、取消/重复取消、指标、预热、开始、暂停/重复暂停、恢复请求/查询；Order 预览、创建、列表、详情、明细、重复与冲突幂等、取消/重复取消；Payment 成功支付、重复支付幂等、回调及回调幂等、金额/币种异常；Inventory 运营 JWT、未授权、非法数量、资源不存在，以及 acceptance seed `INVENTORY_ACCEPTANCE_SEED=9001=10` 下预占/重复预占、确认/重复确认、已确认释放错误、释放/重复释放；CUSTOMER/OPERATOR/ADMIN 权限隔离和 Trace ID。已验证库存活动链路：Redis 库存从 9 减至 8 后经取消释放恢复至 8；活动库存事件 payload、Outbox、消费者幂等和 checkpoint 推进测试通过；活动 5 暂停后屏障为 `3`，延迟启用 Outbox/Activity Consumer 后 3 条事件连续消费至 checkpoint `3`，幂等记录均为 `SUCCEEDED`，未发现库存流水、账本、Redis 不一致。已完成的代码修复已分别提交：`bacf0e3`、`f7f2e22`、`80a495d` 等。不能严格保证/尚未完成：没有完成一次“存在未消费库存事件且 barrier>0 → 暂停 → 追平 → 恢复成功 → 最终库存对账”的真实 HTTP 闭环；活动 5 后续恢复因时间窗口过期返回 `ACTIVITY_NOT_READY`，不是库存校验失败；活动 7 的恢复任务 `id=4` 虽为 `SUCCEEDED` 且活动回到 `ACTIVE`，但 `barrier=0`，只证明无待处理事件时恢复成功。该边缘场景暂不继续处理，保留为 H01 未完成项；详细补做方案见下方“H01 活动恢复边缘场景补做方案”。 | DOING |
+
+### H01 活动恢复边缘场景补做方案
+
+该方案用于严格验证“存在未消费库存事件且 `barrier > 0` 时，暂停、事件追平、恢复和最终库存对账”这一当前未完成的真实 HTTP 闭环。
+
+1. **准备数据与时间窗口**
+   - 使用新的、当前时间窗口有效的活动和独立验收账号。
+   - 固定商品、活动库存、购买限额和请求幂等键；确认 `starts_at` 已到达且 `ends_at` 仍在未来。
+
+2. **启动并检查依赖**
+   - 启动 PostgreSQL、Redis、Nacos、RocketMQ、Inventory、Activity、Order、Auth、Gateway、XXL-Job 及必要的 Outbox/Consumer 服务。
+   - 确认服务健康，XXL-Job executor 已注册，订单 Outbox 投递器和 Activity Consumer 均可用。
+
+3. **建立活动基线**
+   - 预热并开始活动，确认活动为 `ACTIVE`。
+   - 保存 Redis 活动库存、活动详情、库存闸门、数据库 `available_stock` 和初始库存流水/账本快照。
+
+4. **制造“已产生但未消费”的事件**
+   - 通过活动订单或等价真实 HTTP 入口制造至少一条活动 `RESERVE` 事件。
+   - 在事件已写入活动事件表和订单 Outbox 后，暂时阻止 Activity Consumer 消费；确认事件尚未进入 `SUCCEEDED`，checkpoint 尚未追平。
+
+5. **暂停并截取屏障**
+   - 在事件仍未消费时调用暂停接口。
+   - 记录暂停响应、Trace ID、活动状态、`pause_barrier_sequence`、事件序号、订单 Outbox 状态、消费幂等记录、checkpoint、Redis 库存、库存流水和账本。
+   - 通过标准：暂停成功，活动为 `PAUSED`，且 barrier 大于 0。
+
+6. **恢复投递与消费，验证追平**
+   - 暂停完成后恢复 Outbox 投递和 Activity Consumer。
+   - 验证 barrier 内每条事件的生产端 Outbox 达到 `SENT`，消费幂等记录达到 `SUCCEEDED`，`last_contiguous_sequence` 连续追平 barrier。
+   - 检查无跳号、重复扣减、重复回补、负库存或超额库存。
+
+7. **执行恢复接口**
+   - 调用恢复接口，记录任务 ID、请求 Trace ID 和恢复 barrier。
+   - 轮询恢复查询直到 `SUCCEEDED` 或明确失败，不能只依据 HTTP `202` 判断成功。
+
+8. **成功验收标准**
+   - 活动从 `PAUSED` 变为 `ACTIVE`。
+   - 恢复任务为 `SUCCEEDED`，恢复 barrier 与暂停 barrier 一致。
+   - 屏障内 Outbox 全部 `SENT`，checkpoint 等于 barrier。
+   - 事件账本、库存流水、活动可用库存、Redis 库存和订单保留数量一致。
+   - 库存无负数、重复释放、超额回补或重复消费。
+
+9. **幂等与失败验收**
+   - 重复调用 resume 返回同一进行中或已完成任务，不创建并发恢复任务。
+   - 重复投递同一事件不重复变更库存。
+   - 在恢复执行期间再次调用 resume 不创建第二个任务。
+   - 任一对账条件失败时，任务必须为 `FAILED`，活动保持 `PAUSED`，并记录可定位的失败原因和告警。
+
+10. **证据与清理**
+    - 保存请求/响应、Trace ID、容器日志、PostgreSQL 查询结果、Redis 查询结果、XXL-Job 执行记录和 `docker stats` 峰值。
+    - 测试结束后关闭本轮启动的所有服务。
+    - 在 H01 行补充实际结果、失败原因、修复提交、资源峰值和清理状态；只有上述闭环全部通过后才可将 H01 改为 `DONE`。
+
 | H02 | 核心状态机、数据库不变量与跨服务一致性验收 | A01-G05,H01 | 订单、支付、用户券、活动、库存、Outbox、消费幂等和补偿记录只能发生设计规定的状态迁移；库存不得为负，库存流水/活动事件序号连续，订单和支付终态唯一，用户券不得重复核销，Outbox/消费记录与业务变更满足同事务约束；检查 Redis、PostgreSQL、RocketMQ 最终状态一致 | Docker Java 21 执行状态机和数据库核对测试；输出表级不变量、跨服务对账结果及异常记录 | TODO |
 | H03 | 高并发、幂等与容量压测 | D04,E02-E03,F02-F04,G01-G04,H02 | 覆盖活动热点库存、同用户限购、优惠券领取、重复提交、支付/取消竞争和 MQ 消费；核心正确性 100% 满足 AC01-AC08，零负库存、零重复有效订单/券/支付；报告记录并发量、持续时间、吞吐、P95/P99、错误率、Outbox 积压和消费延迟，并与发布基线比较 | Docker Java 21 使用固定压测场景执行，压测前声明容量和延迟基线；压测后核对 PostgreSQL、Redis、RocketMQ 和业务指标，生成可复现压测报告 | TODO |
 | H04 | 故障恢复、补偿与告警演练 | G01-G04,H02 | 覆盖服务/数据库重启、Outbox 投递中断、消费者崩溃、重复/乱序/延迟消息、RocketMQ 重投、Redis 预扣丢失、XXL-Job 重复触发和补偿失败；恢复后无数据不变量破坏，任务可重试且幂等，Redis 可由 PostgreSQL/事件账本安全重建，失败进入告警和人工处理记录 | Docker Java 21 按演练脚本注入故障并记录故障时间、恢复时间、重试次数、告警、补偿记录和最终对账结果；每个场景完成后关闭测试服务 | TODO |

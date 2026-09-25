@@ -77,6 +77,7 @@ public final class JdbcOrderCancellationStore implements OrderCancellationStore 
         outbox(eventId, "STOCK_RELEASE", "ORDER:STOCK_RELEASE:" + eventId, "ACTIVITY", Long.toString(r.activityId), Map.ofEntries(
                 Map.entry("event_id", eventId.toString()), Map.entry("idempotency_key", "ORDER:STOCK_RELEASE:" + eventId),
                 Map.entry("event_type", "STOCK_RELEASE"), Map.entry("producer", "flashsale-order"),
+                Map.entry("activity_id", r.activityId),
                 Map.entry("aggregate_id", Long.toString(r.activityId)), Map.entry("sequence", sequence),
                 Map.entry("kind", "RELEASE"), Map.entry("quantity", r.quantity), Map.entry("order_number", number),
                 Map.entry("trace_id", TraceContext.getOrCreate()), Map.entry("created_at", OffsetDateTime.now().toString())));

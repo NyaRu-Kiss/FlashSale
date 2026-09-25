@@ -25,9 +25,9 @@ public class JdbcAuthUserRepository implements AuthUserRepository {
     }
     public Optional<AuthUser> findById(long id) { return jdbc.query("select id,username,password_hash,role,status from app_user where id = ?", rs -> rs.next() ? Optional.of(map(rs)) : Optional.empty(), id); }
     public AuthUser create(String username, String passwordHash, Role role) {
-        return jdbc.queryForObject("insert into app_user(username,password_hash,role,status) values (?, ?, ?, 'ACTIVE') returning id,username,password_hash,role,status", (rs,n)->map(rs), username,passwordHash,role.name());
+        return jdbc.queryForObject("insert into app_user(username,password_hash,role,status) values (?, ?, ?::user_role, 'ACTIVE') returning id,username,password_hash,role,status", (rs,n)->map(rs), username,passwordHash,role.name());
     }
-    public AuthUser updateRole(long id, Role role) { return jdbc.queryForObject("update app_user set role = ? where id = ? returning id,username,password_hash,role,status", (rs,n)->map(rs), role.name(),id); }
+    public AuthUser updateRole(long id, Role role) { return jdbc.queryForObject("update app_user set role = ?::user_role where id = ? returning id,username,password_hash,role,status", (rs,n)->map(rs), role.name(),id); }
     public AuthUser updateStatus(long id, String status) { return jdbc.queryForObject("update app_user set status = ? where id = ? returning id,username,password_hash,role,status", (rs,n)->map(rs), status,id); }
     public List<AuthUser> findAll(int offset, int limit) { return jdbc.query("select id,username,password_hash,role,status from app_user order by id limit ? offset ?", (rs,n)->map(rs), limit,offset); }
     public long count() { return jdbc.queryForObject("select count(*) from app_user", Long.class); }

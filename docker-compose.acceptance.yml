@@ -21,7 +21,6 @@ x-acceptance-health: &acceptance-health
   start_period: 20s
 
 x-acceptance-service: &acceptance-service
-  environment: *acceptance-env
   volumes:
     - flashsale-m2:/root/.m2
   depends_on:
@@ -60,46 +59,73 @@ services:
     image: flashsale-gateway:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-gateway}}
     ports: ["18080:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-gateway
     <<: *acceptance-service
   auth:
     image: flashsale-auth:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-auth}}
     ports: ["18081:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-auth
     <<: *acceptance-service
   product:
     image: flashsale-product:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-product}}
     ports: ["18082:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-product
     <<: *acceptance-service
   activity:
     image: flashsale-activity:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-activity}}
     ports: ["18083:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-activity
     <<: *acceptance-service
   inventory:
     image: flashsale-inventory:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-inventory}}
     ports: ["18084:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-inventory
     <<: *acceptance-service
   coupon:
     image: flashsale-coupon:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-coupon}}
     ports: ["18085:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-coupon
     <<: *acceptance-service
   order:
     image: flashsale-order:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-order}}
     ports: ["18086:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-order
     <<: *acceptance-service
   payment:
     image: flashsale-payment:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-payment}}
     ports: ["18087:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-payment
     <<: *acceptance-service
   job:
     image: flashsale-job:acceptance
     build: {context: ., dockerfile: Dockerfile.service, args: {MODULE: flashsale-job}}
     ports: ["18091:8080"]
+    environment:
+      <<: *acceptance-env
+      SERVICE_NAME: flashsale-job
     <<: *acceptance-service
 
 volumes:

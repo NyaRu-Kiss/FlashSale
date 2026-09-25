@@ -12,6 +12,9 @@ x-acceptance-env: &acceptance-env
   REDIS_PORT_INTERNAL: 6379
   NACOS_SERVER_ADDR: nacos:8848
   ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
+  FLASHSALE_OUTBOX_ENABLED: "true"
+  FLASHSALE_CONSUMER_ENABLED: "true"
+  XXL_JOB_ENABLED: "true"
 
 x-acceptance-health: &acceptance-health
   test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q 'UP'"]

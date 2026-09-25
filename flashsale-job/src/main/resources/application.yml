@@ -3,7 +3,18 @@ spring:
   config.import: optional:nacos:${spring.application.name}.yaml?group=${NACOS_CONFIG_GROUP:DEFAULT_GROUP}
   cloud.nacos.discovery.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
   cloud.nacos.config.server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+  datasource.url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/flashsale}
+  datasource.username: ${SPRING_DATASOURCE_USERNAME:flashsale}
+  datasource.password: ${SPRING_DATASOURCE_PASSWORD:flashsale}
 server.port: ${SERVER_PORT:8080}
 management.endpoints.web.exposure.include: health,info,prometheus
 flashsale.security.jwt-secret: ${JWT_SECRET}
 flashsale.security.jwt-ttl: ${JWT_TTL:PT2H}
+flashsale:
+  xxl:
+    enabled: ${XXL_JOB_ENABLED:false}
+    admin-addresses: ${XXL_JOB_ADMIN_ADDRESSES:http://xxl-job-admin:8080/xxl-job-admin}
+    access-token: ${XXL_JOB_ACCESS_TOKEN:}
+    port: ${XXL_JOB_EXECUTOR_PORT:9999}
+    log-path: ${XXL_JOB_LOG_PATH:/tmp/flashsale-xxl-job}
+    log-retention-days: ${XXL_JOB_LOG_RETENTION_DAYS:7}

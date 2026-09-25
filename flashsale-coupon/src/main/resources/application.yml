@@ -33,3 +33,11 @@ flashsale.cache:
   retry-count: ${COUPON_CACHE_RETRY_COUNT:3}
   retry-backoff: ${COUPON_CACHE_RETRY_BACKOFF:PT0.025S}
   ttl-jitter: ${COUPON_CACHE_TTL_JITTER:PT1M}
+flashsale:
+  xxl:
+    enabled: ${XXL_JOB_ENABLED:false}
+    admin-addresses: ${XXL_JOB_ADMIN_ADDRESSES:http://xxl-job-admin:8080/xxl-job-admin}
+    access-token: ${XXL_JOB_ACCESS_TOKEN:}
+    port: ${XXL_JOB_EXECUTOR_PORT:9999}
+    log-path: ${XXL_JOB_LOG_PATH:/tmp/flashsale-xxl-job}
+    log-retention-days: ${XXL_JOB_LOG_RETENTION_DAYS:7}

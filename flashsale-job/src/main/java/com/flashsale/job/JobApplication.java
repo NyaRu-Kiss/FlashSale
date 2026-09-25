@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Import;
 import com.flashsale.common.config.CommonWebConfiguration;
 
 @SpringBootApplication
-@Import(CommonWebConfiguration.class)
+@Import({CommonWebConfiguration.class, com.flashsale.common.job.XxlJobExecutorConfiguration.class, JobConfiguration.class})
 public class JobApplication {
     public static void main(String[] args) { SpringApplication.run(JobApplication.class, args); }
 }

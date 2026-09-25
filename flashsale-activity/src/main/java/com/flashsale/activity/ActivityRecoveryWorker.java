@@ -1,5 +1,6 @@
 package com.flashsale.activity;
 
+import com.xxl.job.core.handler.annotation.XxlJob;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,15 +29,19 @@ final class ActivityRecoveryWorker {
         this.alerts = alerts;
     }
 
-    void executeDueJobs() { jobs.pendingIds().forEach(this::run); }
+    @XxlJob("activityRecovery")
+    public void executeDueJobs() {
+        boolean failed = jobs.pendingIds().stream().map(this::run).anyMatch(done -> !done);
+        if (failed) throw new IllegalStateException("ACTIVITY_RECOVERY_RETRY_REQUIRED");
+    }
 
     @Transactional
-    void run(long id) {
+    boolean run(long id) {
         ActivityRecoveryJob initial = jobs.byId(id);
-        if (initial == null) return;
+        if (initial == null) return true;
         long barrier = activities.lockAndReadBarrier(initial.activityId());
         ActivityRecoveryJob job = jobs.claim(id, barrier);
-        if (job == null) return;
+        if (job == null) return true;
         try {
             Activity activity = activities.find(job.activityId());
             if (activity == null || activity.status() != ActivityStatus.PAUSED) throw new IllegalStateException("ACTIVITY_NOT_PAUSED");
@@ -51,10 +56,12 @@ final class ActivityRecoveryWorker {
             if (active == null) throw new IllegalStateException("ACTIVITY_NOT_PAUSED");
             activities.audit(job.requestedBy(), active.id(), "RESUME", activity, active);
             jobs.succeeded(id, activity.id(), TraceContext.getOrCreate());
+            return true;
         } catch (RuntimeException error) {
             inventory.closeGate(initial.activityId());
             jobs.failed(id, error.getMessage());
             alerts.recoveryFailed(initial.activityId(), id, error.getMessage());
+            return false;
         }
     }
 }

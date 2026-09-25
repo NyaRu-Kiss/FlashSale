@@ -1,10 +1,10 @@
 package com.flashsale.job;
 
+import com.xxl.job.core.handler.annotation.XxlJob;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /** Named entry points for XXL-Job registration; deployment may bind each method to a schedule. */
 @Component
@@ -18,7 +18,16 @@ public final class RecoveryJobHandlers {
         this.rules = List.copyOf(rules);
     }
 
-    public ReconciliationTask.Report outboxRecovery(String traceId) { return reconciliation.run(rules, traceId); }
-    public ReconciliationTask.Report consumerRecovery(String traceId) { return reconciliation.run(rules, traceId); }
-    public ReconciliationTask.Report inventoryAndOrderReconciliation(String traceId) { return reconciliation.run(rules, traceId); }
+    @XxlJob("outboxRecovery")
+    public ReconciliationTask.Report outboxRecovery(String traceId) { return runAndRetry(traceId); }
+    @XxlJob("consumerRecovery")
+    public ReconciliationTask.Report consumerRecovery(String traceId) { return runAndRetry(traceId); }
+    @XxlJob("inventoryAndOrderReconciliation")
+    public ReconciliationTask.Report inventoryAndOrderReconciliation(String traceId) { return runAndRetry(traceId); }
+
+    private ReconciliationTask.Report runAndRetry(String traceId) {
+        var report = reconciliation.run(rules, traceId);
+        if (report.failed() > 0) throw new IllegalStateException("COMPENSATION_RETRY_REQUIRED");
+        return report;
+    }
 }

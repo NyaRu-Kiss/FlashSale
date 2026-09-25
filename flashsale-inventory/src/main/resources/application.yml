@@ -22,3 +22,11 @@ flashsale.outbox:
   max-attempts: ${FLASHSALE_OUTBOX_MAX_ATTEMPTS:8}
   backoff-initial: ${FLASHSALE_OUTBOX_BACKOFF_INITIAL:PT1S}
   backoff-maximum: ${FLASHSALE_OUTBOX_BACKOFF_MAXIMUM:PT5M}
+flashsale:
+  xxl:
+    enabled: ${XXL_JOB_ENABLED:false}
+    admin-addresses: ${XXL_JOB_ADMIN_ADDRESSES:http://xxl-job-admin:8080/xxl-job-admin}
+    access-token: ${XXL_JOB_ACCESS_TOKEN:}
+    port: ${XXL_JOB_EXECUTOR_PORT:9999}
+    log-path: ${XXL_JOB_LOG_PATH:/tmp/flashsale-xxl-job}
+    log-retention-days: ${XXL_JOB_LOG_RETENTION_DAYS:7}

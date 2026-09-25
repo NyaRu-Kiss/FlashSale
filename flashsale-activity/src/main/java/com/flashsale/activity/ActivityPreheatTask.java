@@ -1,5 +1,6 @@
 package com.flashsale.activity;
 
+import com.xxl.job.core.handler.annotation.XxlJob;
 import org.springframework.stereotype.Component;
 
 /** Callable task entrypoint for an external scheduler; intentionally not scheduled locally. */
@@ -9,5 +10,6 @@ public final class ActivityPreheatTask {
 
     ActivityPreheatTask(ActivityService service) { this.service = service; }
 
+    @XxlJob("activityPreheat")
     public int run() { return service.preheatDueActivities(); }
 }

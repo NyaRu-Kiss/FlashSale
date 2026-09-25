@@ -30,7 +30,7 @@ class ProductWriteRepository {
         String payload = json(Map.of("resource_type", "PRODUCT", "resource_id", productId,
                 "cache_keys", cacheKeys, "trace_id", traceId, "delayed_delete", true,
                 "planned_at", availableAt.toString()));
-        jdbc.update("insert into product_outbox(event_id,event_type,idempotency_key,aggregate_type,aggregate_id,payload,trace_id,available_at) values(?,?,?,?,?,?,?,?)",
+        jdbc.update("insert into product_outbox(event_id,event_type,idempotency_key,aggregate_type,aggregate_id,payload,trace_id,available_at) values(?,?,?,?,?,cast(? as jsonb),?,?)",
                 eventId, "PRODUCT_CACHE_INVALIDATE", "PRODUCT_CACHE_INVALIDATE:" + productId + ":" + eventId,
                 "PRODUCT", Long.toString(productId), payload, traceId, availableAt);
     }

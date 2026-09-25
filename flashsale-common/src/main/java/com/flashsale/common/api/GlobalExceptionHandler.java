@@ -5,9 +5,12 @@ import com.flashsale.common.trace.StructuredLogContext;
 import java.util.Map;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(IllegalArgumentException.class)
     public ApiResponse<Void> handleValidation(IllegalArgumentException exception) {
         String code = exception.getMessage();
@@ -19,6 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleUnexpected(Exception exception) {
+        log.error("unhandled request exception", exception);
         try (var ignored = StructuredLogContext.open(Map.of(StructuredLogContext.ERROR_CODE, ErrorCode.INTERNAL_ERROR.name()))) {
         return ApiResponse.failure(ErrorCode.INTERNAL_ERROR.name(), "internal error", TraceContext.getOrCreate());
         }

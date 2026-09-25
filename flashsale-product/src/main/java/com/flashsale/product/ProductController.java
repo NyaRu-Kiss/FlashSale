@@ -13,5 +13,5 @@ import com.flashsale.common.api.ApiResponse; import com.flashsale.common.api.Pag
  private ApiResponse<Product> ok(Product p){return ApiResponse.success(p,TraceContext.getOrCreate());} private Principal actor(String h){try{if(h==null||!h.startsWith("Bearer "))throw new IllegalArgumentException();return tokens.parse(h.substring(7));}catch(Exception e){throw new IllegalArgumentException("UNAUTHENTICATED");}}
  private void validatePage(int page,int size){if(page<1||size<1||size>100)throw new IllegalArgumentException("VALIDATION_ERROR");}
  private PageResponse<Product> page(List<Product> all,int page,int size,long total){int from=Math.min((page-1)*size,all.size());int to=Math.min(from+size,all.size());return new PageResponse<>(all.subList(from,to),page,size,total);}
- record Request(@NotBlank String sku,@NotBlank String name,String description,@Min(0)long priceMinor,@Min(0)int stock){Product toProduct(){return new Product(0,sku,name,description,priceMinor,stock,null,0);}}
+ record Request(@NotBlank String sku,@NotBlank String name,String description,@com.fasterxml.jackson.annotation.JsonProperty("list_price_minor") @Min(0)long priceMinor,@com.fasterxml.jackson.annotation.JsonProperty("available_stock") @Min(0)int stock){Product toProduct(){return new Product(0,sku,name,description,priceMinor,stock,null,0);}}
 }

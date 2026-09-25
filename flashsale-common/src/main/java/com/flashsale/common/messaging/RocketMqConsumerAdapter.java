@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.flashsale.common.trace.StructuredLogContext;
 
 /** RocketMQ consumer adapter. Decoder belongs to the service because payload schemas are service-owned. */
 public final class RocketMqConsumerAdapter implements AutoCloseable {
@@ -39,8 +40,10 @@ public final class RocketMqConsumerAdapter implements AutoCloseable {
             for (MessageExt message : messages) {
                 try {
                     MessageEnvelope envelope = decoder.apply(message.getBody());
+                    try (StructuredLogContext ignored = StructuredLogContext.openMessage(envelope)) {
                     if (handler.apply(envelope) == ConsumerMessageHandler.HandleResult.RETRY)
                         return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                    }
                 } catch (RuntimeException error) {
                     LOG.error("RocketMQ consumer failed; message will be retried topic={} keys={} reconsumeTimes={}",
                             message.getTopic(), message.getKeys(), message.getReconsumeTimes(), error);

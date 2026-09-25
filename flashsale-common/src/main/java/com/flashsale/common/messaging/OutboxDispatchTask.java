@@ -3,6 +3,8 @@ package com.flashsale.common.messaging;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.flashsale.common.trace.StructuredLogContext;
+import com.flashsale.common.trace.TraceContext;
 
 /** One bounded delivery pass; scheduling is supplied by XXL-Job in R20. */
 public final class OutboxDispatchTask {
@@ -16,6 +18,9 @@ public final class OutboxDispatchTask {
     }
 
     public OutboxDispatcher.DispatchReport dispatchOnce() {
+        try (StructuredLogContext ignored = StructuredLogContext.open(java.util.Map.of(
+                StructuredLogContext.TRACE_ID, TraceContext.getOrCreate(),
+                StructuredLogContext.SPAN_ID, java.util.UUID.randomUUID()))) {
         var report = dispatcher.dispatchOnce();
         var backlog = dispatcher.backlog();
         metrics.outboxPending(backlog.pending(), backlog.oldestAge());
@@ -24,6 +29,7 @@ public final class OutboxDispatchTask {
         for (int i = 0; i < report.deadLetterCandidates(); i++) metrics.outboxExhausted();
         if (report.deadLetterCandidates() > 0) LOG.error("Outbox exhausted retries: {}", report.deadLetterCandidates());
         return report;
+        }
     }
 
     @XxlJob("outboxDispatch")

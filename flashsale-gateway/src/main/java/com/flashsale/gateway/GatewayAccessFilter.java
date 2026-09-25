@@ -8,6 +8,9 @@ import com.flashsale.common.security.JwtTokenService;
 import com.flashsale.common.security.Principal;
 import com.flashsale.common.security.Role;
 import com.flashsale.common.trace.TraceContext;
+import com.flashsale.common.trace.StructuredLogContext;
+import org.slf4j.MDC;
+import java.util.UUID;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,23 +38,34 @@ final class GatewayAccessFilter implements GlobalFilter, Ordered {
         String traceId = exchange.getRequest().getHeaders().getFirst(TraceContext.HEADER);
         if (traceId == null || traceId.isBlank()) traceId = TraceContext.getOrCreate();
         TraceContext.set(traceId);
+        MDC.put(StructuredLogContext.TRACE_ID, traceId);
+        MDC.put(StructuredLogContext.SPAN_ID, UUID.randomUUID().toString());
         exchange.getResponse().getHeaders().set(TraceContext.HEADER, traceId);
 
         List<Entry> entries = new ArrayList<>();
         try {
             admit(entries, exchange);
             Principal principal = authenticate(exchange);
-            if (principal != null) exchange.getAttributes().put("principal", principal);
-            return chain.filter(exchange).doFinally(signal -> {
+            ServerWebExchange downstream = exchange;
+            if (principal != null) {
+                exchange.getAttributes().put("principal", principal);
+                MDC.put(StructuredLogContext.USER_ID, Long.toString(principal.userId()));
+                downstream = exchange.mutate().request(exchange.getRequest().mutate()
+                        .header("X-User-Id", Long.toString(principal.userId())).build()).build();
+            }
+            return chain.filter(downstream).doFinally(signal -> {
                 exit(entries);
+                MDC.clear();
                 TraceContext.clear();
             });
         } catch (BlockException blocked) {
             exit(entries);
+            MDC.clear();
             TraceContext.clear();
             return rejected(exchange, "RATE_LIMITED", "rate limit exceeded");
         } catch (IllegalArgumentException unauthorized) {
             exit(entries);
+            MDC.clear();
             TraceContext.clear();
             String code = unauthorized.getMessage() == null ? "UNAUTHENTICATED" : unauthorized.getMessage();
             return rejected(exchange, code, code.equals("FORBIDDEN") ? "forbidden" : "authentication required");

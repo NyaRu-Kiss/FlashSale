@@ -6,6 +6,7 @@ x-observed-env: &observed-env
   SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-flashsale}
   SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-flashsale}
   REDIS_HOST: redis
+  SPRING_DATA_REDIS_HOST: redis
   ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
   JWT_SECRET: ${JWT_SECRET:-local-only-jwt-secret-at-least-32-bytes}
   SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800

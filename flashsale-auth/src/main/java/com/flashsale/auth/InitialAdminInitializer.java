@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** Creates exactly one initial administrator and never mutates an existing account. */
 @Component
-final class InitialAdminInitializer implements ApplicationRunner {
+class InitialAdminInitializer implements ApplicationRunner {
     private final AuthUserRepository users;
     private final PasswordEncoder passwordEncoder;
     private final String username;

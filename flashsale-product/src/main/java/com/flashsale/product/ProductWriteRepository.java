@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Repository
-final class ProductWriteRepository {
+class ProductWriteRepository {
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper;
 

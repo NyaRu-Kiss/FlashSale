@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Repository
-final class CouponWriteRepository {
+class CouponWriteRepository {
     private final JdbcTemplate jdbc; private final ObjectMapper mapper;
     CouponWriteRepository(JdbcTemplate jdbc,ObjectMapper mapper){this.jdbc=jdbc;this.mapper=mapper;}
     void audit(long operatorId,long targetId,String action,CouponTemplate before,CouponTemplate after){jdbc.update("insert into operator_audit_log(operator_id,target_type,target_id,action,before_snapshot,after_snapshot,trace_id,request_source) values(?, 'COUPON_TEMPLATE', ?, ?, cast(? as jsonb), cast(? as jsonb), ?, ?)",operatorId,targetId,action,snapshot(before),snapshot(after),TraceContext.getOrCreate(),"operator:"+operatorId);}

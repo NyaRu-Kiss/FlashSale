@@ -15,6 +15,13 @@ x-observed-env: &observed-env
   JAVA_TOOL_OPTIONS: -Xms64m -Xmx256m
 
 
+x-observed-health: &observed-health
+  test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q UP"]
+  interval: 10s
+  timeout: 5s
+  retries: 12
+  start_period: 20s
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -103,6 +110,8 @@ services:
       retries: 30
 
   auth:
+    healthcheck: *observed-health
+
     profiles: ["r02", "r21"]
     build:
       context: .
@@ -119,6 +128,8 @@ services:
         condition: service_completed_successfully
 
   gateway:
+    healthcheck: *observed-health
+
     profiles: ["r02", "r21"]
     build:
       context: .
@@ -136,6 +147,8 @@ services:
         condition: service_started
 
   product:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .
@@ -152,6 +165,8 @@ services:
         condition: service_completed_successfully
 
   activity:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .
@@ -168,6 +183,8 @@ services:
         condition: service_completed_successfully
 
   inventory:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .
@@ -184,6 +201,8 @@ services:
         condition: service_completed_successfully
 
   coupon:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .
@@ -200,6 +219,8 @@ services:
         condition: service_completed_successfully
 
   order:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .
@@ -216,6 +237,8 @@ services:
         condition: service_completed_successfully
 
   payment:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .
@@ -232,6 +255,8 @@ services:
         condition: service_completed_successfully
 
   job:
+    healthcheck: *observed-health
+
     profiles: ["r21"]
     build:
       context: .

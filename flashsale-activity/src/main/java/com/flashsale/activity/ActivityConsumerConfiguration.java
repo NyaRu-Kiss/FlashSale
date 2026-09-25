@@ -24,7 +24,8 @@ final class ActivityConsumerConfiguration {
             @Value("${flashsale.consumer.processing-timeout:PT5M}") Duration timeout) throws Exception {
         ConsumerMessageHandler.BusinessHandler business = message -> consumer.consume(decode(message, json));
         var durable = new JdbcConsumerMessageHandler(jdbc, manager, "activity_message_idempotency", timeout, business);
-        var adapter = new RocketMqConsumerAdapter(group, namesrv, topic, "ACTIVITY_INVENTORY_*",
+        var adapter = new RocketMqConsumerAdapter(group, namesrv, topic,
+                "ACTIVITY_INVENTORY_RESERVE || ACTIVITY_INVENTORY_RELEASE",
                 body -> decodeEnvelope(body, json), message -> durable.handle(message, message.eventId().toString()));
         adapter.start();
         return adapter;

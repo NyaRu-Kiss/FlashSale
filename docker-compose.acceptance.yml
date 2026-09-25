@@ -1,6 +1,10 @@
 x-workspace: &workspace [".:/workspace", "flashsale-m2:/root/.m2"]
 
 services:
+  postgres:
+    environment:
+      POSTGRES_DB: flashsale_acceptance
+
   migration:
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/flashsale_acceptance
@@ -101,7 +105,7 @@ services:
   job:
     image: flashsale-dev:acceptance
     command: ["mvn", "-B", "-pl", "flashsale-job", "-am", "spring-boot:run"]
-    ports: ["18090:8080"]
+    ports: ["18091:8080"]
     environment: *service-env
     volumes: *workspace
     depends_on: {migration: {condition: service_completed_successfully}}

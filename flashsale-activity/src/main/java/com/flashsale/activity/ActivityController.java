@@ -91,8 +91,13 @@ final class ActivityController {
         return new PageResponse<>(all.subList(from, to), page, size, total);
     }
 
-    record Request(@NotBlank String name, long productId, @Min(0) long salePriceMinor, @Min(1) int initialStock,
-                   @Min(1) int purchaseLimitPerUser, OffsetDateTime startsAt, OffsetDateTime endsAt) {
+    record Request(@NotBlank String name,
+                   @com.fasterxml.jackson.annotation.JsonProperty("product_id") long productId,
+                   @com.fasterxml.jackson.annotation.JsonProperty("sale_price_minor") @Min(0) long salePriceMinor,
+                   @com.fasterxml.jackson.annotation.JsonProperty("initial_stock") @Min(1) int initialStock,
+                   @com.fasterxml.jackson.annotation.JsonProperty("purchase_limit_per_user") @Min(1) int purchaseLimitPerUser,
+                   @com.fasterxml.jackson.annotation.JsonProperty("starts_at") OffsetDateTime startsAt,
+                   @com.fasterxml.jackson.annotation.JsonProperty("ends_at") OffsetDateTime endsAt) {
         Activity toActivity() { return new Activity(0, name, productId, salePriceMinor, initialStock, initialStock,
                 purchaseLimitPerUser, startsAt, endsAt, ActivityStatus.NOT_STARTED, false, 0); }
     }

@@ -144,7 +144,7 @@ class CouponClaimService {
         return jdbc.query("""
                 select uc.id,uc.coupon_template_id,uc.status,uc.claimed_at,ct.threshold_minor,ct.discount_minor,ct.use_starts_at,ct.use_ends_at
                 from user_coupon uc join coupon_template ct on ct.id=uc.coupon_template_id
-                where uc.user_id=? and (? is null or uc.status=?) order by uc.id desc
+                where uc.user_id=? and (cast(? as user_coupon_status) is null or uc.status=cast(? as user_coupon_status)) order by uc.id desc
                 """, (r, n) -> new UserCouponView(r.getLong(1), r.getLong(2), r.getString(3), r.getObject(4, OffsetDateTime.class), r.getLong(5), r.getLong(6), r.getObject(7, OffsetDateTime.class), r.getObject(8, OffsetDateTime.class)),
                 p.userId(), status == null || status.isBlank() ? null : status, status == null || status.isBlank() ? null : status);
     }

@@ -101,8 +101,13 @@ public final class JdbcPaymentService {
         if (paymentIds.isEmpty()) throw new IllegalArgumentException("PAYMENT_NOT_FOUND");
         Long paymentId = paymentIds.getFirst();
         PaymentSnapshot payment = payment(paymentId);
-        if (payment.amountMinor() != callback.amountMinor() || !payment.currency().equals(callback.currency())) {
+        if ((callback.amountMinor() > 0 && payment.amountMinor() != callback.amountMinor())
+                || (callback.currency() != null && !payment.currency().equals(callback.currency()))) {
             throw new IllegalArgumentException("PAYMENT_AMOUNT_MISMATCH");
+        }
+        if (request.orderNumber() != null && !request.orderNumber().isBlank()) {
+            String orderNumber = jdbc.queryForObject("select order_number from customer_order where id=?", String.class, payment.orderId());
+            if (!request.orderNumber().equals(orderNumber)) throw new IllegalArgumentException("PAYMENT_ORDER_MISMATCH");
         }
         if (!callback.success()) {
             jdbc.update("update payment_record set status='FAILED',failure_code='PAYMENT_FAILED',failed_at=current_timestamp where id=? and status='PENDING'", paymentId);

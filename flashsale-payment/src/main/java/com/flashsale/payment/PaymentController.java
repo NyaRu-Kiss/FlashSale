@@ -30,7 +30,10 @@ public final class PaymentController {
 
     @PostMapping("/payments/callback")
     public ApiResponse<JdbcPaymentService.Result> callback(@Valid @RequestBody CallbackRequest request) {
-        return ApiResponse.success(payments.callback(new PaymentGateway.CallbackRequest(request.transactionId(), request.amountMinor(), request.currency(), request.paymentStatus(), request.eventId())), TraceContext.getOrCreate());
+        long amount = request.amountMinor() == null ? 0L : request.amountMinor();
+        return ApiResponse.success(payments.callback(new PaymentGateway.CallbackRequest(
+                request.transactionId(), amount, request.currency(), request.paymentStatus(), request.eventId(),
+                request.orderNumber(), request.paidAt())), TraceContext.getOrCreate());
     }
 
     private Principal customer(String authorization) {
@@ -38,5 +41,11 @@ public final class PaymentController {
         catch (IllegalArgumentException e) { throw e; } catch (Exception e) { throw new IllegalArgumentException("UNAUTHENTICATED"); }
     }
     public record PaymentRequest(@JsonProperty("amount_minor") @Positive long amountMinor, @NotBlank String currency, @JsonProperty("payment_status") String paymentStatus) {}
-    public record CallbackRequest(@JsonProperty("provider_transaction_id") @NotBlank String transactionId, @JsonProperty("amount_minor") @Positive long amountMinor, @NotBlank String currency, @JsonProperty("payment_status") @NotBlank String paymentStatus, @JsonProperty("event_id") @NotBlank String eventId) {}
+    public record CallbackRequest(@JsonProperty("order_number") String orderNumber,
+                                  @JsonProperty("provider_transaction_id") @NotBlank String transactionId,
+                                  @JsonProperty("amount_minor") @Positive Long amountMinor,
+                                  String currency,
+                                  @JsonProperty("payment_status") @NotBlank String paymentStatus,
+                                  @JsonProperty("paid_at") String paidAt,
+                                  @JsonProperty("event_id") @NotBlank String eventId) {}
 }

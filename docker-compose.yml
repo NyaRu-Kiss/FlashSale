@@ -352,6 +352,16 @@ services:
       redis:
         condition: service_healthy
 
+  rocketmq-exporter:
+    profiles: ["r21"]
+    image: apache/rocketmq-exporter:0.0.2
+    command:
+      - --rocketmq.config.namesrvAddr=rocketmq-namesrv:9876
+      - --rocketmq.config.rocketmqVersion=5_0_0
+    depends_on:
+      rocketmq-broker:
+        condition: service_healthy
+
   node-exporter:
     image: prom/node-exporter:v1.8.2
     command: ["--path.rootfs=/host"]

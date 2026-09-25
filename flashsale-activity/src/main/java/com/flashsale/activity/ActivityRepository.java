@@ -36,7 +36,7 @@ final class ActivityRepository {
         jdbc.update("insert into activity_inventory_checkpoint(activity_id) values (?)", result.id());
         String traceId = TraceContext.getOrCreate();
         String payload = json(Map.of("resource_type", "ACTIVITY", "resource_id", result.id(),
-                "cache_keys", List.of(RedisActivityInventory.detailKey(result.id())), "trace_id", traceId));
+                "cache_keys", List.of("cache:activity:public:" + result.id()), "trace_id", traceId));
         jdbc.update("""
                 insert into activity_outbox(event_id, event_type, idempotency_key, aggregate_type,
                     aggregate_id, payload, trace_id)

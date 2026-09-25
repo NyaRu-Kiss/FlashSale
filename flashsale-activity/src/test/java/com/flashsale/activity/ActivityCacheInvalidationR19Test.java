@@ -20,7 +20,7 @@ class ActivityCacheInvalidationR19Test {
         var payload = new ObjectMapper().readTree(jdbc.payload);
         assertEquals("ACTIVITY", payload.get("resource_type").asText());
         assertEquals(31, payload.get("resource_id").asLong());
-        assertEquals("activity:31:detail", payload.get("cache_keys").get(0).asText());
+        assertEquals("cache:activity:public:31", payload.get("cache_keys").get(0).asText());
         assertEquals(jdbc.traceId, payload.get("trace_id").asText());
     }
 

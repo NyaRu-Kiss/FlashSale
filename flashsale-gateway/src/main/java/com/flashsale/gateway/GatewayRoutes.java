@@ -27,6 +27,8 @@ public class GatewayRoutes {
                         .uri("lb://flashsale-coupon"))
                 .route("payment", r -> r.path("/api/v1/orders/*/payments/**", "/api/v1/payments/**")
                         .uri("lb://flashsale-payment"))
+                .route("inventory", r -> r.path("/api/v1/inventory/**")
+                        .uri("lb://flashsale-inventory"))
                 .route("order", r -> r.path("/api/v1/orders/**").uri("lb://flashsale-order"))
                 .build();
     }

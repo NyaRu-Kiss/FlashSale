@@ -28,4 +28,15 @@ class ReconciliationTaskTest {
         assertEquals(new ReconciliationTask.Report(1, 0, 1), report);
         assertFalse(store.find("OUTBOX_1").orElseThrow().success());
     }
+
+    @Test void failedCompensationRaisesManualAlert() {
+        var store = new InMemoryCompensationStore();
+        var alerts = new AtomicInteger();
+        var rule = new ReconciliationTask.ReconciliationRule() {
+            public List<ReconciliationTask.Issue> findIssues() { return List.of(new ReconciliationTask.Issue("ORDER_2", "MISSING", "A", "B")); }
+            public void repair(ReconciliationTask.Issue issue) { throw new IllegalStateException("down"); }
+        };
+        new ReconciliationTask(store, record -> alerts.incrementAndGet(), Clock.systemUTC()).run(List.of(rule), "trace");
+        assertEquals(1, alerts.get());
+    }
 }

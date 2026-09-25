@@ -8,10 +8,16 @@ import java.util.Objects;
 /** Generic idempotent reconciliation runner used by XXL-Job handlers. */
 public final class ReconciliationTask {
     private final CompensationStore compensationStore;
+    private final CompensationAlert alert;
     private final Clock clock;
 
     public ReconciliationTask(CompensationStore compensationStore, Clock clock) {
+        this(compensationStore, record -> { }, clock);
+    }
+
+    public ReconciliationTask(CompensationStore compensationStore, CompensationAlert alert, Clock clock) {
         this.compensationStore = Objects.requireNonNull(compensationStore);
+        this.alert = Objects.requireNonNull(alert);
         this.clock = Objects.requireNonNull(clock);
     }
 
@@ -28,8 +34,10 @@ public final class ReconciliationTask {
                             issue.targetState(), traceId, true, null, Instant.now(clock)));
                     repaired++;
                 } catch (Exception error) {
-                    compensationStore.save(new CompensationRecord(issue.key(), issue.reason(), issue.originalState(),
-                            issue.targetState(), traceId, false, error.toString(), Instant.now(clock)));
+                    var record = new CompensationRecord(issue.key(), issue.reason(), issue.originalState(),
+                            issue.targetState(), traceId, false, error.toString(), Instant.now(clock));
+                    compensationStore.save(record);
+                    alert.failed(record);
                     failed++;
                 }
             }

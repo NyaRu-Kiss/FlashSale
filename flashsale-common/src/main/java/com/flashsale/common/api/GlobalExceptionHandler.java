@@ -5,6 +5,7 @@ import com.flashsale.common.trace.StructuredLogContext;
 import java.util.Map;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,11 @@ public class GlobalExceptionHandler {
         try (var ignored = StructuredLogContext.open(Map.of(StructuredLogContext.ERROR_CODE, code))) {
         return ApiResponse.failure(code, code, TraceContext.getOrCreate());
         }
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ApiResponse<Void> handleMissingHeader(MissingRequestHeaderException exception) {
+        return ApiResponse.failure(ErrorCode.VALIDATION_ERROR.name(), ErrorCode.VALIDATION_ERROR.name(), TraceContext.getOrCreate());
     }
 
     @ExceptionHandler(Exception.class)

@@ -3,18 +3,20 @@ package com.flashsale.activity;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import com.flashsale.common.trace.TraceContext;
 
 /** Recovery remains PAUSED unless all barrier evidence has been verified. */
 @Component
-final class ActivityRecoveryWorker {
+class ActivityRecoveryWorker {
     private final ActivityRepository activities;
     private final ActivityRecoveryRepository jobs;
     private final ActivityInventoryPort inventory;
     private final ActivityRecoveryVerifier verifier;
     private final ActivityRecoveryAlert alerts;
 
+    @Autowired
     ActivityRecoveryWorker(ActivityRepository activities, ActivityRecoveryRepository jobs, ActivityInventoryPort inventory,
                            ActivityRecoveryVerifier verifier) {
         this(activities, jobs, inventory, verifier, (activityId, recoveryJobId, error) -> { });

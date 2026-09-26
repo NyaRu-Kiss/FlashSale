@@ -72,12 +72,15 @@ run_k6() {
   chmod 777 "$results"
   local image=${K6_IMAGE:-ghcr.io/grafana/k6:latest}
   local load_tokens=${LOAD_TOKENS:-}
+  local token_mount=()
   if [[ -n "${LOAD_TOKENS_FILE:-}" ]]; then
-    load_tokens=$(tr '\n' ',' < "$LOAD_TOKENS_FILE" | sed 's/,$//')
+    local token_file="$LOAD_TOKENS_FILE"
+    [[ "$token_file" = /* ]] || token_file="$ROOT_DIR/$token_file"
+    token_mount=(-e LOAD_TOKENS_FILE=/tokens.txt -v "$token_file:/tokens.txt:ro")
   fi
   docker run --rm --network host -e BASE_URL="$BASE_URL" -e SCENARIO="${H03_SCENARIO:-product_read_cold}" \
     -e PRODUCT_ID="${PRODUCT_ID:-1}" -e ACTIVITY_ID="${ACTIVITY_ID:-1}" \
-    -e LOAD_TOKEN="${LOAD_TOKEN:-}" -e LOAD_TOKENS="$load_tokens" \
+    -e LOAD_TOKEN="${LOAD_TOKEN:-}" -e LOAD_TOKENS="$load_tokens" "${token_mount[@]}" \
     -v "$ROOT_DIR/load/k6:/scripts:ro" -v "$results:/results" "$image" run --summary-export /results/summary-k6.json /scripts/h03.js
 }
 

@@ -5,7 +5,8 @@ import { csvEnv, jsonEnv, request } from './lib.js';
 
 const scenario = __ENV.SCENARIO || 'product_read';
 const token = __ENV.LOAD_TOKEN || '';
-const tokens = csvEnv('LOAD_TOKENS');
+const tokenFile = __ENV.LOAD_TOKENS_FILE || '';
+const tokens = tokenFile ? open(tokenFile).split(/\r?\n/).map(v => v.trim()).filter(Boolean) : csvEnv('LOAD_TOKENS');
 const productId = __ENV.PRODUCT_ID || '1';
 const activityId = __ENV.ACTIVITY_ID || '1';
 const couponTemplateId = __ENV.COUPON_TEMPLATE_ID || '1';

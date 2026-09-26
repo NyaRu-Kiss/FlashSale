@@ -1,0 +1,6 @@
+interface:
+  display_name: "FlashSale H03 高并发验收"
+  short_description: "执行 H03 压测、对账与失败修复回归"
+  default_prompt: "使用 $flashsale-h03-acceptance 执行 FlashSale H03 高并发验收并生成可复核报告。"
+policy:
+  allow_implicit_invocation: true

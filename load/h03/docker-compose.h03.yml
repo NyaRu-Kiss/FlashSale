@@ -4,8 +4,16 @@ x-h03-env: &h03-env
   FLASHSALE_OUTBOX_ENABLED: "true"
   FLASHSALE_CONSUMER_ENABLED: "true"
   XXL_JOB_ENABLED: "true"
+  XXL_JOB_ACCESS_TOKEN: "default_token"
 
 services:
+  xxl-job-admin:
+    environment:
+      PARAMS: >-
+        --spring.datasource.url=jdbc:mysql://xxl-mysql:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+        --spring.datasource.username=xxl
+        --spring.datasource.password=xxl
+        --xxl.job.accessToken=default_token
   xxl-mysql:
     volumes:
       - ./load/h03/xxl-job-init.sql:/docker-entrypoint-initdb.d/zz-h03.sql:ro

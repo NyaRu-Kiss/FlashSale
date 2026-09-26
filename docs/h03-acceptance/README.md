@@ -15,6 +15,7 @@
 - [最终对账记录](records/reconciliation.md)
 - [k6 原始 summary 输出](evidence/k6/)
 - [容器关键日志摘录](evidence/containers/)
+- [完整容器日志（最近 2 小时）](evidence/containers-full/)
 - 执行工件：[`load/h03/run.sh`](../../load/h03/run.sh)、[`load/k6/h03.js`](../../load/k6/h03.js)、[`load/h03/verify.sql`](../../load/h03/verify.sql)
 
 ## 原始证据

@@ -6,6 +6,9 @@ x-h03-env: &h03-env
   XXL_JOB_ENABLED: "true"
 
 services:
+  xxl-mysql:
+    volumes:
+      - ./load/h03/xxl-job-init.sql:/docker-entrypoint-initdb.d/zz-h03.sql:ro
   auth: {environment: *h03-env}
   gateway:
     environment:

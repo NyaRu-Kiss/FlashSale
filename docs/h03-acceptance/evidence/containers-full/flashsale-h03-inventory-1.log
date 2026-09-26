@@ -1,0 +1,1558 @@
+Picked up JAVA_TOOL_OPTIONS: -Xms64m -Xmx256m
+DEBUG 2026-09-26 08:43:34.965 main AgentPackagePath : The beacon class location is jar:file:/opt/skywalking/agent/skywalking-agent.jar!/org/apache/skywalking/apm/agent/core/boot/AgentPackagePath.class. 
+INFO 2026-09-26 08:43:34.967 main SnifferConfigInitializer : Config file found in /opt/skywalking/agent/config/agent.config. 
+INFO 2026-09-26 08:43:35.054 main SnifferConfigInitializer : SnifferConfigInitializer url:jar:file:/app/app.jar!/META-INF/MANIFEST.MF 
+INFO 2026-09-26 08:43:35.058 main SnifferConfigInitializer : SnifferConfigInitializer url:jar:file:/opt/skywalking/agent/skywalking-agent.jar!/META-INF/MANIFEST.MF 
+INFO 2026-09-26 08:43:35.067 main AgentClassLoader : /opt/skywalking/agent/plugins/motan-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.068 main AgentClassLoader : /opt/skywalking/agent/plugins/sofa-rpc-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.069 main AgentClassLoader : /opt/skywalking/agent/plugins/baidu-brpc-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.070 main AgentClassLoader : /opt/skywalking/agent/plugins/baidu-brpc-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.072 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-httpasyncclient-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.073 main AgentClassLoader : /opt/skywalking/agent/plugins/solon-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.075 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-undertow-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.075 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-postgresql-8.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.077 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-xxl-job-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.079 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-okhttp-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.080 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-springmvc-annotation-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.082 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-light4j-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.083 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-vertx-core-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.084 main AgentClassLoader : /opt/skywalking/agent/plugins/resteasy-server-6.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.085 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-undertow-worker-thread-pool-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.086 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-cloud-feign-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.088 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-sharding-sphere-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.089 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-okhttp-common-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.090 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-kylin-jdbc-2.6.x-3.x-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.092 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-concurrent-util-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.093 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-redisson-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.094 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-h2-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.095 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-activemq-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.097 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-hutool-http-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.100 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-pulsar-2.8.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.101 main AgentClassLoader : /opt/skywalking/agent/plugins/spring-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.102 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-nutz-mvc-annotation-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.103 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mongodb-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.103 main AgentClassLoader : /opt/skywalking/agent/plugins/spring-webflux-5.x-webclient-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.105 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-vertx-core-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.106 main AgentClassLoader : /opt/skywalking/agent/plugins/dubbo-3.x-conflict-patch-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.107 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-kafka-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.107 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-shardingsphere-4.0.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.109 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-grizzly-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.115 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-rocketMQ-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.116 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jetty-client-11.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.117 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-play-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.121 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-springmvc-annotation-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.123 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-shardingsphere-5.0.0-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.127 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-cassandra-java-driver-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.129 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-rabbitmq-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.130 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-grizzly-2.x-4.x-work-threadpool-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.133 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jetty-thread-pool-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.135 main AgentClassLoader : /opt/skywalking/agent/plugins/micronaut-http-client-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.137 main AgentClassLoader : /opt/skywalking/agent/plugins/okhttp-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.145 main AgentClassLoader : /opt/skywalking/agent/plugins/graphql-9.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.147 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-servicecomb-java-chassis-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.148 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-httpClient-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.149 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-sharding-sphere-4.1.0-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.150 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-influxdb-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.151 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-okhttp-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.151 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-armeria-0.84.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.152 main AgentClassLoader : /opt/skywalking/agent/plugins/nats-2.14.x-2.16.5-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.153 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mysql-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.154 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-feign-default-http-9.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.155 main AgentClassLoader : /opt/skywalking/agent/plugins/micronaut-http-server-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.156 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-elasticsearch-6.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.157 main AgentClassLoader : /opt/skywalking/agent/plugins/graphql-12.x-15.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.163 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-kafka-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.165 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-dubbo-2.7.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.167 main AgentClassLoader : /opt/skywalking/agent/plugins/tomcat-7.x-8.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.168 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-activemq-artemis-jakarta-client-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.169 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-httpclient-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.171 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-quasar-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.172 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-kafka-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.173 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-pulsar-2.2-2.7-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.174 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-core-patch-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.175 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mysql-6.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.175 main AgentClassLoader : /opt/skywalking/agent/plugins/druid-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.176 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jdbc-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.177 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mssql-jdbc-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.178 main AgentClassLoader : /opt/skywalking/agent/plugins/resteasy-server-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.179 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-grpc-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.180 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-pulsar-common-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.181 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jetty-server-11.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.181 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-c3p0-0.9.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.182 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spymemcached-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.183 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-dubbo-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.184 main AgentClassLoader : /opt/skywalking/agent/plugins/dbcp-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.184 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-finagle-6.25.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.185 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mssql-jtds-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.187 main AgentClassLoader : /opt/skywalking/agent/plugins/thrift-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.188 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-nutz-http-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.189 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-asynchttpclient-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.190 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-scheduled-annotation-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.191 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jetty-client-9.0-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.192 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-canal-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.193 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-rocketmq-client-java-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.193 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-armeria-1.0.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.194 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-rocketmq-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.195 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-elasticsearch-7.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.196 main AgentClassLoader : /opt/skywalking/agent/plugins/dubbo-conflict-patch-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.197 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-resttemplate-4.3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.198 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-clickhouse-0.3.2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.198 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jetty-client-9.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.199 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-hikaricp-3.x-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.199 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-solrj-7.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.200 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-struts2-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.201 main AgentClassLoader : /opt/skywalking/agent/plugins/jedis-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.201 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-springmvc-annotation-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.202 main AgentClassLoader : /opt/skywalking/agent/plugins/spring-webflux-6.x-webclient-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.204 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jersey-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.205 main AgentClassLoader : /opt/skywalking/agent/plugins/graphql-16plus-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.206 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-netty-socketio-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.207 main AgentClassLoader : /opt/skywalking/agent/plugins/elasticsearch-common-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.209 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mssql-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.210 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-httpclient-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.211 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-elastic-job-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.212 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mysql-8.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.213 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jersey-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.214 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-guava-eventbus-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.215 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-async-annotation-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.216 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-elasticsearch-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.217 main AgentClassLoader : /opt/skywalking/agent/plugins/jsonrpc4j-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.218 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-httpclient-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.220 main AgentClassLoader : /opt/skywalking/agent/plugins/graphql-8.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.222 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mysql-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.223 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-jetty-server-9.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.223 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-lettuce-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.224 main AgentClassLoader : /opt/skywalking/agent/plugins/resttemplate-commons-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.225 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-armeria-0.85.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.226 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-tomcat-thread-pool-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.238 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-resttemplate-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.241 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-avro-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.242 main AgentClassLoader : /opt/skywalking/agent/plugins/resteasy-server-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.242 main AgentClassLoader : /opt/skywalking/agent/plugins/tomcat-10x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.243 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-elasticjob-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.250 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-kafka-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.251 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-hbase-1.x-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.254 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-aerospike-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.255 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-clickhouse-0.3.1-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.256 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-neo4j-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.256 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mongodb-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.257 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mariadb-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.257 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-cxf-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.258 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-rocketmq-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.258 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-mongodb-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.260 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-cloud-feign-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.260 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-springmvc-annotation-5.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.261 main AgentClassLoader : /opt/skywalking/agent/plugins/dubbo-2.7.x-conflict-patch-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.261 main AgentClassLoader : /opt/skywalking/agent/plugins/websphere-liberty-23.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.262 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-hystrix-1.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.262 main AgentClassLoader : /opt/skywalking/agent/plugins/jedis-2.x-3.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.263 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-dubbo-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.264 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-xmemcached-2.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.265 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-webflux-6.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.266 main AgentClassLoader : /opt/skywalking/agent/plugins/apm-spring-cloud-gateway-4.x-plugin-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.268 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-micrometer-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.268 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-trace-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.269 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-kafka-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.270 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-webflux-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.271 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-logging-common-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.272 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-meter-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.273 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-log4j-2.x-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.274 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-log4j-1.x-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.275 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-opentracing-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.276 main AgentClassLoader : /opt/skywalking/agent/activations/apm-toolkit-logback-1.x-activation-9.4.0.jar loaded. 
+INFO 2026-09-26 08:43:35.299 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/motan-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.299 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/sofa-rpc-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.299 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/baidu-brpc-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.299 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/baidu-brpc-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.300 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-httpasyncclient-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.300 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/solon-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.300 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-undertow-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.300 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-postgresql-8.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.300 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-xxl-job-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-okhttp-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-springmvc-annotation-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-light4j-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-vertx-core-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/resteasy-server-6.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-undertow-worker-thread-pool-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-cloud-feign-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.301 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-sharding-sphere-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.302 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-kylin-jdbc-2.6.x-3.x-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.302 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-concurrent-util-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.302 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-redisson-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.302 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-h2-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.302 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-activemq-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.302 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-hutool-http-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.305 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-pulsar-2.8.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.306 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-nutz-mvc-annotation-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.307 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mongodb-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.307 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/spring-webflux-5.x-webclient-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.307 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-vertx-core-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.307 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/dubbo-3.x-conflict-patch-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.309 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-shardingsphere-4.0.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.309 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-grizzly-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.310 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-rocketMQ-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.311 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jetty-client-11.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.314 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-play-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.314 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-springmvc-annotation-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.314 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-shardingsphere-5.0.0-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.314 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-cassandra-java-driver-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.315 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-rabbitmq-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.315 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-grizzly-2.x-4.x-work-threadpool-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.315 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jetty-thread-pool-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.315 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/micronaut-http-client-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.315 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/okhttp-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.315 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/graphql-9.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.316 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-servicecomb-java-chassis-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.317 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-httpClient-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.318 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-sharding-sphere-4.1.0-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.318 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-influxdb-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.318 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-okhttp-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-armeria-0.84.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/nats-2.14.x-2.16.5-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-feign-default-http-9.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/micronaut-http-server-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-elasticsearch-6.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/graphql-12.x-15.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-kafka-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.319 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-dubbo-2.7.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.321 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/tomcat-7.x-8.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.322 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-activemq-artemis-jakarta-client-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.322 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-httpclient-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.323 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-quasar-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.323 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-kafka-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.323 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-pulsar-2.2-2.7-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.324 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-core-patch-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.324 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mysql-6.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.324 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/druid-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.324 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mssql-jdbc-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.325 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/resteasy-server-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.326 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-grpc-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.328 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jetty-server-11.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.329 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-c3p0-0.9.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.329 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spymemcached-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.329 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-dubbo-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.330 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/dbcp-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.330 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-finagle-6.25.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.330 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mssql-jtds-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.332 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/thrift-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.332 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-nutz-http-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.332 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-asynchttpclient-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.332 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-scheduled-annotation-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.332 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jetty-client-9.0-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.332 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-canal-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.335 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-rocketmq-client-java-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.335 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-armeria-1.0.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.335 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-rocketmq-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.335 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-elasticsearch-7.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.336 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/dubbo-conflict-patch-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.337 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-resttemplate-4.3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.337 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-clickhouse-0.3.2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.338 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jetty-client-9.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.339 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-hikaricp-3.x-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.340 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-solrj-7.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.341 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-struts2-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.341 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/jedis-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.342 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-springmvc-annotation-commons-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.344 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/spring-webflux-6.x-webclient-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.344 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jersey-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.344 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/graphql-16plus-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.344 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-netty-socketio-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.344 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-httpclient-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.345 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-elastic-job-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.345 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mysql-8.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.347 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jersey-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.347 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-guava-eventbus-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.347 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-async-annotation-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.347 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-elasticsearch-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/jsonrpc4j-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/graphql-8.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mysql-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-jetty-server-9.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-lettuce-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-armeria-0.85.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.348 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-tomcat-thread-pool-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.349 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-resttemplate-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.349 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-avro-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.349 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/resteasy-server-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.349 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/tomcat-10x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.349 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-elasticjob-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.349 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-kafka-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.353 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-hbase-1.x-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.353 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-aerospike-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.353 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-clickhouse-0.3.1-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.353 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-neo4j-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.353 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mongodb-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.354 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mariadb-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.354 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-cxf-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.354 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-rocketmq-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.354 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-mongodb-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.355 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-cloud-feign-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.355 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-springmvc-annotation-5.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.355 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/dubbo-2.7.x-conflict-patch-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.355 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/websphere-liberty-23.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.355 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-hystrix-1.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.357 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/jedis-2.x-3.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.359 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-dubbo-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.359 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-xmemcached-2.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.360 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-webflux-6.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.360 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/plugins/apm-spring-cloud-gateway-4.x-plugin-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.364 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-micrometer-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.364 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-trace-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.364 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-kafka-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.364 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-webflux-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.364 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-meter-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.364 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-log4j-2.x-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.365 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-log4j-1.x-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.365 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-opentracing-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.365 main PluginResourcesResolver : find skywalking plugin define in jar:file:/opt/skywalking/agent/activations/apm-toolkit-logback-1.x-activation-9.4.0.jar!/skywalking-plugin.def 
+INFO 2026-09-26 08:43:35.904 main SkyWalkingAgent : Skywalking agent begin to install transformer ... 
+Sep 26, 2026 8:43:42 AM org.apache.skywalking.apm.dependencies.io.grpc.internal.ManagedChannelImpl$NameResolverListener handleErrorInSyncContext
+WARNING: [Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+Sep 26, 2026 8:43:43 AM org.apache.skywalking.apm.dependencies.io.grpc.internal.ManagedChannelImpl$NameResolverListener handleErrorInSyncContext
+WARNING: [Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}
+Sep 26, 2026 8:43:45 AM org.apache.skywalking.apm.dependencies.io.grpc.internal.ManagedChannelImpl$NameResolverListener handleErrorInSyncContext
+WARNING: [Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}
+08:43:50.637 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+08:43:50.639 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+08:43:55.266 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
+08:43:55.270 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+08:43:55.272 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
+08:43:55.274 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.5)
+
+{"timestamp":"2026-09-26T08:43:56.061Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.h.validator.internal.util.Version","message":"HV000001: Hibernate Validator 8.0.2.Final"}
+{"timestamp":"2026-09-26T08:43:56.912Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.f.inventory.InventoryApplication","message":"Starting InventoryApplication v0.1.0-SNAPSHOT using Java 21.0.12 with PID 1 (/app/app.jar started by root in /)"}
+{"timestamp":"2026-09-26T08:43:56.914Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.f.inventory.InventoryApplication","message":"No active profile set, falling back to 1 default profile: \"default\""}
+{"timestamp":"2026-09-26T08:43:58.202Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.a.c.n.c.NacosConfigDataLoader","message":"[Nacos Config] config[dataId=flashsale-inventory.yaml, group=DEFAULT_GROUP] is empty"}
+{"timestamp":"2026-09-26T08:43:58.838Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:44:03.673Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.d.r.c.RepositoryConfigurationDelegate","message":"Multiple Spring Data modules found, entering strict repository configuration mode"}
+{"timestamp":"2026-09-26T08:44:03.687Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.d.r.c.RepositoryConfigurationDelegate","message":"Bootstrapping Spring Data Redis repositories in DEFAULT mode."}
+{"timestamp":"2026-09-26T08:44:03.837Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.d.r.c.RepositoryConfigurationDelegate","message":"Finished Spring Data repository scanning in 50 ms. Found 0 Redis repository interfaces."}
+{"timestamp":"2026-09-26T08:44:04.757Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.cloud.context.scope.GenericScope","message":"BeanFactory id=d50066dd-1602-3886-8107-70b5dfd39fa0"}
+{"timestamp":"2026-09-26T08:44:05.103Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'org.apache.rocketmq.spring.autoconfigure.ListenerContainerConfiguration' of type [org.apache.rocketmq.spring.autoconfigure.ListenerContainerConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.199Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'org.apache.rocketmq.spring.autoconfigure.MessageConverterConfiguration' of type [org.apache.rocketmq.spring.autoconfigure.MessageConverterConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.424Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'createRocketMQMessageConverter' of type [org.apache.rocketmq.spring.support.RocketMQMessageConverter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.443Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'org.springframework.cloud.commons.config.CommonsConfigAutoConfiguration' of type [org.springframework.cloud.commons.config.CommonsConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.447Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.448Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'loadBalancerClientsDefaultsMappingsProvider' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration$$Lambda/0x0000741f889dc8d0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.450Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'defaultsBindHandlerAdvisor' of type [org.springframework.cloud.commons.config.DefaultsBindHandlerAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.460Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'rocketmq-org.apache.rocketmq.spring.autoconfigure.RocketMQProperties' of type [org.apache.rocketmq.spring.autoconfigure.RocketMQProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:06.467Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker","message":"Bean 'rocketMQMessageListenerContainerRegistrar' of type [org.apache.rocketmq.spring.support.RocketMQMessageListenerContainerRegistrar] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [org.apache.rocketmq.spring.annotation.RocketMQMessageListenerBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE."}
+{"timestamp":"2026-09-26T08:44:07.677Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.b.w.e.tomcat.TomcatWebServer","message":"Tomcat initialized with port 8080 (http)"}
+{"timestamp":"2026-09-26T08:44:07.720Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.coyote.http11.Http11NioProtocol","message":"Initializing ProtocolHandler [\"http-nio-8080\"]"}
+{"timestamp":"2026-09-26T08:44:07.731Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.catalina.core.StandardService","message":"Starting service [Tomcat]"}
+{"timestamp":"2026-09-26T08:44:07.733Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.catalina.core.StandardEngine","message":"Starting Servlet engine: [Apache Tomcat/10.1.40]"}
+{"timestamp":"2026-09-26T08:44:07.933Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.c.c.C.[Tomcat].[localhost].[/]","message":"Initializing Spring embedded WebApplicationContext"}
+{"timestamp":"2026-09-26T08:44:07.935Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.b.w.s.c.ServletWebServerApplicationContext","message":"Root WebApplicationContext: initialization completed in 9724 ms"}
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+{"timestamp":"2026-09-26T08:44:08.272Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:44:12.335Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.r.s.a.RocketMQAutoConfiguration","message":"The necessary spring property 'rocketmq.name-server' is not defined, all rockertmq beans creation are skipped!"}
+{"timestamp":"2026-09-26T08:44:14.965Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.b.a.e.web.EndpointLinksResolver","message":"Exposing 3 endpoints beneath base path '/actuator'"}
+{"timestamp":"2026-09-26T08:44:15.022Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.x.job.core.executor.XxlJobExecutor","message":">>>>>>>>>>> xxl-job register jobhandler success, name:outboxDispatch, jobHandler:com.xxl.job.core.handler.impl.MethodJobHandler@2a178b15[class com.flashsale.common.messaging.OutboxDispatchTask#runXxlJob]"}
+{"timestamp":"2026-09-26T08:44:15.267Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.coyote.http11.Http11NioProtocol","message":"Starting ProtocolHandler [\"http-nio-8080\"]"}
+{"timestamp":"2026-09-26T08:44:15.329Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.b.w.e.tomcat.TomcatWebServer","message":"Tomcat started on port 8080 (http) with context path '/'"}
+{"timestamp":"2026-09-26T08:44:15.376Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"com.xxl.job.core.server.EmbedServer","message":">>>>>>>>>>> xxl-job remoting server start success, nettype = class com.xxl.job.core.server.EmbedServer, port = 9999"}
+{"timestamp":"2026-09-26T08:44:15.402Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.a.n.p.a.s.c.ClientAuthPluginManager","message":"[ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success."}
+{"timestamp":"2026-09-26T08:44:15.402Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.a.n.p.a.s.c.ClientAuthPluginManager","message":"[ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success."}
+{"timestamp":"2026-09-26T08:44:15.517Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.a.c.n.r.NacosServiceRegistry","message":"nacos registry, DEFAULT_GROUP flashsale-inventory 172.20.0.8:8080 register finished"}
+{"timestamp":"2026-09-26T08:44:15.546Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.f.inventory.InventoryApplication","message":"Started InventoryApplication in 30.334 seconds (process running for 40.786)"}
+{"timestamp":"2026-09-26T08:44:15.769Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.a.c.n.r.NacosContextRefresher","message":"[Nacos Config] Listening config: dataId=flashsale-inventory.yaml, group=DEFAULT_GROUP"}
+{"timestamp":"2026-09-26T08:44:15.858Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.c.c.C.[Tomcat].[localhost].[/]","message":"Initializing Spring DispatcherServlet 'dispatcherServlet'"}
+{"timestamp":"2026-09-26T08:44:15.859Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.web.servlet.DispatcherServlet","message":"Initializing Servlet 'dispatcherServlet'"}
+{"timestamp":"2026-09-26T08:44:15.863Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.s.web.servlet.DispatcherServlet","message":"Completed initialization in 4 ms"}
+{"timestamp":"2026-09-26T08:44:16.163Z","level":"INFO","service":"flashsale-inventory","trace_id":"7c8971d2-c3f4-48be-8f2d-aed451b09fc2","span_id":"90bdf002-64a3-4005-9d3a-31e1d372077b","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"com.zaxxer.hikari.HikariDataSource","message":"HikariPool-1 - Starting..."}
+{"timestamp":"2026-09-26T08:44:17.010Z","level":"INFO","service":"flashsale-inventory","trace_id":"7c8971d2-c3f4-48be-8f2d-aed451b09fc2","span_id":"90bdf002-64a3-4005-9d3a-31e1d372077b","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"com.zaxxer.hikari.pool.HikariPool","message":"HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@71ce440c"}
+{"timestamp":"2026-09-26T08:44:17.037Z","level":"INFO","service":"flashsale-inventory","trace_id":"7c8971d2-c3f4-48be-8f2d-aed451b09fc2","span_id":"90bdf002-64a3-4005-9d3a-31e1d372077b","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"com.zaxxer.hikari.HikariDataSource","message":"HikariPool-1 - Start completed."}
+{"timestamp":"2026-09-26T08:44:27.541Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:44:37.213Z","level":"INFO","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"c.x.job.core.executor.XxlJobExecutor","message":">>>>>>>>>>> xxl-job regist JobThread success, jobId:3, handler:com.xxl.job.core.handler.impl.MethodJobHandler@2a178b15[class com.flashsale.common.messaging.OutboxDispatchTask#runXxlJob]"}
+{"timestamp":"2026-09-26T08:44:59.188Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:45:41.176Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:46:43.424Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:48:21.216Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:50:01.876Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:52:18.176Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:54:37.348Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:56:40.338Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T08:58:28.171Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:00:48.157Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:02:52.270Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:05:01.298Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:07:01.729Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:08:53.548Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:10:47.111Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:12:59.005Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:10.994Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:11.806Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:13.717Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:16.182Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:20.798Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:28.402Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:38.087Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:14:54.230Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:15:17.966Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:16:04.250Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:17:17.877Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:18:57.616Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:21:00.190Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:22:36.884Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:24:32.887Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:26:14.048Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:28:01.577Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:30:06.582Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:32:14.178Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:33:59.137Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:35:37.673Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:37:42.470Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:39:55.282Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:41:56.011Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:43:59.324Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:44:40.976Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:44:41.872Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:44:43.255Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:44:45.746Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:44:49.482Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap
+	at java.base/java.net.InetAddress$CachedLookup.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:44:56.133Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:45:07.497Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:45:25.930Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:45:55.114Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:46:40.273Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:47:51.239Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:49:26.674Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:51:25.354Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:53:09.496Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:55:31.319Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:57:51.504Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T09:59:32.983Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}
+{"timestamp":"2026-09-26T10:01:30.437Z","level":"WARN","service":"flashsale-inventory","trace_id":"","span_id":"","user_id":"","order_id":"","event_id":"","idempotency_key":"","outbox_id":"","error_code":"","logger":"o.a.s.a.d.i.g.i.ManagedChannelImpl","message":"[Channel<1>: (skywalking-oap:11800)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host skywalking-oap, cause=java.lang.RuntimeException: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:224)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:283)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:320)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.net.UnknownHostException: skywalking-oap: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Unknown Source)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(Unknown Source)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.base/java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:644)
+	at org.apache.skywalking.apm.dependencies.io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:220)
+	... 5 more
+}"}

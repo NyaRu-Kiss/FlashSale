@@ -1,0 +1,35 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v2.7.18)
+
+16:43:32.476 logback [main] INFO  c.x.job.admin.XxlJobAdminApplication - Starting XxlJobAdminApplication using Java 1.8.0_332 on 3347ae756a37 with PID 7 (/app.jar started by root in /)
+16:43:32.479 logback [main] INFO  c.x.job.admin.XxlJobAdminApplication - No active profile set, falling back to 1 default profile: "default"
+16:43:34.065 logback [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+16:43:34.074 logback [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+16:43:34.078 logback [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+16:43:34.079 logback [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.83]
+16:43:34.264 logback [main] INFO  o.a.c.c.C.[.[.[/xxl-job-admin] - Initializing Spring embedded WebApplicationContext
+16:43:34.265 logback [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1547 ms
+16:43:35.117 logback [main] INFO  c.x.j.a.c.scheduler.XxlJobScheduler - >>>>>>>>> init xxl-job admin success.
+16:43:35.139 logback [xxl-job, admin JobLogReportHelper] INFO  com.zaxxer.hikari.HikariDataSource - HikariCP - Starting...
+16:43:36.181 logback [xxl-job, admin JobLogReportHelper] INFO  com.zaxxer.hikari.HikariDataSource - HikariCP - Start completed.
+16:43:36.254 logback [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+16:43:39.036 logback [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+16:43:39.084 logback [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+16:43:39.139 logback [main] INFO  o.a.c.c.C.[.[.[/xxl-job-admin] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+16:43:39.140 logback [main] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+16:43:39.146 logback [main] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+16:43:39.149 logback [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path '/xxl-job-admin'
+16:43:39.203 logback [main] INFO  c.x.job.admin.XxlJobAdminApplication - Started XxlJobAdminApplication in 7.081 seconds (JVM running for 7.653)
+16:43:40.000 logback [xxl-job, admin JobScheduleHelper#scheduleThread] INFO  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>> init xxl-job admin scheduler success.
+16:43:40.008 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 1
+16:43:40.013 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 2
+16:43:40.016 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 3
+16:43:40.017 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 4
+16:43:40.017 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 5
+16:43:40.018 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 6

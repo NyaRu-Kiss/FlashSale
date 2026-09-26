@@ -90,6 +90,8 @@ run_k6() {
   docker run --rm --network host -e BASE_URL="$BASE_URL" -e SCENARIO="${H03_SCENARIO:-product_read_cold}" \
     -e PRODUCT_ID="${PRODUCT_ID:-1}" -e ACTIVITY_ID="${ACTIVITY_ID:-1}" \
     -e LOAD_TOKEN="${LOAD_TOKEN:-}" -e LOAD_TOKENS="$load_tokens" "${token_mount[@]}" \
+    -e BURST_RATE="${BURST_RATE:-}" -e BURST_DURATION="${BURST_DURATION:-}" \
+    -e PREALLOCATED_VUS="${PREALLOCATED_VUS:-}" -e MAX_VUS="${MAX_VUS:-}" \
     -v "$ROOT_DIR/load/k6:/scripts:ro" -v "$results:/results" "$image" run --summary-export /results/summary-k6.json /scripts/h03.js
 }
 

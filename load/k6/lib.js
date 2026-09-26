@@ -1,19 +1,30 @@
 import http from 'k6/http';
-import { check } from 'k6';
+import { Counter } from 'k6/metrics';
 
 export const baseUrl = (__ENV.BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
-export const token = __ENV.LOAD_TOKEN || '';
-
-export function authHeaders(extra = {}) {
-  return { Authorization: `Bearer ${token}`, ...extra };
-}
+export const transportFailures = new Counter('transport_failures');
+export const businessAccepted = new Counter('business_accepted');
+export const businessRejected = new Counter('business_rejected');
+export const unexpectedResponses = new Counter('unexpected_responses');
 
 export function request(method, path, body, headers = {}) {
-  const params = { headers: { 'Content-Type': 'application/json', ...headers }, tags: { endpoint: path } };
+  const params = {
+    headers: { 'Content-Type': 'application/json', ...headers },
+    tags: { endpoint: path.replace(/\/\d+/g, '/{id}') },
+    responseCallback: http.expectedStatuses({ min: 200, max: 499 }),
+  };
   const response = method === 'GET'
     ? http.get(`${baseUrl}${path}`, params)
     : http.request(method, `${baseUrl}${path}`, body === undefined ? null : JSON.stringify(body), params);
-  check(response, { 'HTTP status is successful or business rejection': r => r.status >= 200 && r.status < 500 });
+  if (response.status === 0 || response.status >= 500) {
+    transportFailures.add(1);
+  } else if (response.status < 300 && response.json('code') === 'SUCCESS') {
+    businessAccepted.add(1);
+  } else if (response.status >= 400 && response.status < 500) {
+    businessRejected.add(1);
+  } else {
+    unexpectedResponses.add(1);
+  }
   return response;
 }
 

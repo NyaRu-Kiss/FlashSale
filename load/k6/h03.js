@@ -1,11 +1,18 @@
 import { check } from 'k6';
-import { authHeaders, csvEnv, jsonEnv, request, token } from './lib.js';
+import { csvEnv, jsonEnv, request } from './lib.js';
 
 const scenario = __ENV.SCENARIO || 'product_read';
+const token = __ENV.LOAD_TOKEN || '';
+const tokens = csvEnv('LOAD_TOKENS');
 const productId = __ENV.PRODUCT_ID || '1';
 const activityId = __ENV.ACTIVITY_ID || '1';
 const couponTemplateId = __ENV.COUPON_TEMPLATE_ID || '1';
 const orderNumbers = csvEnv('ORDER_NUMBERS');
+
+function authHeaders(extra = {}) {
+  const selected = tokens.length ? tokens[(__VU - 1) % tokens.length] : token;
+  return { Authorization: `Bearer ${selected}`, ...extra };
+}
 
 export const options = {
   scenarios: {
@@ -38,7 +45,7 @@ function scenarioOptions(name) {
 
 export default function () {
   if (scenario === 'product_read') return productRead();
-  if (!token) throw new Error('LOAD_TOKEN is required for this scenario');
+  if (!token && !tokens.length) throw new Error('LOAD_TOKEN or LOAD_TOKENS is required for this scenario');
   if (scenario === 'activity_burst') return activityBurst();
   if (scenario === 'activity_limit') return activityBurst();
   if (scenario === 'direct_purchase') return directPurchase();

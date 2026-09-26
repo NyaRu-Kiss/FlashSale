@@ -4,15 +4,16 @@
 
 ## 运行方式
 
-使用 k6 Docker 镜像，业务服务只按当前场景启动。`LOAD_TOKEN` 必须是 CUSTOMER JWT；写场景使用独立商品、活动、券和用户数据。
+使用 k6 Docker 镜像，业务服务只按当前场景启动。写场景使用独立商品、活动、券和用户数据。活动库存突发应通过 `LOAD_TOKENS` 传入多个 CUSTOMER JWT（逗号分隔），避免把单用户限购误当成全局库存容量；`LOAD_TOKEN` 适合单用户限购和重复幂等场景。
 
 ```bash
-docker run --rm -i --network host \
+docker run --rm --network host \
   -e BASE_URL=http://127.0.0.1:8080 \
   -e LOAD_TOKEN="$LOAD_TOKEN" \
   -e PRODUCT_ID=101 -e ACTIVITY_ID=7 \
   -e SCENARIO=activity_burst \
-  grafana/k6 run - < load/k6/h03.js
+  -v "$PWD/load/k6:/scripts:ro" \
+  ghcr.io/grafana/k6:latest run /scripts/h03.js
 ```
 
 ## 场景参数
@@ -26,6 +27,8 @@ docker run --rm -i --network host \
 | `coupon_claim` | 默认 100 VUs、30 秒；每次使用独立幂等键 |
 | `duplicate_order` | 所有请求共用 `DUPLICATE_KEY`，验证同键幂等 |
 | `payment_cancel` | 固定阶梯 10→50→100 VUs；必须提供逗号分隔的 `ORDER_NUMBERS` |
+
+`LOAD_TOKENS=user-token-1,user-token-2,...` 按 VU 轮换身份；`LOAD_TOKEN` 未提供时，除公开商品读取外的场景会立即失败。
 
 ## 结果判定
 

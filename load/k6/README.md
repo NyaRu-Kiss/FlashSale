@@ -49,4 +49,8 @@ load/h03/run.sh verify
 load/h03/run.sh down
 ```
 
+`prepare` 写入的 `load/h03/data.json` 会被 `run.sh run` 自动读取；显式设置
+`PRODUCT_ID` 或 `ACTIVITY_ID` 时以环境变量为准。写场景会连同 `job`、XXL-Job
+Admin/MySQL 和 RocketMQ 一起启动，确保 Outbox 投递状态可以在验收中对账。
+
 `product_read_cold` 先检查详情字段和非零库存；`product_read_warm` 运行预热后的 5,000 VUs。活动突发脚本按 `iterationInTest` 选择前 9,000 个用户，再重复前 1,000 个用户，并在 `summary.json` 记录实际首尾时间；若首尾时间差超过 1 秒，结果标记为未达到目标突发窗口。SQL 不变量检查见 `load/h03/verify.sql`。

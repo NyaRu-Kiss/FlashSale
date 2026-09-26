@@ -51,7 +51,7 @@ Docker Compose 中的 Maven 服务统一使用 `flashsale-m2:/root/.m2`，不会
 
 ```bash
 docker compose --profile r21 up -d \
-  postgres redis nacos migration \
+  postgres redis nacos migration xxl-mysql xxl-job-admin \
   rocketmq-namesrv rocketmq-broker rocketmq-init \
   auth gateway product activity inventory coupon order payment job
 ```
@@ -64,6 +64,8 @@ docker compose logs -f gateway
 ```
 
 Gateway 默认地址为 `http://127.0.0.1:8080`。默认管理员账号由环境变量控制，默认值为 `admin` / `local-admin-password`。本地配置可复制 `.env.example` 为 `.env` 后按需修改。
+
+基础 Compose 默认关闭 Outbox 投递和消费者。要验收完整异步链路，使用下面的 H03 独立环境；该环境会启用 Outbox、消费者和 XXL-Job，并初始化六个 `outboxDispatch` 周期任务。
 
 ### 启动接口验收环境
 
@@ -103,7 +105,7 @@ H03 使用独立 Compose project 和临时数据卷：
 H03_SCENARIO=activity_burst load/h03/run.sh up
 H03_SCENARIO=activity_burst load/h03/run.sh prepare
 H03_USER_COUNT=9000 LOAD_TOKENS_FILE=load/h03/tokens.txt load/h03/prepare-users.sh
-LOAD_TOKENS_FILE=load/h03/tokens.txt load/h03/run.sh run
+H03_SCENARIO=activity_burst LOAD_TOKENS_FILE=load/h03/tokens.txt load/h03/run.sh run
 load/h03/run.sh verify
 load/h03/run.sh down
 ```

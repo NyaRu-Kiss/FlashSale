@@ -76,7 +76,8 @@ function productReadCold() {
     if (r.status < 200 || r.status >= 300) return false;
     const body = r.json('data') || r.json();
     return Boolean(body && body.name && body.description !== undefined
-      && body.list_price_minor !== undefined && body.available_stock > 0);
+      && (body.list_price_minor !== undefined || body.priceMinor !== undefined)
+      && (body.available_stock > 0 || body.stock > 0));
   }});
 }
 

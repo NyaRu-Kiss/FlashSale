@@ -58,10 +58,19 @@ prepare() {
   product=$(curl -fsS -X POST "$BASE_URL/api/v1/admin/products" -H "Authorization: Bearer $operator_auth" -H 'Content-Type: application/json' \
     -d "{\"sku\":\"H03-READ-$suffix\",\"name\":\"H03 Read Product $suffix\",\"description\":\"H03 load product\",\"list_price_minor\":1999,\"available_stock\":100000}" | jq -er '.data.id')
   curl -fsS -X POST "$BASE_URL/api/v1/admin/products/$product/on-sale" -H "Authorization: Bearer $operator_auth" >/dev/null
-  now=$(date -u -d '-1 minute' +%Y-%m-%dT%H:%M:%SZ); later=$(date -u -d '+2 hours' +%Y-%m-%dT%H:%M:%SZ)
+  now=$(date -u -d '+20 seconds' +%Y-%m-%dT%H:%M:%SZ); later=$(date -u -d '+2 hours' +%Y-%m-%dT%H:%M:%SZ)
   activity=$(curl -fsS -X POST "$BASE_URL/api/v1/admin/activities" -H "Authorization: Bearer $operator_auth" -H 'Content-Type: application/json' \
     -d "$(jq -nc --arg n "H03 Burst Activity $suffix" --arg s "$now" --arg e "$later" --argjson p "$product" '{name:$n,product_id:$p,sale_price_minor:999,initial_stock:300,purchase_limit_per_user:2,starts_at:$s,ends_at:$e}')" | jq -er '.data.id')
-  curl -fsS -X POST "$BASE_URL/api/v1/admin/activities/$activity/start" -H "Authorization: Bearer $operator_auth" >/dev/null
+  curl -fsS -X POST "$BASE_URL/api/v1/admin/activities/$activity/preheat" -H "Authorization: Bearer $operator_auth" >/dev/null
+  for _ in $(seq 1 90); do
+    state=$(curl -fsS "$BASE_URL/api/v1/admin/activities/$activity" -H "Authorization: Bearer $operator_auth" | jq -r '.data.status')
+    [[ "$state" = "ACTIVE" ]] && break
+    if [[ "$state" = "NOT_STARTED" ]]; then
+      curl -sS -X POST "$BASE_URL/api/v1/admin/activities/$activity/start" -H "Authorization: Bearer $operator_auth" >/dev/null || true
+    fi
+    sleep 1
+  done
+  [[ "$state" = "ACTIVE" ]] || { echo "activity did not become ACTIVE (state=$state)" >&2; exit 1; }
   jq -n --argjson product "$product" --argjson activity "$activity" '{product_id:$product,activity_id:$activity}' > "${H03_DATA_FILE:-$ROOT_DIR/load/h03/data.json}"
   echo "Prepared product=$product activity=$activity; register CUSTOMER users separately and store JWTs in LOAD_TOKENS_FILE."
 }

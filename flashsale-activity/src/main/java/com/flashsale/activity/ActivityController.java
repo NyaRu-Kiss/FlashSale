@@ -59,6 +59,11 @@ final class ActivityController {
         return ok(service.start(actor(header), id));
     }
 
+    @PostMapping("/admin/activities/{id}/preheat")
+    ApiResponse<Activity> preheat(@RequestHeader("Authorization") String header, @PathVariable long id) {
+        return ok(service.preheat(actor(header), id));
+    }
+
     @PostMapping("/admin/activities/{id}/pause")
     ApiResponse<Activity> pause(@RequestHeader("Authorization") String header, @PathVariable long id) {
         return ok(service.pause(actor(header), id));

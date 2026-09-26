@@ -35,3 +35,18 @@ docker run --rm --network host \
 k6 只设置通用失败率和脚本检查阈值，不预设 P95/P99 硬门槛。每个场景结束后必须核对 PostgreSQL、Redis、Outbox、消费幂等、库存流水和活动事件序号；保存 `summary.json`、Docker 资源峰值和场景数据快照。
 
 1 万请求是 1 秒内的瞬时突发，不代表持续 1 万 QPS。若 k6 在单机上成为 CPU/内存瓶颈，结果只能作为单机压测结果，不能解释为服务容量上限。
+
+## H03 临时环境与证据
+
+`load/h03/run.sh` 使用独立 Compose project（默认 `flashsale-h03`），因此不会读取或修改 acceptance 数据卷。按场景只显式启动所需服务；`down` 会停止服务并删除该 project 的临时卷，预先存在的独立 `redis` 容器不受影响。
+
+```bash
+H03_SCENARIO=activity_burst load/h03/run.sh up
+H03_SCENARIO=activity_burst load/h03/run.sh prepare
+H03_SCENARIO=activity_burst PRODUCT_ID=101 ACTIVITY_ID=7 \
+  LOAD_TOKENS_FILE=load/h03/tokens.txt load/h03/run.sh run
+load/h03/run.sh verify
+load/h03/run.sh down
+```
+
+`product_read_cold` 先检查详情字段和非零库存；`product_read_warm` 运行预热后的 5,000 VUs。活动突发脚本按 `iterationInTest` 选择前 9,000 个用户，再重复前 1,000 个用户，并在 `summary.json` 记录实际首尾时间；若首尾时间差超过 1 秒，结果标记为未达到目标突发窗口。SQL 不变量检查见 `load/h03/verify.sql`。

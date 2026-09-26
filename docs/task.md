@@ -117,7 +117,7 @@ H 阶段按 `H01 → H02 → H03 → H04 → H05` 顺序执行。每项开始前
 - 并行准备任务：`H03`
   - 状态：`DOING`
   - 备注：按已确认范围先实现 k6 压测工件；活动暂停/恢复不纳入 H03，本地实际压测和数据对账待 k6 镜像可用后执行。
-  - 运行环境修复（2026-09-26）：H03 Compose 临时 XXL-Job MySQL 现在幂等预置六个业务服务的 `outboxDispatch` 每秒任务，并统一 Admin/executor 的 `default_token`；已实测六个 executor 注册成功，历史 Outbox 从 `PENDING` 追平为 `SENT`。H03 仍因优惠券、支付/取消竞争、完整 MQ/Redis/数据库对账和目标突发窗口证据不足保持 `DOING`。
+  - 运行环境修复（2026-09-26）：H03 Compose 临时 XXL-Job MySQL 现在幂等预置六个业务服务的 `outboxDispatch` 每秒任务，并统一 Admin/executor 的 `default_token`；已实测六个 executor 注册成功，历史 Outbox 从 `PENDING` 追平为 `SENT`。随后补测 ACTIVE 优惠券领取：单用户限领只生成 1 张用户券，Coupon Outbox 为 `SENT`；补测支付/取消竞争场景并保留 k6 结果。H03 仍因优惠券多用户容量证据、支付最终状态明细、完整 MQ/Redis/数据库对账和目标突发窗口证据不足保持 `DOING`。
 
 ## I. 设计偏离修正任务
 

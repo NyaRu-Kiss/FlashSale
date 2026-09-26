@@ -90,7 +90,7 @@
 |---|---|---|---|---|---|
 | H01 | 全量 HTTP 接口契约与权限验收 | C01-C03,D01-D05,E01-E06,F01-F07,G04 | Auth、商品、优惠券、活动、订单、支付、库存和运营接口逐项符合 `api-design.md`：路径/方法、请求响应字段、分页、错误码、JWT 角色、资源归属、幂等键和 Trace ID 一致；未授权、越权、重复请求和非法参数均返回规定结果 | 2026-09-25～2026-09-26：按 `docker-compose.yml` + `docker-compose.acceptance.yml --profile r21` 分层执行验收，测试完成后已停止本轮启动服务，仅保留预先存在的独立 `redis` 容器。已验证且当前无异常：Compose/Flyway；Auth 注册、登录、JWT、Trace；Product CRUD/上下架/查询；Coupon 创建、规则限制、暂停/恢复、领取、重复领取幂等；Activity 创建、取消/重复取消、指标、预热、开始、暂停/重复暂停、恢复请求/查询；Order 预览、创建、列表、详情、明细、重复与冲突幂等、取消/重复取消；Payment 成功支付、重复支付幂等、回调及回调幂等、金额/币种异常；Inventory 运营 JWT、未授权、非法数量、资源不存在，以及 acceptance seed `INVENTORY_ACCEPTANCE_SEED=9001=10` 下预占/重复预占、确认/重复确认、已确认释放错误、释放/重复释放；CUSTOMER/OPERATOR/ADMIN 权限隔离和 Trace ID。已验证库存活动链路：Redis 库存从 9 减至 8 后经取消释放恢复至 8；活动库存事件 payload、Outbox、消费者幂等和 checkpoint 推进测试通过；活动 5 暂停后屏障为 `3`，延迟启用 Outbox/Activity Consumer 后 3 条事件连续消费至 checkpoint `3`，幂等记录均为 `SUCCEEDED`，未发现库存流水、账本、Redis 不一致。已完成的代码修复已分别提交：`bacf0e3`、`f7f2e22`、`80a495d` 等。不能严格保证/尚未完成：没有完成一次“存在未消费库存事件且 barrier>0 → 暂停 → 追平 → 恢复成功 → 最终库存对账”的真实 HTTP 闭环；活动 5 后续恢复因时间窗口过期返回 `ACTIVITY_NOT_READY`，不是库存校验失败；活动 7 的恢复任务 `id=4` 虽为 `SUCCEEDED` 且活动回到 `ACTIVE`，但 `barrier=0`，只证明无待处理事件时恢复成功。该边缘场景暂不继续处理，保留为 H01 未完成项；详细补做方案见末尾“H01 活动恢复边缘场景补做方案”。 | DOING |
 | H02 | 核心状态机、数据库不变量与跨服务一致性验收 | A01-G05,H01 | 订单、支付、用户券、活动、库存、Outbox、消费幂等和补偿记录只能发生设计规定的状态迁移；库存不得为负，库存流水/活动事件序号连续，订单和支付终态唯一，用户券不得重复核销，Outbox/消费记录与业务变更满足同事务约束；检查 Redis、PostgreSQL、RocketMQ 最终状态一致 | 2026-09-26：已完成设计定向 review；Docker Java 21 串行分层测试通过：common、inventory、coupon、order、payment、activity、job；临时 PostgreSQL（V1→V3）验证订单创建/取消、活动事件序号、支付幂等与履约、Outbox/消费幂等；临时 Redis 验证活动库存预扣/暂停门闸、优惠券并发限购与补偿；全量 `mvn -B test -q` 和 Compose config 通过。首次并行 Maven 触发公共模块 Surefire discovery 失败，串行重跑通过；首次优惠券 Redis 集成因既有容器未发布端口失败，改用临时端口 Redis 重跑通过。测试容器及临时 PostgreSQL/Redis 已关闭，仅保留预先存在的独立 `redis` 容器。H01 的 `barrier > 0` 暂停→追平→恢复真实 HTTP 闭环仍未完成，故 H02 保持 `DOING`，不标记完成。 | DOING |
-| H03 | 高并发、幂等与容量压测 | D04,E02-E03,F02-F04,G01-G04,H02 | 覆盖活动热点库存、同用户限购、优惠券领取、重复提交、支付/取消竞争和 MQ 消费；核心正确性 100% 满足 AC01-AC08，零负库存、零重复有效订单/券/支付；报告记录并发量、持续时间、吞吐、P95/P99、错误率、Outbox 积压和消费延迟，并与发布基线比较 | DOING（2026-09-26）：已完成真实活动预热和压测：创建即将开始活动，调用预热接口并确认进入 `ACTIVE`；通过 API 准备 9,000 个 CUSTOMER JWT。1 秒/10,000 请求尝试因 k6 在约 1,000 VU 档位产生 8,996 个 dropped iterations；提高至 4,000 VU 初始化时进程被系统终止。随后以 500/s×20s 完成 10,001 次请求、0 dropped iterations，P50 约 7.6ms、P95 约 1.61s；活动库存 300 时成功订单 300，未见负库存、事件断序或重复有效订单。补测活动 5 同用户限购：同一用户不同幂等键仅成功 2 次，后续返回 `ACTIVITY_PURCHASE_LIMIT_EXCEEDED`；补测重复下单：同键同请求返回同一订单，同键不同请求返回 `IDEMPOTENCY_CONFLICT`。当前数据库有 600 个待支付订单（两组独立活动各 300），对应 1,800 条订单 Outbox（每单 ORDER_CREATED、ACTIVITY_INVENTORY_RESERVE、ORDER_PAYMENT_TIMEOUT），另有商品/活动配置 Outbox；业务服务只注册 XXL-Job handler，H03 尚未创建外部 `outboxDispatch` 周期任务，因此 Outbox 仍有 PENDING，最终一致性暂不能判定。优惠券领取和支付/取消竞争尚未执行，保持 DOING。 | DOING |
+| H03 | 高并发、幂等与容量压测 | D04,E02-E03,F02-F04,G01-G04,H02 | 覆盖活动热点库存、同用户限购、优惠券领取、重复提交、支付/取消竞争和 MQ 消费；核心正确性 100% 满足 AC01-AC08，零负库存、零重复有效订单/券/支付；报告记录并发量、持续时间、吞吐、P95/P99、错误率、Outbox 积压和消费延迟，并与发布基线比较 | DOING（2026-09-26 更新）：活动热点、限购、重复提交、Outbox 调度和基础优惠券已验证；`500/s × 20s` 完成 10,001 请求且 0 dropped iterations；仍缺多用户优惠券容量、支付最终状态明细、完整资源/MQ/Redis/数据库报告，以及 1 秒 10,000 请求目标证据；`1000/s × 10s` 已尝试但未完成 | DOING |
 | H04 | 故障恢复、补偿与告警演练 | G01-G04,H02 | 覆盖服务/数据库重启、Outbox 投递中断、消费者崩溃、重复/乱序/延迟消息、RocketMQ 重投、Redis 预扣丢失、XXL-Job 重复触发和补偿失败；恢复后无数据不变量破坏，任务可重试且幂等，Redis 可由 PostgreSQL/事件账本安全重建，失败进入告警和人工处理记录 | Docker Java 21 按演练脚本注入故障并记录故障时间、恢复时间、重试次数、告警、补偿记录和最终对账结果；每个场景完成后关闭测试服务 | TODO |
 | H05 | 从零部署、全链路冒烟与发布验收 | A03-A05,G05,H01-H04 | 使用干净 Docker 环境完成镜像构建、Flyway 初始化、Compose 健康检查和全部服务启动；完成注册/登录、浏览、领券、下单、支付、履约、取消/超时和运营查询冒烟；Prometheus、日志、Trace、告警可查询；重启后数据和任务可恢复；验收结束清理容器和临时数据 | Docker Java 21 执行一键部署及发布验收脚本；保存版本、配置、健康检查、端到端结果、监控证据和清理记录 | TODO |
 
@@ -117,6 +117,22 @@ H 阶段按 `H01 → H02 → H03 → H04 → H05` 顺序执行。每项开始前
 - 并行准备任务：`H03`
   - 状态：`DOING`
   - 备注：按已确认范围先实现 k6 压测工件；活动暂停/恢复不纳入 H03，本地实际压测和数据对账待 k6 镜像可用后执行。
+
+### H03 最新验证状态（2026-09-26）
+
+**已完成**：
+
+- 活动预热并进入 `ACTIVE`；活动热点库存压测完成 `500/s × 20s`，10,001 请求、0 dropped iterations，P50 约 7.6ms、P95 约 1.61s。
+- 活动库存不变量、同用户限购、同键幂等和冲突幂等通过。
+- 六个 `outboxDispatch` 每秒任务已自动初始化，六个 executor 注册成功；历史 Outbox 已从 `PENDING` 追平为 `SENT`。
+- 基础优惠券领取通过；单用户限领只生成 1 张用户券，Coupon Outbox 为 `SENT`。
+- `load/h03/verify.sql` 全部检查为 0。
+
+**未完成**：
+
+- 单机 `1s × 10,000` 目标突发未达成：约 1,000 VU 出现 8,996 dropped iterations，4,000 VU 初始化时进程被系统终止。
+- `1000/s × 10s` 新活动复测未达标：完成 7,738/10,000 次，2,263 dropped iterations，实际约 712/s；活动库存 300、成功订单 300，未发现负库存。10 秒窗口降低了 VU 初始化压力，但当前机器仍达不到 1,000/s。
+- 优惠券多用户容量、支付/取消最终状态明细、完整 MQ/Redis/数据库/资源报告证据仍需补齐。
   - 运行环境修复（2026-09-26）：H03 Compose 临时 XXL-Job MySQL 现在幂等预置六个业务服务的 `outboxDispatch` 每秒任务，并统一 Admin/executor 的 `default_token`；已实测六个 executor 注册成功，历史 Outbox 从 `PENDING` 追平为 `SENT`。随后补测 ACTIVE 优惠券领取：单用户限领只生成 1 张用户券，Coupon Outbox 为 `SENT`；补测支付/取消竞争场景并保留 k6 结果。H03 仍因优惠券多用户容量证据、支付最终状态明细、完整 MQ/Redis/数据库对账和目标突发窗口证据不足保持 `DOING`。
 
 ## I. 设计偏离修正任务

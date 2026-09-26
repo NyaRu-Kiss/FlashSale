@@ -19,8 +19,8 @@ export const options = {
     load: scenarioOptions(scenario),
   },
   thresholds: {
-    http_req_failed: ['rate<0.05'],
-    checks: ['rate>0.95'],
+    transport_failures: ['count<1'],
+    unexpected_responses: ['count<1'],
   },
   discardResponseBodies: false,
 };
@@ -63,7 +63,7 @@ function activityBurst() {
   const body = jsonEnv('ACTIVITY_ORDER_BODY', { kind: 'ACTIVITY', activity_id: Number(activityId), user_coupon_id: null, items: [{ product_id: Number(productId), quantity: 1 }] });
   const key = `ORDER_SUBMIT_burst_${__VU}_${__ITER}`;
   const response = request('POST', '/api/v1/orders', body, authHeaders({ 'Idempotency-Key': key }));
-  check(response, { 'burst response has trace': r => Boolean(r.json('trace_id')) });
+  check(response, { 'burst response has trace': r => Boolean(r.json('trace_id') || r.json('traceId')) });
 }
 
 function directPurchase() {

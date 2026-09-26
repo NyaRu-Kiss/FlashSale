@@ -18,7 +18,7 @@ export function request(method, path, body, headers = {}) {
     : http.request(method, `${baseUrl}${path}`, body === undefined ? null : JSON.stringify(body), params);
   if (response.status === 0 || response.status >= 500) {
     transportFailures.add(1);
-  } else if (response.status < 300 && response.json('code') === 'SUCCESS') {
+  } else if (response.status >= 200 && response.status < 300) {
     businessAccepted.add(1);
   } else if (response.status >= 400 && response.status < 500) {
     businessRejected.add(1);

@@ -1,0 +1,13 @@
+16:43:34.264 logback [main] INFO  o.a.c.c.C.[.[.[/xxl-job-admin] - Initializing Spring embedded WebApplicationContext
+16:43:35.117 logback [main] INFO  c.x.j.a.c.scheduler.XxlJobScheduler - >>>>>>>>> init xxl-job admin success.
+16:43:35.139 logback [xxl-job, admin JobLogReportHelper] INFO  com.zaxxer.hikari.HikariDataSource - HikariCP - Starting...
+16:43:36.181 logback [xxl-job, admin JobLogReportHelper] INFO  com.zaxxer.hikari.HikariDataSource - HikariCP - Start completed.
+16:43:39.139 logback [main] INFO  o.a.c.c.C.[.[.[/xxl-job-admin] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+16:43:39.149 logback [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path '/xxl-job-admin'
+16:43:40.000 logback [xxl-job, admin JobScheduleHelper#scheduleThread] INFO  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>> init xxl-job admin scheduler success.
+16:43:40.008 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 1
+16:43:40.013 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 2
+16:43:40.016 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 3
+16:43:40.017 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 4
+16:43:40.017 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 5
+16:43:40.018 logback [xxl-job, admin JobScheduleHelper#scheduleThread] WARN  c.x.j.a.c.thread.JobScheduleHelper - >>>>>>>>>>> xxl-job, schedule misfire, jobId = 6

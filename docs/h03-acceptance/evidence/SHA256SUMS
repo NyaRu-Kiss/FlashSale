@@ -1,0 +1,12 @@
+3f7b6cb809a7d7e42bdc5204bc5d857a7fe3f27af7596bca903a2964fbf452bb  docs/h03-acceptance/evidence/k6/1000qps-x10s-summary-k6.json
+ed0fe42ca289a1950cec579ae9b328e1b50d911646087387f01a6404affb76f6  docs/h03-acceptance/evidence/k6/500qps-x20s-summary-k6.json
+9388d9234808b9235db0d1bc7b9b044efb0cc24a6e9807c4ba3f24953114ab20  docs/h03-acceptance/evidence/k6/coupon-active-summary-k6.json
+a00f8cddefd1e65529ad487a15f6f950496024df6df57f88c7500fd58c7b40b2  docs/h03-acceptance/evidence/k6/payment-cancel-summary-k6.json
+607a0dd831de2f75f4c77ca77086b45e761e42b9993d1f8a657d1ad7d6b9627e  docs/h03-acceptance/evidence/containers/flashsale-h03-activity-1.log
+347eb27854f634c3e62a4d0d7433084454139988d1c95bc0038b2d410016ed96  docs/h03-acceptance/evidence/containers/flashsale-h03-coupon-1.log
+952590943ef3b6fad8a33f1bb1932e1426d02e16124fb8f2af26a9b4913c53ca  docs/h03-acceptance/evidence/containers/flashsale-h03-inventory-1.log
+c53f3da2b17480e7a4a0a7be0ad09d745904b4aab295fedfd79caae015ef7b69  docs/h03-acceptance/evidence/containers/flashsale-h03-job-1.log
+4a2106420059e5fbadac61d298d53faef01e79941da443d5ee11e19367af0313  docs/h03-acceptance/evidence/containers/flashsale-h03-order-1.log
+bcdd5761e92b9f7d02a23398247f8b5c476d76c65f2f7aa9eb51351430434aab  docs/h03-acceptance/evidence/containers/flashsale-h03-payment-1.log
+9aaab734deecd8e1e91afff87bef9317dc71932dbc12e18319bf0ba070705eb4  docs/h03-acceptance/evidence/containers/flashsale-h03-product-1.log
+4a459ff5976924a8dd1958b94756190ce2f767e25e0ffbf073e3050b6001f515  docs/h03-acceptance/evidence/containers/flashsale-h03-xxl-job-admin-1.log

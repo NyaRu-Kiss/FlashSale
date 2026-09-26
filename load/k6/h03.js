@@ -1,4 +1,6 @@
 import { check } from 'k6';
+import exec from 'k6/execution';
+import { Gauge } from 'k6/metrics';
 import { csvEnv, jsonEnv, request } from './lib.js';
 
 const scenario = __ENV.SCENARIO || 'product_read';
@@ -8,6 +10,10 @@ const productId = __ENV.PRODUCT_ID || '1';
 const activityId = __ENV.ACTIVITY_ID || '1';
 const couponTemplateId = __ENV.COUPON_TEMPLATE_ID || '1';
 const orderNumbers = csvEnv('ORDER_NUMBERS');
+const burstTotal = Number(__ENV.BURST_TOTAL_REQUESTS || 10000);
+const burstUniqueUsers = Number(__ENV.BURST_UNIQUE_USERS || 9000);
+const burstStartedAt = new Gauge('burst_started_at_ms');
+const burstFinishedAt = new Gauge('burst_finished_at_ms');
 
 function authHeaders(extra = {}) {
   const selected = tokens.length ? tokens[(__VU - 1) % tokens.length] : token;
@@ -37,6 +43,10 @@ function scenarioOptions(name) {
   if (name === 'product_read') return {
     executor: 'constant-vus', vus: Number(__ENV.VUS || 5000), duration: __ENV.DURATION || '30s',
   };
+  if (name === 'product_read_cold') return { executor: 'shared-iterations', iterations: 1, maxDuration: __ENV.MAX_DURATION || '30s' };
+  if (name === 'product_read_warm') return {
+    executor: 'constant-vus', vus: Number(__ENV.VUS || 5000), duration: __ENV.DURATION || '30s',
+  };
   if (name === 'direct_purchase' || name === 'payment_cancel') return {
     executor: 'ramping-vus', startVUs: 0, stages: [{ duration: '15s', target: 10 }, { duration: '30s', target: 50 }, { duration: '30s', target: 100 }, { duration: '15s', target: 0 }],
   };
@@ -44,7 +54,8 @@ function scenarioOptions(name) {
 }
 
 export default function () {
-  if (scenario === 'product_read') return productRead();
+  if (scenario === 'product_read' || scenario === 'product_read_warm') return productRead();
+  if (scenario === 'product_read_cold') return productReadCold();
   if (!token && !tokens.length) throw new Error('LOAD_TOKEN or LOAD_TOKENS is required for this scenario');
   if (scenario === 'activity_burst') return activityBurst();
   if (scenario === 'activity_limit') return activityBurst();
@@ -59,11 +70,31 @@ function productRead() {
   request('GET', `/api/v1/products/${productId}`);
 }
 
+function productReadCold() {
+  const response = request('GET', `/api/v1/products/${productId}`);
+  check(response, { 'cold read returns a complete product': r => {
+    if (r.status < 200 || r.status >= 300) return false;
+    const body = r.json('data') || r.json();
+    return Boolean(body && body.name && body.description !== undefined
+      && body.list_price_minor !== undefined && body.available_stock > 0);
+  }});
+}
+
 function activityBurst() {
+  const iteration = exec.scenario.iterationInTest;
+  if (scenario === 'activity_burst' && iteration === 0) burstStartedAt.add(Date.now());
   const body = jsonEnv('ACTIVITY_ORDER_BODY', { kind: 'ACTIVITY', activity_id: Number(activityId), user_coupon_id: null, items: [{ product_id: Number(productId), quantity: 1 }] });
-  const key = `ORDER_SUBMIT_burst_${__VU}_${__ITER}`;
-  const response = request('POST', '/api/v1/orders', body, authHeaders({ 'Idempotency-Key': key }));
+  const tokenIndex = scenario === 'activity_burst'
+    ? (iteration < burstUniqueUsers ? iteration : iteration - burstUniqueUsers) : 0;
+  const selected = tokens.length ? tokens[tokenIndex % tokens.length] : token;
+  const key = scenario === 'activity_burst'
+    ? `ORDER_SUBMIT_burst_${iteration}` : `ORDER_SUBMIT_limit_${__VU}_${__ITER}`;
+  const response = request('POST', '/api/v1/orders', body, {
+    Authorization: `Bearer ${selected}`, 'Idempotency-Key': key,
+    'X-H03-Iteration': String(iteration),
+  });
   check(response, { 'burst response has trace': r => Boolean(r.json('trace_id') || r.json('traceId')) });
+  if (scenario === 'activity_burst' && iteration === burstTotal - 1) burstFinishedAt.add(Date.now());
 }
 
 function directPurchase() {
@@ -89,4 +120,16 @@ function paymentCancel() {
   } else {
     request('POST', `/api/v1/orders/${orderNumber}/cancel`, { reason: 'LOAD_CANCEL' }, authHeaders());
   }
+}
+
+export function handleSummary(data) {
+  const started = data.metrics.burst_started_at_ms?.values?.value || null;
+  const finished = data.metrics.burst_finished_at_ms?.values?.value || null;
+  const result = {
+    scenario, burst_total_requests: burstTotal, burst_unique_users: burstUniqueUsers,
+    burst_repeated_requests: Math.max(0, burstTotal - burstUniqueUsers),
+    burst_started_at_ms: started, burst_finished_at_ms: finished,
+    burst_window_ms: started && finished ? finished - started : null, metrics: data.metrics,
+  };
+  return { stdout: JSON.stringify(result, null, 2), 'summary.json': JSON.stringify(result, null, 2) };
 }

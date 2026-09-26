@@ -4,3 +4,6 @@
 *.iml
 .env
 docker-compose.override.yml
+load/h03/data.json
+load/h03/tokens*.txt
+load/h03/results/

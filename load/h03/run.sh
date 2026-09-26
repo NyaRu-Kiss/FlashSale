@@ -5,6 +5,7 @@ ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 PROJECT=${H03_COMPOSE_PROJECT:-flashsale-h03}
 BASE_URL=${BASE_URL:-http://127.0.0.1:8080}
 COMPOSE=(docker compose -p "$PROJECT" -f "$ROOT_DIR/docker-compose.yml" -f "$ROOT_DIR/load/h03/docker-compose.h03.yml")
+FULL_COMPOSE=("${COMPOSE[@]}" --profile r21)
 
 usage() {
   cat <<'EOF'
@@ -38,7 +39,7 @@ up() {
   "${COMPOSE[@]}" up -d "${services[@]}"
 }
 
-down() { "${COMPOSE[@]}" down --volumes --remove-orphans; }
+down() { "${FULL_COMPOSE[@]}" down --volumes --remove-orphans; }
 
 prepare() {
   command -v curl >/dev/null || { echo 'curl is required' >&2; exit 2; }

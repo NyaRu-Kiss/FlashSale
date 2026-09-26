@@ -28,10 +28,10 @@ base_services=(postgres redis nacos migration auth gateway)
 up() {
   local services=("${base_services[@]}")
   case "${H03_SCENARIO:-product_read_cold}" in
-    activity_burst|activity_limit) services+=(product activity order inventory rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
-    direct_purchase|duplicate_order) services+=(product order inventory rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
-    coupon_claim) services+=(coupon rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
-    payment_cancel) services+=(product order payment inventory rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
+    activity_burst|activity_limit) services+=(product activity order inventory job xxl-mysql xxl-job-admin rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
+    direct_purchase|duplicate_order) services+=(product order inventory job xxl-mysql xxl-job-admin rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
+    coupon_claim) services+=(coupon job xxl-mysql xxl-job-admin rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
+    payment_cancel) services+=(product order payment inventory job xxl-mysql xxl-job-admin rocketmq-namesrv rocketmq-broker rocketmq-init) ;;
     product_read*|*) services+=(product) ;;
   esac
   read -r -a extras <<< "${H03_SERVICES:-}"
@@ -80,6 +80,13 @@ run_k6() {
   mkdir -p "$results"
   chmod 777 "$results"
   local image=${K6_IMAGE:-ghcr.io/grafana/k6:latest}
+  local data_file=${H03_DATA_FILE:-$ROOT_DIR/load/h03/data.json}
+  local prepared_product_id=${PRODUCT_ID:-}
+  local prepared_activity_id=${ACTIVITY_ID:-}
+  if [[ -f "$data_file" ]] && command -v jq >/dev/null; then
+    prepared_product_id=${prepared_product_id:-$(jq -r '.product_id // empty' "$data_file")}
+    prepared_activity_id=${prepared_activity_id:-$(jq -r '.activity_id // empty' "$data_file")}
+  fi
   local load_tokens=${LOAD_TOKENS:-}
   local token_mount=()
   if [[ -n "${LOAD_TOKENS_FILE:-}" ]]; then
@@ -88,7 +95,7 @@ run_k6() {
     token_mount=(-e LOAD_TOKENS_FILE=/tokens.txt -v "$token_file:/tokens.txt:ro")
   fi
   docker run --rm --network host -e BASE_URL="$BASE_URL" -e SCENARIO="${H03_SCENARIO:-product_read_cold}" \
-    -e PRODUCT_ID="${PRODUCT_ID:-1}" -e ACTIVITY_ID="${ACTIVITY_ID:-1}" \
+    -e PRODUCT_ID="${prepared_product_id:-1}" -e ACTIVITY_ID="${prepared_activity_id:-1}" \
     -e LOAD_TOKEN="${LOAD_TOKEN:-}" -e LOAD_TOKENS="$load_tokens" "${token_mount[@]}" \
     -e BURST_RATE="${BURST_RATE:-}" -e BURST_DURATION="${BURST_DURATION:-}" \
     -e PREALLOCATED_VUS="${PREALLOCATED_VUS:-}" -e MAX_VUS="${MAX_VUS:-}" \

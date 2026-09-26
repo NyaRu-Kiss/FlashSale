@@ -7,7 +7,15 @@ x-h03-env: &h03-env
 
 services:
   auth: {environment: *h03-env}
-  gateway: {environment: *h03-env}
+  gateway:
+    environment:
+      <<: *h03-env
+      # H03 data preparation and burst traffic must not be rejected by the
+      # normal production Sentinel quotas. This override is isolated to H03.
+      FLASHSALE_GATEWAY_RATE_LIMIT_DEFAULT_QPS: "20000"
+      FLASHSALE_GATEWAY_RATE_LIMIT_IP_QPS: "20000"
+      FLASHSALE_GATEWAY_RATE_LIMIT_ACTIVITY_HOTSPOT_QPS: "20000"
+      FLASHSALE_GATEWAY_RATE_LIMIT_COUPON_HOTSPOT_QPS: "20000"
   product: {environment: *h03-env}
   activity: {environment: *h03-env}
   inventory: {environment: *h03-env}
